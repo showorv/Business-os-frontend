@@ -36,7 +36,7 @@ export const NAV_ITEMS: NavItem[] = [
   { key: "budgets", icon: PiggyBank, path: "budgets", permission: Permission.FINANCE_READ },
   { key: "goals", icon: Target, path: "goals", permission: Permission.FINANCE_READ },
   { key: "ledger", icon: BookOpen, path: "ledger", permission: Permission.FINANCE_READ },
-  { key: "statements", icon: Landmark, path: null, step: "9.6" },
+  { key: "statements", icon: Landmark, path: "statements", permission: Permission.FINANCE_READ },
   { key: "tasks", icon: ListChecks, path: null, step: "9.7" },
   { key: "documents", icon: FileText, path: null, step: "9.8" },
   { key: "assistant", icon: Bot, path: null, step: "9.8" },

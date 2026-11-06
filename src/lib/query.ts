@@ -26,6 +26,9 @@ export const queryKeys = {
   // The books underneath: chart of accounts, journals, months and reconciliations. Posting money reloads it.
   ledger: (businessId: string) => ["businesses", businessId, "ledger"],
   ledgerItem: (businessId: string, name: string, params = "") => ["businesses", businessId, "ledger", name, params],
+  // Bank statements: imports, the review inbox, rules and saved file formats.
+  statements: (businessId: string) => ["businesses", businessId, "statements"],
+  statementItem: (businessId: string, name: string, params = "") => ["businesses", businessId, "statements", name, params],
   // The all-businesses view, across every business this person can read.
   consolidated: (params = "") => ["consolidated", params],
 } as const satisfies Record<string, QueryKey | ((...ids: string[]) => QueryKey)>;

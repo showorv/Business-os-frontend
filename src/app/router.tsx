@@ -13,6 +13,8 @@ import { JournalDetailPage } from "@/features/ledger/JournalDetailPage";
 import { LedgerPage } from "@/features/ledger/LedgerPage";
 import { NewJournalPage } from "@/features/ledger/NewJournalPage";
 import { ReconciliationPage } from "@/features/ledger/ReconciliationPage";
+import { ImportPage } from "@/features/statements/ImportPage";
+import { StatementsPage } from "@/features/statements/StatementsPage";
 import { GoalsPage } from "@/features/goals/GoalsPage";
 import { ReportsPage } from "@/features/reports/ReportsPage";
 import { CreateBusinessPage } from "@/features/businesses/CreateBusinessPage";
@@ -71,6 +73,8 @@ export const router = createBrowserRouter([
           { path: "/b/:businessId/ledger/journals/new", element: <NewJournalPage /> },
           { path: "/b/:businessId/ledger/journals/:journalId", element: <JournalDetailPage /> },
           { path: "/b/:businessId/ledger/reconcile/:reconciliationId", element: <ReconciliationPage /> },
+          { path: "/b/:businessId/statements", element: <StatementsPage /> },
+          { path: "/b/:businessId/statements/import", element: <ImportPage /> },
           { path: "/b/:businessId/accounts", element: <AccountsPage /> },
           { path: "/b/:businessId/transactions", element: <TransactionsPage /> },
           { path: "/b/:businessId/transactions/new", element: <NewTransactionPage /> },

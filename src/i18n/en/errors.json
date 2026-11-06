@@ -81,5 +81,12 @@
   "RECONCILIATION_ALREADY_OPEN": "This account already has a reconciliation in progress. Finish that one first.",
   "RECONCILIATION_CLOSED": "This reconciliation is finished and can't change.",
   "RECONCILIATION_DIFFERENCE": "There is still a difference. Tick off the missing entries, or book the difference.",
-  "JOURNAL_LINE_NOT_MATCHABLE": "Some entries can't be ticked off here. Reload and try again."
+  "JOURNAL_LINE_NOT_MATCHABLE": "Some entries can't be ticked off here. Reload and try again.",
+  "STATEMENT_FILE_UNREADABLE": "That file can't be read as a statement. Check it's the CSV or Excel file from your bank, and that the columns are right.",
+  "STATEMENT_FILE_TOO_LARGE": "That statement is too big. Download a shorter date range from your bank.",
+  "STATEMENT_COLUMN_MISSING": "The column “{{column}}” isn't in this file. Pick the columns again.",
+  "STATEMENT_LINE_NOT_OPEN": "Someone already settled this line. Reload to see it.",
+  "STATEMENT_LINE_RECONCILED": "This line is part of a finished reconciliation, so it can't be unmatched.",
+  "SPLIT_TOTAL_MISMATCH": "The parts don't add up to the line's amount.",
+  "RULE_CATEGORY_MISMATCH": "Money in needs an income category, and money out needs an expense category."
 }

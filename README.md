@@ -18,8 +18,8 @@ phone sizes, tried by you, then committed.
 | 9.3 | Accounts, transactions, approvals, attachments | **Done** |
 | 9.4 | Dashboards, reports, budgets, goals, exports, all-businesses view | **Done** |
 | 9.5 | Ledger: chart of accounts, journals, closing months, reconciliation | **Done** |
-| 9.6 | Bank statements: import, inbox, rules | Next |
-| 9.7 | Tasks, reminders, recurring schedules, notifications, push | |
+| 9.6 | Bank statements: import, inbox, rules | **Done** |
+| 9.7 | Tasks, reminders, recurring schedules, notifications, push | Next |
 | 9.8 | AI assistant, document search, audit history | |
 
 ## Decisions made before starting
@@ -158,6 +158,118 @@ export const useCreateBusiness = () =>
 
 The helpers turn server errors into an `ApiError` with a code, which `errorMessage()` turns into words in
 the reader's language. The names of all cached lists live in `queryKeys`, in the same file.
+
+## Step 9.6: Bank statements: import, inbox, rules
+
+### What you can do now
+
+Side menu → **Bank statements**. It has three tabs, and the open one is kept in the address.
+
+- **Import statement** (the button on top) brings in a bank's CSV or Excel (.xlsx) file, up to 10 MB,
+  in two steps:
+  1. **Choose the file:** pick the account, then drop the file in or click to choose one. If formats
+     have been saved before, one can be picked so the columns fill themselves in.
+  2. **Check the columns:** the app guesses which row holds the headings and which column is which, and
+     shows what it found. You can change any of it:
+     - the heading row (some banks put a few lines of details above the table),
+     - the date column and how dates are written (formats that fit every row get a ✓),
+     - amounts as **one column** (minus means money out, with an optional Dr/Cr column) or
+       **in & out** as separate columns,
+     - description, reference, from/to, fee and balance, all optional.
+
+     Each change is checked against the file straight away. The right side shows how many rows can be
+     read, how many can't (and why, row by row), how many **balance gaps** there are (a running balance
+     that doesn't follow from the row before, which can mean missing rows), and the first lines as they
+     will be saved. Below that is the file as it is, with the heading row and the chosen columns
+     picked out.
+
+     Tick **Save these columns as a format** to name it for next time, then **Import N lines**. Nothing
+     is saved before this.
+- **Imports:** every file brought in, newest first. While a file is being read, the list checks again
+  every two seconds. A finished one shows how many lines are new, already there (the same file twice
+  adds nothing), unreadable, or with balance gaps; the unreadable rows can be opened. **Review lines**
+  opens the inbox for that file only. **Saved file formats** can be renamed or deleted here.
+- **To review** (the inbox): every statement line, to be settled.
+  - A bar on top shows how much is settled (matched or ignored), with four tiles that filter the list:
+    **To review**, **Waiting to post** (a transaction was made but isn't posted yet), **Matched** and
+    **Ignored**. A list can also be narrowed to one account.
+  - Lines settle themselves where they can: by reference, by amount and date when there's exactly one
+    fit, or by a rule. **Match again** runs that again, for example after recording more transactions.
+    A line that couldn't settle itself says why (for example a locked month).
+  - Click a line to open it in a side panel. The arrows (or ↑/↓, j/k) move through the list, and after
+    settling one the panel moves on to the next. Ways to settle it:
+    - **Match:** book entries on this account with the same amount within 10 days, closest first.
+      Choose one and match.
+    - **Categorize:** record it as income or expense in a category, or as a **transfer** to or from
+      another account (a bank fee on the line is recorded separately as a bank charge).
+    - **Split:** several categories adding up to the line, for example a purchase and its card fee. A
+      bar shows what's allocated and what's left, and the empty box suggests the rest. It only goes
+      through when the parts add up exactly.
+    - Categorize and split can **post to the books now**, or leave drafts for someone else to post.
+    - **Ignore** a line that isn't real money; it can be brought back.
+  - A settled line links to its transactions and can be **unmatched**, which sends it back to review.
+    Any transaction it made stays. A line that's part of a finished reconciliation can't be unmatched.
+  - **Make a rule from this line** opens a new rule, already filled in from the line.
+- **Rules:** "when money out contains *daraz* → Office Supplies", in the order they run (lower priority
+  number first; the first that fits wins).
+  - Each can have a top amount, and can **post itself** instead of making drafts.
+  - A switch pauses a rule; the menu edits or deletes it. Lines a rule already handled stay as they are.
+
+### Who can do what
+
+| | Owner, Admin, Accountant | Manager, Viewer |
+| --- | --- | --- |
+| See statements, imports and rules | Yes | Only if given "Can see finances" |
+| Import, settle lines, make rules and formats | Yes | No |
+| Post to the books from a line, or a rule that posts itself | Yes | No |
+
+The screens also handle a custom role that can change money but not post: it makes drafts, and the
+line waits in **Waiting to post**.
+
+### Backend changes for this step
+
+- **API description** (`src/app/docs/integrations.docs.ts`): now describes the preview answer (columns,
+  suggested mapping, date formats, the file's first rows and what would be imported) and one line's
+  answer (its links and suggested matches). Before, these had no description, so the frontend couldn't
+  be typed from it. Lines also list their import, and imports and formats their dates.
+- No behaviour changed. All 735 backend tests pass.
+
+### New shared pieces
+
+- `src/features/statements/`: the data hooks, the inbox, the line panel, imports, rules and the import
+  page. `parts.tsx` has the money-in/out icon, the status badge and an on/off switch.
+- `queryKeys.statements` in `src/lib/query.ts`. Settling a line also reloads transactions, balances,
+  reports and the ledger.
+- `src/lib/api.ts`: a few lists (statements, tasks, notifications) send their rows as
+  `{ items, nextCursor }` instead of rows plus `meta`. The page reader now accepts both.
+
+### How it was checked
+
+- **Browser test** (`e2e/statements.spec.ts`), at laptop and phone size:
+  1. Record a 12,000 sale, then add a rule for "daraz".
+  2. Import a CSV with two lines of bank details above the table: the heading row and the in & out
+     columns are found on their own, all 4 rows read, and the columns are saved as a format.
+  3. Wait for the import to finish: the deposit matched itself and the rule handled Daraz, leaving 2
+     to review.
+  4. Categorize the rent as Rent and post it; the panel moves on to the card purchase.
+  5. Split the card purchase: a part too much is shown and blocks it, the right amounts go through.
+  6. "All caught up". Unmatch the deposit, then match it again from the suggestion.
+  7. The rule's draft is waiting to post, and 3 of 4 lines are settled.
+- **All browser tests:** 29 pass (one phone-only test is skipped at laptop size). Three older tests
+  failed during one full run because of the test backend's sign-up limit, then passed when run again.
+- Lint, type-check, 58 small tests and the build pass.
+- Looked at by eye with a 13-line sample statement at laptop and phone size, light and dark: each tab,
+  the import page, and the panel for matching and splitting.
+
+### Fixes along the way
+
+- Split amounts first filled in the rest when the box was clicked, and typing then added to it
+  ("1050.001000"). The empty box now only shows the rest as a hint.
+- After settling a line, the panel could open the line just settled, before the list reloaded. It now
+  skips it.
+- On the import page, the amount layout buttons were cut off, "Money out" and "Money in" were marked
+  optional though one is needed, a saved format's card spilled past the screen on phones, and the
+  account box was blank while accounts were loading. All fixed.
 
 ## Step 9.5: Ledger: chart of accounts, journals, closing months, reconciliation
 

@@ -68,11 +68,15 @@ export interface Page<T> {
   nextCursor: string | null;
 }
 
-export type PagedCall<T> = Promise<{ data?: { data: T[]; meta?: { nextCursor?: string | null } }; error?: unknown; response: Response }>;
+// Most lists send the rows as `data` and the cursor in `meta`. A few (statements, tasks, notifications)
+// send `{ items, nextCursor }` as `data` instead; both are read the same way here.
+type PagedBody<T> = { data: T[]; meta?: { nextCursor?: string | null } } | { data: Page<T>; meta?: undefined };
+export type PagedCall<T> = Promise<{ data?: PagedBody<T>; error?: unknown; response: Response }>;
 
 export const unwrapPage = async <T>(call: PagedCall<T>): Promise<Page<T>> => {
   const body = await readBody(call);
-  return { items: body.data, nextCursor: body.meta?.nextCursor ?? null };
+  if (Array.isArray(body.data)) return { items: body.data, nextCursor: body.meta?.nextCursor ?? null };
+  return body.data;
 };
 
 // A fresh Idempotency-Key. Sent with a create, it makes a retried or double-clicked request count once.

@@ -10642,6 +10642,7 @@ export interface paths {
                                 mapping: {
                                     [key: string]: unknown;
                                 };
+                                createdAt: string;
                             }[];
                         };
                     };
@@ -10718,6 +10719,7 @@ export interface paths {
                                 mapping: {
                                     [key: string]: unknown;
                                 };
+                                createdAt: string;
                             };
                         };
                     };
@@ -10859,6 +10861,7 @@ export interface paths {
                                 mapping: {
                                     [key: string]: unknown;
                                 };
+                                createdAt: string;
                             };
                         };
                     };
@@ -10943,7 +10946,48 @@ export interface paths {
                         "application/json": {
                             /** @enum {boolean} */
                             success: true;
-                            data: Record<string, never>;
+                            data: {
+                                headers: string[];
+                                suggestion: {
+                                    headerRow?: number;
+                                    dateColumn?: string;
+                                    dateFormat?: string;
+                                    descriptionColumn?: string;
+                                    referenceColumn?: string;
+                                    counterpartyColumn?: string;
+                                    amountColumn?: string;
+                                    directionColumn?: string;
+                                    debitColumn?: string;
+                                    creditColumn?: string;
+                                    feeColumn?: string;
+                                    balanceColumn?: string;
+                                };
+                                dateFormats: string[];
+                                fileName: string;
+                                currency: string;
+                                rawRows: string[][];
+                                result?: {
+                                    totalRows: number;
+                                    readableRows: number;
+                                    failedRows: number;
+                                    balanceBreaks: number;
+                                    errors: {
+                                        row: number;
+                                        code: string;
+                                    }[];
+                                    lines: {
+                                        txnDate: string;
+                                        /** @enum {string} */
+                                        direction: "IN" | "OUT";
+                                        amountMinor: string;
+                                        feeMinor: string;
+                                        balanceAfterMinor: string | null;
+                                        description: string | null;
+                                        reference: string | null;
+                                        counterparty: string | null;
+                                    }[];
+                                };
+                            };
                         };
                     };
                 };
@@ -11026,6 +11070,8 @@ export interface paths {
                                         code: string;
                                     }[];
                                     errorCode: string | null;
+                                    finishedAt: string | null;
+                                    createdAt: string;
                                 }[];
                                 nextCursor: string | null;
                             };
@@ -11121,6 +11167,8 @@ export interface paths {
                                     code: string;
                                 }[];
                                 errorCode: string | null;
+                                finishedAt: string | null;
+                                createdAt: string;
                             };
                         };
                     };
@@ -11200,6 +11248,8 @@ export interface paths {
                                     code: string;
                                 }[];
                                 errorCode: string | null;
+                                finishedAt: string | null;
+                                createdAt: string;
                             };
                         };
                     };
@@ -11276,6 +11326,10 @@ export interface paths {
                                     id: string;
                                     /** Format: uuid */
                                     financialAccountId: string;
+                                    /** Format: uuid */
+                                    importId: string | null;
+                                    /** Format: uuid */
+                                    connectionId: string | null;
                                     txnDate: string;
                                     /** @enum {string} */
                                     direction: "IN" | "OUT";
@@ -11289,6 +11343,7 @@ export interface paths {
                                     status: "UNMATCHED" | "AWAITING_POSTING" | "MATCHED" | "IGNORED";
                                     matchedBy: string | null;
                                     lastMatchError: string | null;
+                                    createdAt: string;
                                 }[];
                                 nextCursor: string | null;
                             };
@@ -11498,6 +11553,10 @@ export interface paths {
                                 id: string;
                                 /** Format: uuid */
                                 financialAccountId: string;
+                                /** Format: uuid */
+                                importId: string | null;
+                                /** Format: uuid */
+                                connectionId: string | null;
                                 txnDate: string;
                                 /** @enum {string} */
                                 direction: "IN" | "OUT";
@@ -11511,6 +11570,23 @@ export interface paths {
                                 status: "UNMATCHED" | "AWAITING_POSTING" | "MATCHED" | "IGNORED";
                                 matchedBy: string | null;
                                 lastMatchError: string | null;
+                                createdAt: string;
+                                links: {
+                                    /** Format: uuid */
+                                    transactionId: string | null;
+                                    /** Format: uuid */
+                                    journalLineId: string | null;
+                                }[];
+                                suggestions: {
+                                    /** Format: uuid */
+                                    journalLineId: string;
+                                    entryNo: string;
+                                    entryDate: string;
+                                    memo: string | null;
+                                    referenceNo: string | null;
+                                    /** Format: uuid */
+                                    transactionId: string | null;
+                                }[];
                             };
                         };
                     };
@@ -11586,6 +11662,10 @@ export interface paths {
                                 id: string;
                                 /** Format: uuid */
                                 financialAccountId: string;
+                                /** Format: uuid */
+                                importId: string | null;
+                                /** Format: uuid */
+                                connectionId: string | null;
                                 txnDate: string;
                                 /** @enum {string} */
                                 direction: "IN" | "OUT";
@@ -11599,6 +11679,7 @@ export interface paths {
                                 status: "UNMATCHED" | "AWAITING_POSTING" | "MATCHED" | "IGNORED";
                                 matchedBy: string | null;
                                 lastMatchError: string | null;
+                                createdAt: string;
                             };
                         };
                     };
@@ -11666,6 +11747,10 @@ export interface paths {
                                 id: string;
                                 /** Format: uuid */
                                 financialAccountId: string;
+                                /** Format: uuid */
+                                importId: string | null;
+                                /** Format: uuid */
+                                connectionId: string | null;
                                 txnDate: string;
                                 /** @enum {string} */
                                 direction: "IN" | "OUT";
@@ -11679,6 +11764,7 @@ export interface paths {
                                 status: "UNMATCHED" | "AWAITING_POSTING" | "MATCHED" | "IGNORED";
                                 matchedBy: string | null;
                                 lastMatchError: string | null;
+                                createdAt: string;
                             };
                         };
                     };
@@ -11758,6 +11844,10 @@ export interface paths {
                                 id: string;
                                 /** Format: uuid */
                                 financialAccountId: string;
+                                /** Format: uuid */
+                                importId: string | null;
+                                /** Format: uuid */
+                                connectionId: string | null;
                                 txnDate: string;
                                 /** @enum {string} */
                                 direction: "IN" | "OUT";
@@ -11771,6 +11861,7 @@ export interface paths {
                                 status: "UNMATCHED" | "AWAITING_POSTING" | "MATCHED" | "IGNORED";
                                 matchedBy: string | null;
                                 lastMatchError: string | null;
+                                createdAt: string;
                                 /** Format: uuid */
                                 transactionId: string;
                             };
@@ -11853,6 +11944,10 @@ export interface paths {
                                 id: string;
                                 /** Format: uuid */
                                 financialAccountId: string;
+                                /** Format: uuid */
+                                importId: string | null;
+                                /** Format: uuid */
+                                connectionId: string | null;
                                 txnDate: string;
                                 /** @enum {string} */
                                 direction: "IN" | "OUT";
@@ -11866,6 +11961,7 @@ export interface paths {
                                 status: "UNMATCHED" | "AWAITING_POSTING" | "MATCHED" | "IGNORED";
                                 matchedBy: string | null;
                                 lastMatchError: string | null;
+                                createdAt: string;
                                 transactionIds: string[];
                             };
                         };
@@ -11934,6 +12030,10 @@ export interface paths {
                                 id: string;
                                 /** Format: uuid */
                                 financialAccountId: string;
+                                /** Format: uuid */
+                                importId: string | null;
+                                /** Format: uuid */
+                                connectionId: string | null;
                                 txnDate: string;
                                 /** @enum {string} */
                                 direction: "IN" | "OUT";
@@ -11947,6 +12047,7 @@ export interface paths {
                                 status: "UNMATCHED" | "AWAITING_POSTING" | "MATCHED" | "IGNORED";
                                 matchedBy: string | null;
                                 lastMatchError: string | null;
+                                createdAt: string;
                             };
                         };
                     };
@@ -12014,6 +12115,10 @@ export interface paths {
                                 id: string;
                                 /** Format: uuid */
                                 financialAccountId: string;
+                                /** Format: uuid */
+                                importId: string | null;
+                                /** Format: uuid */
+                                connectionId: string | null;
                                 txnDate: string;
                                 /** @enum {string} */
                                 direction: "IN" | "OUT";
@@ -12027,6 +12132,7 @@ export interface paths {
                                 status: "UNMATCHED" | "AWAITING_POSTING" | "MATCHED" | "IGNORED";
                                 matchedBy: string | null;
                                 lastMatchError: string | null;
+                                createdAt: string;
                             };
                         };
                     };
