@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { formatMoney, type Grouping } from "@/lib/money";
+import { formatCompact, formatMoney, type Grouping } from "@/lib/money";
 import { useFormatting } from "@/lib/preferences";
 import type { BusinessSettings } from "./api";
 import { useCurrentBusiness } from "./useCurrentBusiness";
@@ -21,5 +21,18 @@ export const useMoney = () => {
       return text.startsWith("-") ? `-${currency} ${text.slice(1)}` : `${currency} ${text}`;
     },
     [digitStyle, grouping, asCode],
+  );
+};
+
+// The short form for chart axes and tight spaces: "৳12.5K", "৳3.4L". Takes whole currency units
+// (what a chart scale works in), not paisa.
+export const useCompactMoney = () => {
+  const { business } = useCurrentBusiness();
+  const { digitStyle } = useFormatting();
+  const settings = business?.settings as Partial<BusinessSettings> | undefined;
+  const grouping: Grouping = settings?.numberGrouping ?? "lakh";
+  return useCallback(
+    (units: number, currency: string) => formatCompact(BigInt(Math.round(units * 100)), currency, { digitStyle, grouping }),
+    [digitStyle, grouping],
   );
 };

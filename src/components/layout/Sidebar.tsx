@@ -22,7 +22,7 @@ export const SidebarNav = ({ businessId, onNavigate }: { businessId?: string; on
             <NavLink
               key={key}
               to={`/b/${businessId}${path ? `/${path}` : ""}`}
-              // Overview is lit only on its own page; the others stay lit on their inner pages too.
+              // The dashboard is lit only on its own page; the others stay lit on their inner pages too.
               end={path === ""}
               onClick={onNavigate}
               className={({ isActive }) =>

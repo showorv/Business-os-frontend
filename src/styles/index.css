@@ -20,6 +20,13 @@
   --color-danger-soft: var(--danger-soft);
   --color-warning-soft: var(--warning-soft);
   --color-overlay: var(--overlay);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-chart-grid: var(--chart-grid);
+  --color-chart-track: var(--chart-track);
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   /* Bangla text falls through to Noto Sans Bengali, which shapes conjuncts correctly. */
@@ -36,5 +43,57 @@
   }
   * {
     @apply border-border;
+  }
+}
+
+/* Charts come in gently: lines draw from left to right, bars grow from the baseline.
+   Nobody who asks for less motion gets any. */
+@keyframes chart-draw {
+  from {
+    stroke-dashoffset: var(--chart-length, 2000);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes chart-rise {
+  from {
+    transform: scaleY(0);
+  }
+}
+@keyframes chart-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes chart-fade {
+  from {
+    opacity: 0;
+  }
+}
+@layer utilities {
+  .animate-chart-draw {
+    stroke-dasharray: var(--chart-length, 2000);
+    animation: chart-draw 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .animate-chart-rise {
+    transform-box: fill-box;
+    transform-origin: bottom;
+    animation: chart-rise 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .animate-chart-grow {
+    transform-origin: left;
+    animation: chart-grow 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .animate-chart-fade {
+    animation: chart-fade 500ms ease-out both;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .animate-chart-draw,
+    .animate-chart-rise,
+    .animate-chart-grow,
+    .animate-chart-fade {
+      animation: none;
+    }
   }
 }

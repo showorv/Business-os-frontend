@@ -58,5 +58,12 @@
   "DOCUMENT_IN_USE": "That file is already attached.",
   "PAYLOAD_TOO_LARGE": "That's too large to send.",
   "BUSINESS_NOT_PROVISIONED": "This business's books aren't set up yet. Try again in a moment.",
-  "CONFLICT": "Someone else changed this at the same time. Reload and try again."
+  "CONFLICT": "Someone else changed this at the same time. Reload and try again.",
+  "FX_RATE_MISSING": "There's no exchange rate saved to convert one of your businesses. Add one, or show each in its own currency.",
+  "DATE_RANGE_TOO_LONG": "That period is too long. Pick five years or less.",
+  "INVALID_MONTH_RANGE": "The first month must come before the last.",
+  "BUDGET_LINE_DUPLICATE": "That category is already in this budget.",
+  "EXPORT_NOT_READY": "The file isn't ready yet.",
+  "GOAL_NOT_ACTIVE": "This goal is no longer active.",
+  "REPORTING_CURRENCY_REQUIRED": "Your businesses use different currencies. Choose one to show them in."
 }

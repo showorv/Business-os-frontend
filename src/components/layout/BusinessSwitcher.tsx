@@ -1,4 +1,4 @@
-import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import { Check, ChevronsUpDown, LayoutGrid, Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { useAppSelector } from "@/app/store";
@@ -48,6 +48,12 @@ export const BusinessSwitcher = () => {
           </DropdownMenuItem>
         ))}
         <DropdownMenuSeparator />
+        {businesses.length > 1 ? (
+          <DropdownMenuItem onSelect={() => void navigate("/all")}>
+            <LayoutGrid className="size-4" />
+            {t("allBusinesses")}
+          </DropdownMenuItem>
+        ) : null}
         <DropdownMenuItem onSelect={() => void navigate("/onboarding")}>
           <Plus className="size-4" />
           {t("newBusiness")}

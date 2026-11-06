@@ -55,3 +55,36 @@ export const minorToInput = (minor: string | bigint, currency: string) => {
   const digits = BigInt(minor).toString().padStart(decimals + 1, "0");
   return decimals === 0 ? digits : `${digits.slice(0, -decimals)}.${digits.slice(-decimals)}`;
 };
+
+// A short form for chart axes and tight spaces: "৳12.5K", "৳3.4L", "৳1.2Cr" (lakh) or "৳1.2M" (western).
+// Rounded, so only for places where the exact figure is one hover or table away.
+const LAKH_UNITS: [bigint, string][] = [
+  [1_00_00_000n, "Cr"],
+  [1_00_000n, "L"],
+  [1_000n, "K"],
+];
+const WESTERN_UNITS: [bigint, string][] = [
+  [1_000_000_000n, "B"],
+  [1_000_000n, "M"],
+  [1_000n, "K"],
+];
+export const formatCompact = (minor: string | bigint, currency: string, { digitStyle = "latin", grouping = "lakh", withSymbol = true }: MoneyFormat = {}) => {
+  const amount = BigInt(minor);
+  const decimals = ZERO_DECIMAL.has(currency) ? 0n : 2n;
+  const whole = (amount < 0n ? -amount : amount) / 10n ** decimals;
+  const symbol = withSymbol ? (CURRENCY_SYMBOLS[currency] ?? `${currency} `) : "";
+  const unit = (grouping === "lakh" ? LAKH_UNITS : WESTERN_UNITS).find(([size]) => whole >= size);
+  let body: string;
+  if (!unit) body = whole.toString();
+  else {
+    // One decimal place, dropped when it's zero: 12.5K, 12K.
+    const tenths = (whole * 10n + unit[0] / 2n) / unit[0];
+    const text = `${tenths / 10n}${tenths % 10n === 0n ? "" : `.${tenths % 10n}`}`;
+    body = `${text}${unit[1]}`;
+  }
+  const result = `${amount < 0n ? "-" : ""}${symbol}${body}`;
+  return digitStyle === "bangla" ? toBanglaDigits(result) : result;
+};
+
+// For drawing only: a chart needs a plain number to place a mark. Never used to show or add up money.
+export const minorToNumber = (minor: string | bigint) => Number(BigInt(minor)) / 100;

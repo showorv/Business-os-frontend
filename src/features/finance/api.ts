@@ -1,10 +1,7 @@
 import { api, newRequestKey, unwrap, withShape } from "@/lib/api";
 import { queryKeys, useAction, useApiMutation, useApiPages, useApiQuery } from "@/lib/query";
 import type { paths } from "@/api/schema";
-
-type Json<T> = T extends { content: { "application/json": infer B } } ? B : never;
-type Data<T> = Json<T> extends { data: infer D } ? D : never;
-type Body<T> = T extends { requestBody?: infer R } ? Json<NonNullable<R>> : never;
+import type { Body, Data } from "@/lib/api-types";
 
 type AccountsPath = paths["/api/v1/businesses/{businessId}/accounts"];
 type TransactionsPath = paths["/api/v1/businesses/{businessId}/transactions"];
@@ -47,7 +44,8 @@ export const useAccounts = (businessId: string, enabled = true) =>
 
 export const useCreateAccount = (businessId: string) =>
   useApiMutation((body: NewAccount) => api.POST("/api/v1/businesses/{businessId}/accounts", { params: path(businessId), body }), {
-    invalidates: [queryKeys.accounts(businessId)],
+    // An opening balance is posted to the books, so the figures move too.
+    invalidates: [queryKeys.accounts(businessId), queryKeys.figures(businessId)],
   });
 
 export const useUpdateAccount = (businessId: string) =>
@@ -94,7 +92,9 @@ export const useTransaction = (businessId: string, transactionId: string) =>
   );
 
 // A change to one transaction can move balances and every list, so all of them reload.
-const reloadMoney = (businessId: string) => ({ invalidates: [queryKeys.transactions(businessId), queryKeys.accounts(businessId)] });
+const reloadMoney = (businessId: string) => ({
+  invalidates: [queryKeys.transactions(businessId), queryKeys.accounts(businessId), queryKeys.figures(businessId), queryKeys.consolidated()],
+});
 
 // `requestKey` stays the same while one form is open, so a double click or a retry creates it once.
 export const useCreateTransaction = (businessId: string) =>

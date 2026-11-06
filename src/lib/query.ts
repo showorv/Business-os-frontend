@@ -19,6 +19,12 @@ export const queryKeys = {
   transactions: (businessId: string) => ["businesses", businessId, "transactions"],
   transactionList: (businessId: string, filters: string) => ["businesses", businessId, "transactions", "list", filters],
   transaction: (businessId: string, transactionId: string) => ["businesses", businessId, "transactions", transactionId],
+  // Everything worked out from the books: dashboard, reports, budgets, goals. Posting money reloads all of it.
+  figures: (businessId: string) => ["businesses", businessId, "figures"],
+  figure: (businessId: string, name: string, params = "") => ["businesses", businessId, "figures", name, params],
+  exports: (businessId: string) => ["businesses", businessId, "exports"],
+  // The all-businesses view, across every business this person can read.
+  consolidated: (params = "") => ["consolidated", params],
 } as const satisfies Record<string, QueryKey | ((...ids: string[]) => QueryKey)>;
 
 type QueryExtras<T> = Omit<UseQueryOptions<T, Error>, "queryKey" | "queryFn">;

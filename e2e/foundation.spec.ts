@@ -100,7 +100,7 @@ test("the phone menu opens and closes", async ({ page, isMobile }, info) => {
   await register(page, freshEmail(info.project.name));
   await createBusiness(page, "Rahim Traders");
   await page.getByRole("button", { name: "Open menu" }).click();
-  await expect(page.getByRole("dialog").getByRole("link", { name: "Overview" })).toBeVisible();
-  await page.getByRole("dialog").getByRole("link", { name: "Overview" }).click();
+  await expect(page.getByRole("dialog").getByRole("link", { name: "Dashboard" })).toBeVisible();
+  await page.getByRole("dialog").getByRole("link", { name: "Dashboard" }).click();
   await expect(page.getByRole("dialog")).toBeHidden();
 });

@@ -122,7 +122,8 @@ test("an expense above the approval limit waits; the person who recorded it can'
   await karim.getByRole("link", { name: "Create an account" }).click();
   await fillRegister(karim, karimEmail, "Karim Ahmed");
   await karim.getByRole("button", { name: "Join business" }).click();
-  await expect(karim.getByRole("heading", { name: "Welcome to Rahim Traders" })).toBeVisible();
+  // The business already has money in it, so he lands on its dashboard rather than the welcome.
+  await expect(karim.getByRole("heading", { level: 1, name: "Rahim Traders" })).toBeVisible();
 
   // Above the limit: the form says so first, then it waits.
   await karim.goto(`/b/${businessId}/transactions/new`);

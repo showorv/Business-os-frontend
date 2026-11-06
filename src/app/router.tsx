@@ -6,13 +6,17 @@ import { LoginPage } from "@/features/auth/LoginPage";
 import { MfaPage } from "@/features/auth/MfaPage";
 import { RegisterPage } from "@/features/auth/RegisterPage";
 import { ResetPasswordPage } from "@/features/auth/ResetPasswordPage";
+import { BudgetDetailPage, BudgetsPage } from "@/features/budgets/BudgetsPage";
+import { AllBusinessesPage } from "@/features/consolidated/AllBusinessesPage";
+import { DashboardPage } from "@/features/dashboard/DashboardPage";
+import { GoalsPage } from "@/features/goals/GoalsPage";
+import { ReportsPage } from "@/features/reports/ReportsPage";
 import { CreateBusinessPage } from "@/features/businesses/CreateBusinessPage";
 import { BusinessSettingsPage } from "@/features/businesses/settings/BusinessSettingsPage";
 import { AccountsPage } from "@/features/finance/accounts/AccountsPage";
 import { TransactionDetailPage } from "@/features/finance/transactions/TransactionDetailPage";
 import { EditTransactionPage, NewTransactionPage } from "@/features/finance/transactions/TransactionFormPages";
 import { TransactionsPage } from "@/features/finance/transactions/TransactionsPage";
-import { BusinessHomePage } from "@/features/home/BusinessHomePage";
 import { ProfilePage } from "@/features/settings/ProfilePage";
 import { SecurityPage } from "@/features/settings/SecurityPage";
 import { SettingsLayout } from "@/features/settings/SettingsLayout";
@@ -53,7 +57,12 @@ export const router = createBrowserRouter([
       {
         element: <AppShell />,
         children: [
-          { path: "/b/:businessId", element: <BusinessHomePage /> },
+          { path: "/b/:businessId", element: <DashboardPage /> },
+          { path: "/b/:businessId/reports", element: <ReportsPage /> },
+          { path: "/b/:businessId/budgets", element: <BudgetsPage /> },
+          { path: "/b/:businessId/budgets/:budgetId", element: <BudgetDetailPage /> },
+          { path: "/b/:businessId/goals", element: <GoalsPage /> },
+          { path: "/all", element: <AllBusinessesPage /> },
           { path: "/b/:businessId/accounts", element: <AccountsPage /> },
           { path: "/b/:businessId/transactions", element: <TransactionsPage /> },
           { path: "/b/:businessId/transactions/new", element: <NewTransactionPage /> },

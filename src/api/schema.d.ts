@@ -6106,7 +6106,24 @@ export interface paths {
                         "application/json": {
                             /** @enum {boolean} */
                             success: true;
-                            data: Record<string, never>;
+                            data: {
+                                currency: string;
+                                /** @enum {string} */
+                                basis: "POSTED_ACTUALS";
+                                metric: string;
+                                current: {
+                                    fromMonth: string;
+                                    toMonth: string;
+                                    amountMinor: string;
+                                };
+                                comparedTo: {
+                                    fromMonth: string;
+                                    toMonth: string;
+                                    amountMinor: string;
+                                };
+                                changeMinor: string;
+                                changePercent: string | null;
+                            };
                         };
                     };
                 };
@@ -6316,9 +6333,18 @@ export interface paths {
                                 /** @enum {string} */
                                 status: "ACTIVE" | "ARCHIVED";
                                 currency: string;
+                                /** @enum {string} */
+                                basis: "POSTED_ACTUALS";
                                 lines: {
                                     /** Format: uuid */
                                     id: string;
+                                    category: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string;
+                                        nameBn: string | null;
+                                        type: string;
+                                    };
                                     amountMinor: string;
                                     alertPercent: number;
                                     actualMinor: string;
@@ -6326,6 +6352,11 @@ export interface paths {
                                     usedPercent: string | null;
                                     /** @enum {string} */
                                     level: "OK" | "NEAR" | "REACHED" | "OVER";
+                                    alerts: {
+                                        percent: number;
+                                        actualMinor: string;
+                                        createdAt: string;
+                                    }[];
                                 }[];
                             };
                         };

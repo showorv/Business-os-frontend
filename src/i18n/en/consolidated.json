@@ -1,0 +1,16 @@
+{
+  "title": "All businesses",
+  "subtitle": "Every business you can see the money of, together, in one currency.",
+  "currency": "Show in",
+  "defaultCurrency": "Main currency",
+  "cash": "Cash",
+  "business": "Business",
+  "acrossCount_one": "Across {{count}} business",
+  "acrossCount_other": "Across {{count}} businesses",
+  "byBusiness": "By business",
+  "byBusinessHint": "Revenue and expenses side by side. Click one to open it.",
+  "ratesUsed": "Converted with:",
+  "eliminated": "{{amount}} moved between your own businesses is left out, so it isn't counted twice.",
+  "status_INACTIVE": "Paused",
+  "status_ARCHIVED": "Archived"
+}

@@ -1,5 +1,4 @@
 {
-  "overview": "Overview",
   "dashboard": "Dashboard",
   "transactions": "Transactions",
   "accounts": "Accounts",
@@ -25,5 +24,8 @@
   "readOnlyINACTIVE": "This business is paused, so nothing in it can change. An owner or admin can reactivate it in Business settings.",
   "readOnlyARCHIVED": "This business is archived, so nothing in it can change. An owner or admin can reactivate it in Business settings.",
   "statusINACTIVE": "Paused",
-  "statusARCHIVED": "Archived"
+  "statusARCHIVED": "Archived",
+  "budgets": "Budgets",
+  "goals": "Goals",
+  "allBusinesses": "All businesses"
 }

@@ -16,8 +16,8 @@ phone sizes, tried by you, then committed.
 | 9.1 | Foundation: sign up, sign in, two-step verification, password reset, the app frame, language, business switcher, profile and security | **Done** |
 | 9.2 | Businesses and team: business settings, members, invitations | **Done** |
 | 9.3 | Accounts, transactions, approvals, attachments | **Done** |
-| 9.4 | Dashboards, reports, budgets, goals, exports, all-businesses view | Next |
-| 9.5 | Ledger: chart of accounts, journals, closing months, reconciliation | |
+| 9.4 | Dashboards, reports, budgets, goals, exports, all-businesses view | **Done** |
+| 9.5 | Ledger: chart of accounts, journals, closing months, reconciliation | Next |
 | 9.6 | Bank statements: import, inbox, rules | |
 | 9.7 | Tasks, reminders, recurring schedules, notifications, push | |
 | 9.8 | AI assistant, document search, audit history | |
@@ -158,6 +158,106 @@ export const useCreateBusiness = () =>
 
 The helpers turn server errors into an `ApiError` with a code, which `errorMessage()` turns into words in
 the reader's language. The names of all cached lists live in `queryKeys`, in the same file.
+
+## Step 9.4: Dashboards, reports, budgets, goals, exports, all businesses
+
+### What you can do now
+
+- **Dashboard** (side menu → Dashboard, and the first page of every business):
+  - A greeting, the business name, a **period picker** (this month, last 3 months, this financial year,
+    last 12 months, or any run of months) and a "New transaction" button. The period is kept in the
+    address, so a view can be bookmarked or shared.
+  - The **net profit** on a dark card, with how it changed against the period before, the margin, and
+    a bar showing how much of what came in was spent.
+  - **Revenue** and **expenses**, each with a small trend line and the change against the period before.
+  - **Revenue and expenses** month by month as lines. Hover, tap, or use the arrow keys to read each
+    month. Click a name in the legend to hide or show that line.
+  - **Profit by month** as columns. Losses are hatched, so they show without colour.
+  - **Biggest expenses**, **Where your cash is** (one bar split by account), **Goals** with rings,
+    **Needs attention** (waiting for approval, drafts, possible duplicates, budget lines getting close,
+    money owed) and **Recent activity**.
+  - Every chart has a Chart/Table switch, so the numbers can always be read as a table.
+  - A business with nothing recorded yet shows a **Getting started** list instead: add accounts, record
+    the first transaction, set an approval limit, invite the team. It ticks off as you go.
+- **Reports** (side menu → Reports): profit and loss, balance sheet, cash flow and trial balance, as
+  tabs. The first and third use a period; the balance sheet and trial balance use an "As of" date.
+  - Each line has a thin bar showing its share, so the big lines stand out.
+  - The balance sheet shows Assets against Liabilities + Equity as two bars and says "Balanced".
+  - Cash flow is drawn as a waterfall from the opening cash to the closing cash.
+  - **Export** makes a PDF, Excel or CSV file in the background. "Your exports" lists them, updates
+    itself until each one is ready, and has a Download button. If you use two-step verification, the
+    download may ask for a code first.
+- **Budgets** (side menu → Budgets): a name, a run of months, and a limit for each expense category you
+  want to watch, plus "warn at" a share (80% to start). Each budget shows how much is used. Its own page
+  lists every category with a meter, a notch where the warning starts, and a label: On track, Getting
+  close, Limit reached or Over budget. You can add a category, change a limit, archive or restore it.
+- **Goals** (side menu → Goals): a target for revenue, net profit or cash over some months. A ring fills
+  as the books move, with a trophy when it's reached. You can change a goal's name or target, or cancel
+  it (it stays in the list, greyed out).
+- **All businesses** (business switcher → All businesses, shown when you have two or more): every
+  business you can see the money of, added up in one currency. The server converts other currencies
+  with the saved rates and leaves out money moved between your own businesses, and the page says which
+  rates it used. Click a business to open it.
+
+### How the charts are designed
+
+- Black, white and greys only, as agreed, with errors in red. Light and dark each have their own shades.
+- Thin bars with rounded ends, 2px lines, light grid lines, one big number per view.
+- Every chart can be hovered and read by keyboard, and has a table view for screen readers and printing.
+- Amounts on axes are short: ৳4.6L, ৳1.2Cr (or K/M/B when the business uses western grouping). Full
+  amounts appear in tooltips and tables.
+- Charts draw themselves in when they appear. People who turn off motion on their device get no animation.
+- They are drawn by hand in SVG, with no chart library, so the app stays smaller and every chart
+  matches the rest of the design.
+
+### Backend changes for this step
+
+- The API description (`src/app/docs/analytics.docs.ts`) now lists what the server already sends: each
+  budget line's category and alerts, the budget's basis, and the earlier period on the dashboard. Before,
+  the generated types didn't know about them. No behaviour changed.
+
+### New shared pieces
+
+- `src/components/charts/`: `TrendChart` (lines), `ColumnChart`, `Waterfall`, and in `Figures.tsx`
+  `Sparkline`, `Meter`, `ProgressRing`, `SplitBar` and `RankedBars`. Also the tooltip, legend and scale
+  helpers they share.
+- `src/features/analytics/`: the data hooks, the period picker and period rules, and `StatTile`,
+  `ChartCard` (with the Chart/Table switch) and `Delta` (the change against the period before).
+- `src/lib/months.ts` (month arithmetic and labels), `src/lib/numbers.ts` (percentages, change) and
+  `formatCompact` in `src/lib/money.ts`.
+
+### How it was checked
+
+- **Browser tests** (`e2e/analytics.spec.ts`), at laptop and phone size:
+  1. A new business shows Getting started. After an account and three transactions, the dashboard shows
+     the right net profit; the period picker changes the address; a chart switches to a table. Each
+     report tab opens, the balance sheet balances, and an Excel export is queued and listed. A budget with
+     two limits shows "Getting close" and "On track". A goal is created, its target is changed until it's
+     reached, and it's cancelled.
+  2. With two businesses, All businesses adds them up and opens one when clicked.
+- The accountant in the approval test now lands on the dashboard after joining, because the business
+  already has money in it. The test checks for that. The phone menu test now looks for "Dashboard",
+  which replaced "Overview" in the side menu.
+- All 25 browser tests pass, with the earlier ones (one phone-only test is skipped at laptop size).
+  Lint, type-check, 54 small tests and the build pass.
+- Looked at by eye with five months of sample data at laptop and phone size, light and dark: dashboard,
+  each report, budgets, a budget, goals, all businesses.
+
+### Fixes along the way
+
+- The change badge on the net profit card showed an empty white box when there was no earlier figure.
+  It now only appears when there is one.
+- Account shares under "Where your cash is", and line shares in the reports, went above 100% when an
+  account was overdrawn. They are now shares of the money actually held (or of all lines together, in
+  the reports).
+- The revenue and expenses legend can now be clicked to hide one line and focus on the other.
+
+### Known and open
+
+- The app file is now 1,012 kB (301 kB compressed). Splitting it so each area loads only when opened is
+  still planned.
+- Charts follow the black-and-white rule. If you later want one accent colour (for example for
+  revenue), it can be set in `src/styles/theme.css` (`--chart-1`) without touching the charts.
 
 ## Step 9.3: Accounts, transactions, approvals, attachments
 
