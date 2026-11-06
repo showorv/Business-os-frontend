@@ -1,0 +1,22 @@
+{
+  "appName": "Business OS",
+  "loading": "Loading…",
+  "save": "Save",
+  "saved": "Saved",
+  "cancel": "Cancel",
+  "continue": "Continue",
+  "back": "Back",
+  "signOut": "Sign out",
+  "optional": "optional",
+  "soon": "Coming in step {{step}}",
+  "close": "Close",
+  "menu": "Menu",
+  "retry": "Try again",
+  "language": "Language",
+  "english": "English",
+  "bangla": "বাংলা",
+  "theme": "Theme",
+  "theme_light": "Light",
+  "theme_dark": "Dark",
+  "theme_system": "Same as device"
+}

@@ -1,0 +1,22 @@
+{
+  "appName": "Business OS",
+  "loading": "লোড হচ্ছে…",
+  "save": "সংরক্ষণ করুন",
+  "saved": "সংরক্ষিত হয়েছে",
+  "cancel": "বাতিল",
+  "continue": "এগিয়ে যান",
+  "back": "ফিরে যান",
+  "signOut": "সাইন আউট",
+  "optional": "ঐচ্ছিক",
+  "soon": "ধাপ {{step}}-এ আসছে",
+  "close": "বন্ধ করুন",
+  "menu": "মেনু",
+  "retry": "আবার চেষ্টা করুন",
+  "language": "ভাষা",
+  "english": "English",
+  "bangla": "বাংলা",
+  "theme": "থিম",
+  "theme_light": "হালকা",
+  "theme_dark": "গাঢ়",
+  "theme_system": "ডিভাইসের মতো"
+}

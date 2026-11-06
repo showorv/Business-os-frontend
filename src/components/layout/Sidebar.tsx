@@ -1,0 +1,42 @@
+import { useTranslation } from "react-i18next";
+import { NavLink } from "react-router";
+import { brand } from "@/config/brand";
+import { cn } from "@/lib/cn";
+import { NAV_ITEMS } from "./nav";
+
+// The list of screens. On a laptop it sits on the left; on a phone it opens from the menu button.
+export const SidebarNav = ({ businessId, onNavigate }: { businessId?: string; onNavigate?: () => void }) => {
+  const { t } = useTranslation(["shell", "common"]);
+  return (
+    <div className="flex h-full flex-col">
+      <div className="flex h-16 items-center gap-2 px-5 font-semibold">
+        <img src={brand.logo} alt="" className={cn("size-8", brand.invertLogoInDark && "dark:invert")} />
+        {brand.name}
+      </div>
+      <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 pb-4" aria-label={t("common:menu")}>
+        {NAV_ITEMS.map(({ key, icon: Icon, path, step }) =>
+          path !== null && businessId ? (
+            <NavLink
+              key={key}
+              to={`/b/${businessId}${path ? `/${path}` : ""}`}
+              end
+              onClick={onNavigate}
+              className={({ isActive }) =>
+                cn("flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors", isActive ? "bg-brand-soft text-brand" : "hover:bg-muted")
+              }
+            >
+              <Icon className="size-4" />
+              {t(`shell:${key}`)}
+            </NavLink>
+          ) : (
+            <span key={key} className="flex cursor-default items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground" title={step ? t("common:soon", { step }) : undefined}>
+              <Icon className="size-4" />
+              <span className="flex-1">{t(`shell:${key}`)}</span>
+              {step ? <span className="text-xs">{step}</span> : null}
+            </span>
+          ),
+        )}
+      </nav>
+    </div>
+  );
+};

@@ -1,0 +1,9 @@
+{
+  "required": "Required",
+  "email": "Enter a valid email",
+  "passwordMin": "At least 10 characters",
+  "passwordMax": "Too long",
+  "passwordsDiffer": "The passwords don't match",
+  "code": "Enter the 6 digits",
+  "tooLong": "Too long"
+}

@@ -1,0 +1,42 @@
+/* The app's colours, in one place. Black and white with greys in between. Light mode is :root; dark
+   mode is the .dark block, switched by the sun/moon button (see src/lib/theme.ts).
+   Values are OKLCH: lightness (0 black to 1 white), chroma (0 = no colour), hue.
+   To bring back a colour, give --brand a chroma, e.g. oklch(0.45 0.12 152) for green. */
+:root {
+  color-scheme: light;
+  --brand: oklch(0.15 0 0);
+  --brand-foreground: oklch(1 0 0);
+  --brand-soft: oklch(0.96 0 0);
+
+  --background: oklch(0.985 0 0);
+  --foreground: oklch(0.15 0 0);
+  --surface: oklch(1 0 0);
+  --muted: oklch(0.95 0 0);
+  --muted-foreground: oklch(0.48 0 0);
+  --border: oklch(0.9 0 0);
+  /* The one exception to black and white: errors and destructive buttons stay red so they can't be missed.
+     Set chroma to 0 here to make them grey too. */
+  --danger: oklch(0.55 0.2 27);
+  --danger-soft: oklch(0.96 0.03 27);
+  --warning-soft: oklch(0.95 0 0);
+  --overlay: oklch(0 0 0 / 0.4);
+  --radius: 0.6rem;
+}
+
+.dark {
+  color-scheme: dark;
+  --brand: oklch(0.97 0 0);
+  --brand-foreground: oklch(0.15 0 0);
+  --brand-soft: oklch(0.24 0 0);
+
+  --background: oklch(0.13 0 0);
+  --foreground: oklch(0.96 0 0);
+  --surface: oklch(0.18 0 0);
+  --muted: oklch(0.24 0 0);
+  --muted-foreground: oklch(0.7 0 0);
+  --border: oklch(0.3 0 0);
+  --danger: oklch(0.68 0.19 25);
+  --danger-soft: oklch(0.26 0.06 25);
+  --warning-soft: oklch(0.24 0 0);
+  --overlay: oklch(0 0 0 / 0.6);
+}
