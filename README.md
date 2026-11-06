@@ -56,8 +56,14 @@ You need the backend running first (see its README). Then:
 
 ```bash
 npm install
+cp .env.example .env
 npm run dev
 ```
+
+**Settings and secrets live only in `.env`.** It is listed in `.gitignore`, so git never commits it.
+`.env.example` is the committed copy with the names but no values. Never write a password, key or token
+into any other file: GitHub is scanned (GitGuardian), and anything committed stays in the history even
+after it's deleted.
 
 Open http://localhost:5173. The frontend passes every `/api` request on to the backend at
 `http://localhost:5001`. To use a different backend, set `API_TARGET`, for example
@@ -229,8 +235,10 @@ They need a separate test backend, so they never touch your real data:
    (`SMTP_URL=smtp://localhost:1025`, `DATABASE_URL=.../business_os_e2e`, `REDIS_URL=redis://localhost:6379/2`,
    `PORT=5002`, `CORS_ORIGINS=http://localhost:5173`, `APP_URL=http://localhost:5173`). Run
    `npx prisma migrate deploy`, then `npm run dev` and `npm run worker`.
-4. Here: `API_TARGET=http://localhost:5002 npm run dev`.
-5. `npm run test:e2e`. It uses the Chrome already on your Mac.
+4. Here, in `.env`: set `API_TARGET=http://localhost:5002`, and make up two passwords for
+   `E2E_PASSWORD` and `E2E_NEW_PASSWORD` (at least 10 characters each). Then `npm run dev`.
+5. `npm run test:e2e`. It uses the Chrome already on your Mac. If a password is missing from `.env`, the
+   tests stop and say which one.
 
 Each run creates fresh accounts named `owner-…@e2e.test`. The backend allows 10 sign-ups per 10 minutes
 from one address, and a run makes 9. Between runs, wait 10 minutes or clear the test limits:

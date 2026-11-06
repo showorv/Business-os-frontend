@@ -1,4 +1,8 @@
+import { existsSync } from "node:fs";
 import { defineConfig, devices } from "@playwright/test";
+
+// Test passwords and addresses come from .env, which git never sees. Copy .env.example to .env to start.
+if (existsSync(".env")) process.loadEnvFile(".env");
 
 // Runs against servers that are already up: the frontend on 5173 and a test backend behind it.
 // See README, "Browser tests", for how to start them.

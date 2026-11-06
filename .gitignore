@@ -1,7 +1,9 @@
 node_modules/
 dist/
+# Settings and secrets stay on this computer. Only the empty example is committed.
 .env
-.env.local
+.env.*
+!.env.example
 playwright-report/
 test-results/
 *.log

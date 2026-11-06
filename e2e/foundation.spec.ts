@@ -1,8 +1,16 @@
 import { expect, test, type Page } from "@playwright/test";
 import { TOTP } from "otpauth";
 
+// Never write a password here: they come from .env (see .env.example), which is never committed.
+const needEnv = (name: string) => {
+  const value = process.env[name];
+  if (!value) throw new Error(`Set ${name} in .env before running the browser tests (copy .env.example).`);
+  return value;
+};
+const password = needEnv("E2E_PASSWORD");
+const newPassword = needEnv("E2E_NEW_PASSWORD");
+
 // Each run makes its own account, so runs never collide.
-const password = "e2e-Owner-pass-2026";
 const freshEmail = (project: string) => `owner-${project}-${Date.now()}@e2e.test`;
 
 const register = async (page: Page, email: string) => {
@@ -78,7 +86,6 @@ test("two-step verification: turn on, sign in with a code, confirm a password ch
   await expect(page.getByRole("dialog")).toBeHidden();
 
   // Changing the password asks for a fresh code first, then signs out everywhere.
-  const newPassword = "e2e-Owner-pass-2027";
   await page.getByLabel("Current password").fill(password);
   await page.getByLabel("New password").fill(newPassword);
   await page.getByRole("button", { name: "Change password" }).click();
@@ -113,7 +120,7 @@ test("forgotten password: the emailed link sets a new one", async ({ page, reque
   await expect(page.getByText("a reset link is on its way", { exact: false })).toBeVisible();
 
   // Mailpit, the local mail catcher, holds the email.
-  const mailpit = process.env.MAILPIT_URL ?? "http://localhost:8025";
+  const mailpit = process.env.MAILPIT_URL || "http://localhost:8025";
   let link: string | undefined;
   await expect(async () => {
     const list = (await (await request.get(`${mailpit}/api/v1/search?query=${encodeURIComponent(`to:${email}`)}`)).json()) as { messages: { ID: string }[] };
@@ -125,13 +132,13 @@ test("forgotten password: the emailed link sets a new one", async ({ page, reque
   }).toPass({ timeout: 20_000 });
 
   await page.goto(new URL(link!).pathname + new URL(link!).search);
-  await page.getByLabel("New password", { exact: true }).fill("e2e-Owner-pass-2028");
-  await page.getByLabel("Confirm new password").fill("e2e-Owner-pass-2028");
+  await page.getByLabel("New password", { exact: true }).fill(newPassword);
+  await page.getByLabel("Confirm new password").fill(newPassword);
   await page.getByRole("button", { name: "Set new password" }).click();
   await expect(page.getByText("Your password was changed", { exact: false })).toBeVisible();
 
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password", { exact: true }).fill("e2e-Owner-pass-2028");
+  await page.getByLabel("Password", { exact: true }).fill(newPassword);
   await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page.getByRole("heading", { name: "Welcome to Rahim Traders" })).toBeVisible();
 });
