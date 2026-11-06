@@ -20,3 +20,11 @@ export const formatRelative = (value: string | Date, locale: string, digitStyle:
   }
   return format.format(0, "minute");
 };
+
+// A calendar date from the API ("2026-11-06"), written for people: "6 Nov 2026" or "৬ নভে, ২০২৬".
+// Read as UTC so the date never shifts a day in a time zone behind or ahead.
+export const formatDate = (date: string, locale: string, digitStyle: DigitStyle) =>
+  new Intl.DateTimeFormat(intlLocale(locale, digitStyle), { dateStyle: "medium", timeZone: "UTC" }).format(new Date(`${date}T00:00:00Z`));
+
+// Today's date in a time zone, as the API writes dates: "2026-11-06". A business uses its own zone.
+export const todayIn = (timeZone: string) => new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());

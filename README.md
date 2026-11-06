@@ -15,8 +15,8 @@ phone sizes, tried by you, then committed.
 | --- | --- | --- |
 | 9.1 | Foundation: sign up, sign in, two-step verification, password reset, the app frame, language, business switcher, profile and security | **Done** |
 | 9.2 | Businesses and team: business settings, members, invitations | **Done** |
-| 9.3 | Accounts, transactions, approvals, attachments | Next |
-| 9.4 | Dashboards, reports, budgets, goals, exports, all-businesses view | |
+| 9.3 | Accounts, transactions, approvals, attachments | **Done** |
+| 9.4 | Dashboards, reports, budgets, goals, exports, all-businesses view | Next |
 | 9.5 | Ledger: chart of accounts, journals, closing months, reconciliation | |
 | 9.6 | Bank statements: import, inbox, rules | |
 | 9.7 | Tasks, reminders, recurring schedules, notifications, push | |
@@ -127,11 +127,11 @@ src/
   components/ui/        Buttons, fields, cards, menus, dialogs: the building blocks
   components/layout/    The app frame: side menu, top bar, business switcher, user menu
   config/brand.ts       Name and logo
-  features/             One folder per area: auth, businesses, home, settings, team
+  features/             One folder per area: auth, businesses, finance, home, settings, team
   i18n/en, i18n/bn      The words, in English and Bangla, one file per area
   lib/                  Helpers: API calls, data loading (query.ts), the session, theme, money, dates, errors
   styles/               Colours and fonts
-e2e/                    Browser tests: helpers.ts, foundation (9.1), team (9.2)
+e2e/                    Browser tests: helpers.ts, foundation (9.1), team (9.2), finance (9.3)
 ```
 
 Each feature folder keeps its screens next to an `api.ts` that holds its server calls.
@@ -158,6 +158,106 @@ export const useCreateBusiness = () =>
 
 The helpers turn server errors into an `ApiError` with a code, which `errorMessage()` turns into words in
 the reader's language. The names of all cached lists live in `queryKeys`, in the same file.
+
+## Step 9.3: Accounts, transactions, approvals, attachments
+
+### What you can do now
+
+- **Accounts** (side menu → Accounts): every place money lives, such as cash, bank, bKash, Nagad or
+  another wallet. Each one shows its balance, and the total sits on top. A new business starts with an
+  empty "Cash" account. When you add an account you give it an opening balance and the date of that
+  balance. The opening balance can't change later; record an adjustment instead. Bank and wallet numbers
+  are stored safely, and only the last digits are shown. An account you no longer use can be hidden;
+  its history stays. Clicking an account opens its transactions.
+- **Categories**, on the same page: income and expense groups, in English and Bangla. You can add your
+  own and hide ones you don't use.
+- **Transactions** (side menu → Transactions): the list, newest first, with tabs for each status
+  (Drafts, Waiting, Posted, Rejected, Voided) and filters for type, account and dates. The filters are
+  kept in the address, so a filtered list can be bookmarked or shared. "Load more" fetches the next 30.
+- **New transaction**: choose Income, Expense or Transfer. Refund and Adjustment are behind
+  "Refund or adjustment". Amounts can be typed as `1250`, `1,250.50` or in Bangla digits. Then:
+  - **Save and post** puts it in the books, and balances change at once.
+  - **Save draft** keeps it aside without touching any balance. People who can't post only see this.
+  - A transfer moves money between two of your accounts, with an optional bank or wallet fee.
+  - Pressing the button twice, or retrying after a dropped connection, still records it once. Each form
+    sends one key that the server remembers.
+- **One transaction's page** shows its details, and the buttons depend on its status:
+  - **Draft:** edit, post, or void. Voiding keeps it crossed out in the list but never posts it.
+  - **Waiting for approval:** an owner or admin approves or rejects it.
+  - **Posted:** reverse it, with an optional reason. This records the opposite entry, so both stay in
+    the books.
+  - **Possible duplicate:** a warning, with a link to the similar one and a "Not a duplicate" button.
+- **Approvals** (Business settings → Approval limit): expenses above the limit wait for an owner or
+  admin before they reach the books, and the form says so before you save. The person who recorded an
+  expense can never approve it, even an owner; someone else must. Leave the box empty for no limit.
+- **Receipts and files**: attach PDFs or photos (PNG, JPEG, WebP) up to 25 MB to any transaction that
+  isn't voided. You can download or remove them. A wrong kind of file, or one that is too big, is
+  refused before anything is sent.
+
+### Who can do what
+
+| | Owner, Admin | Accountant | Manager, Viewer |
+| --- | --- | --- | --- |
+| See accounts and transactions | Yes | Yes | Only if given "Can see finances" |
+| Add accounts, record transactions, attach files | Yes | Yes | No |
+| Post, reverse | Yes | Yes | No |
+| Approve or reject large expenses | Yes, but not their own | No | No |
+
+### How uploads work
+
+The file doesn't pass through our server. The browser:
+
+1. asks the server for a one-time upload address,
+2. sends the file straight to storage (MinIO on your Mac, Cloudflare R2 in production),
+3. tells the server it's there. The server then checks that the file really is what it claims to be.
+4. Finally the file is attached to the transaction.
+
+For production, R2 must allow uploads from the frontend's web address. Its CORS setting needs to allow
+`PUT` from the Vercel domain, or uploads fail with "The file couldn't be uploaded".
+
+### Backend changes for this step
+
+- One transaction's answer now gives each attachment's file name, type and size, so the page can list
+  them without asking for each file. Before, it only gave the file's id.
+- The API description now lists `createdBy`, `createdAt` and `approvedAt` for transactions. The server
+  already sent them, but the generated types didn't know.
+- The backend's transaction tests check the new attachment details (34 pass).
+
+### New shared pieces
+
+- `src/lib/money.ts`: `parseMoney` turns what someone typed (commas, Bangla digits, a ৳ sign) into
+  paisa, or refuses it. `minorToInput` does the reverse for editing.
+- `src/lib/dates.ts`: `formatDate` for dates without a time, and `todayIn` for today in the business's
+  time zone.
+- `src/components/ui/money-input.tsx` (an amount box with the currency sign),
+  `segmented.tsx` (the Income/Expense/Transfer switch) and `empty-state.tsx`.
+- `useApiPages` in `src/lib/query.ts`: lists that load page by page ("Load more").
+
+### How it was checked
+
+- **Browser tests** (`e2e/finance.spec.ts`), at laptop and phone size:
+  1. Add two accounts. Record income and post it. Save an expense as a draft, edit it and post it.
+     Transfer between accounts with a fee. Reverse the income. Void a draft. After each step the total
+     balance is checked to the paisa, and the Voided tab shows only the voided one.
+  2. Set an approval limit. An accountant joins by invitation and records an expense above it: the form
+     warns, it waits, and they see no Approve button. The owner finds it under Waiting and approves it,
+     and the balance changes. The owner's own large expense also waits, and they can't approve it.
+  3. Attach a receipt, see it after a reload, have a text file refused, remove the receipt.
+- All 21 browser tests pass, with the earlier ones. Lint, type-check, 38 small tests and the build pass.
+- Looked at by eye at laptop and phone size, light and dark: accounts, list, new transaction, detail.
+
+### Fixes along the way
+
+- The approval-limit card saved but showed no "Saved" message, because the card reloads after saving.
+  It now shows the message either way.
+- The "← Transactions" link on the new-transaction page went to the start page instead of the list.
+- On phones, "Save and post" now sits on top and "Save draft" under it.
+
+### Known and open
+
+- The app file is now 902 kB (276 kB compressed). Splitting it so each area loads only when opened is still planned.
+- Foreign-currency transactions are refused by the backend for now, so the form only offers the
+  business's own currency.
 
 ## Step 9.2: Businesses and team
 
@@ -236,8 +336,8 @@ two-step code if the person has two-step verification on (the same code box as c
 
 ### Known and open
 
-- The approval limit for large expenses and switching modules on or off are in the backend's business
-  settings, but not on this screen yet. The approval limit comes with transactions in step 9.3.
+- Switching modules on or off is in the backend's business settings, but not on this screen yet.
+  (The approval limit arrived in step 9.3.)
 - The app file grew to 833 kB (258 kB compressed). Splitting it so each area loads only when opened is
   still planned.
 

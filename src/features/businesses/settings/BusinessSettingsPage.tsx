@@ -5,6 +5,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Permission } from "@/lib/permissions";
 import { useAccess } from "../api";
 import { useCurrentBusiness } from "../useCurrentBusiness";
+import { ApprovalLimitCard } from "./ApprovalLimitCard";
 import { DetailsCard } from "./DetailsCard";
 import { PreferencesCard } from "./PreferencesCard";
 import { StatusCard } from "./StatusCard";
@@ -32,6 +33,7 @@ export const BusinessSettingsPage = () => {
       {!canManage ? <Alert>{t("readOnlyRole")}</Alert> : null}
       <DetailsCard key={`details-${version}`} business={business} editable={editable} />
       <PreferencesCard key={`prefs-${version}`} business={business} editable={editable} />
+      <ApprovalLimitCard key={`limit-${version}`} business={business} editable={editable} />
       {canManage ? <StatusCard business={business} /> : null}
     </div>
   );

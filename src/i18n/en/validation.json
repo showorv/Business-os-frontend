@@ -5,5 +5,7 @@
   "passwordMax": "Too long",
   "passwordsDiffer": "The passwords don't match",
   "code": "Enter the 6 digits",
-  "tooLong": "Too long"
+  "tooLong": "Too long",
+  "amount": "Enter an amount above 0, like 1250 or 1,250.50",
+  "accountNumber": "4 to 34 digits"
 }

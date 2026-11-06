@@ -2818,6 +2818,10 @@ export interface paths {
                                 reversalEntryId: string | null;
                                 /** Format: uuid */
                                 approvedBy: string | null;
+                                approvedAt: string | null;
+                                /** Format: uuid */
+                                createdBy: string;
+                                createdAt: string;
                             }[];
                         };
                     };
@@ -2919,6 +2923,10 @@ export interface paths {
                                 reversalEntryId: string | null;
                                 /** Format: uuid */
                                 approvedBy: string | null;
+                                approvedAt: string | null;
+                                /** Format: uuid */
+                                createdBy: string;
+                                createdAt: string;
                             };
                         };
                     };
@@ -3008,10 +3016,17 @@ export interface paths {
                                 reversalEntryId: string | null;
                                 /** Format: uuid */
                                 approvedBy: string | null;
+                                approvedAt: string | null;
+                                /** Format: uuid */
+                                createdBy: string;
+                                createdAt: string;
                                 attachments: {
                                     /** Format: uuid */
                                     documentId: string;
                                     createdAt: string;
+                                    fileName: string;
+                                    mime: string;
+                                    sizeBytes: number;
                                 }[];
                             };
                         };
@@ -3111,6 +3126,10 @@ export interface paths {
                                 reversalEntryId: string | null;
                                 /** Format: uuid */
                                 approvedBy: string | null;
+                                approvedAt: string | null;
+                                /** Format: uuid */
+                                createdBy: string;
+                                createdAt: string;
                             };
                         };
                     };
@@ -3198,6 +3217,10 @@ export interface paths {
                                 reversalEntryId: string | null;
                                 /** Format: uuid */
                                 approvedBy: string | null;
+                                approvedAt: string | null;
+                                /** Format: uuid */
+                                createdBy: string;
+                                createdAt: string;
                             };
                         };
                     };
@@ -3289,6 +3312,10 @@ export interface paths {
                                 reversalEntryId: string | null;
                                 /** Format: uuid */
                                 approvedBy: string | null;
+                                approvedAt: string | null;
+                                /** Format: uuid */
+                                createdBy: string;
+                                createdAt: string;
                             };
                         };
                     };
@@ -3380,6 +3407,10 @@ export interface paths {
                                 reversalEntryId: string | null;
                                 /** Format: uuid */
                                 approvedBy: string | null;
+                                approvedAt: string | null;
+                                /** Format: uuid */
+                                createdBy: string;
+                                createdAt: string;
                             };
                         };
                     };
@@ -3471,6 +3502,10 @@ export interface paths {
                                 reversalEntryId: string | null;
                                 /** Format: uuid */
                                 approvedBy: string | null;
+                                approvedAt: string | null;
+                                /** Format: uuid */
+                                createdBy: string;
+                                createdAt: string;
                             };
                         };
                     };
@@ -3569,6 +3604,10 @@ export interface paths {
                                 reversalEntryId: string | null;
                                 /** Format: uuid */
                                 approvedBy: string | null;
+                                approvedAt: string | null;
+                                /** Format: uuid */
+                                createdBy: string;
+                                createdAt: string;
                             };
                         };
                     };
@@ -3660,6 +3699,10 @@ export interface paths {
                                 reversalEntryId: string | null;
                                 /** Format: uuid */
                                 approvedBy: string | null;
+                                approvedAt: string | null;
+                                /** Format: uuid */
+                                createdBy: string;
+                                createdAt: string;
                             };
                         };
                     };

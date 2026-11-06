@@ -32,3 +32,26 @@ export const formatMoney = (minor: string | bigint, currency: string, { digitSty
   const text = `${amount < 0n ? "-" : ""}${symbol}${groupDigits(whole, grouping)}${fraction}`;
   return digitStyle === "bangla" ? toBanglaDigits(text) : text;
 };
+
+const LATIN_ZERO = 48;
+const fromBanglaDigits = (text: string) => text.replace(/[০-৯]/g, (digit) => String.fromCharCode(LATIN_ZERO + digit.charCodeAt(0) - BANGLA_ZERO));
+
+// What someone typed ("1,500.5", "১৫০০", "৳ 2,50,000") as whole paisa in a string, or null if it isn't
+// an amount. Never goes through a float, so 0.1 + 0.2 problems can't happen.
+export const parseMoney = (text: string, currency: string): string | null => {
+  const decimals = ZERO_DECIMAL.has(currency) ? 0 : 2;
+  const cleaned = fromBanglaDigits(text).replace(/[\s,৳$€£₹]/g, "").replace(/^[A-Z]{3}/i, "");
+  const pattern = decimals === 0 ? /^(\d{1,18})$/ : /^(\d{0,18})(?:\.(\d{0,2}))?$/;
+  const match = pattern.exec(cleaned);
+  if (!match || cleaned === "" || cleaned === ".") return null;
+  const whole = match[1] || "0";
+  const fraction = decimals === 0 ? "" : (match[2] ?? "").padEnd(2, "0");
+  return BigInt(whole + fraction).toString();
+};
+
+// Whole paisa back to plain text for an input box: "150050" → "1500.50". No grouping, Latin digits.
+export const minorToInput = (minor: string | bigint, currency: string) => {
+  const decimals = ZERO_DECIMAL.has(currency) ? 0 : 2;
+  const digits = BigInt(minor).toString().padStart(decimals + 1, "0");
+  return decimals === 0 ? digits : `${digits.slice(0, -decimals)}.${digits.slice(-decimals)}`;
+};

@@ -8,6 +8,10 @@ import { RegisterPage } from "@/features/auth/RegisterPage";
 import { ResetPasswordPage } from "@/features/auth/ResetPasswordPage";
 import { CreateBusinessPage } from "@/features/businesses/CreateBusinessPage";
 import { BusinessSettingsPage } from "@/features/businesses/settings/BusinessSettingsPage";
+import { AccountsPage } from "@/features/finance/accounts/AccountsPage";
+import { TransactionDetailPage } from "@/features/finance/transactions/TransactionDetailPage";
+import { EditTransactionPage, NewTransactionPage } from "@/features/finance/transactions/TransactionFormPages";
+import { TransactionsPage } from "@/features/finance/transactions/TransactionsPage";
 import { BusinessHomePage } from "@/features/home/BusinessHomePage";
 import { ProfilePage } from "@/features/settings/ProfilePage";
 import { SecurityPage } from "@/features/settings/SecurityPage";
@@ -50,6 +54,11 @@ export const router = createBrowserRouter([
         element: <AppShell />,
         children: [
           { path: "/b/:businessId", element: <BusinessHomePage /> },
+          { path: "/b/:businessId/accounts", element: <AccountsPage /> },
+          { path: "/b/:businessId/transactions", element: <TransactionsPage /> },
+          { path: "/b/:businessId/transactions/new", element: <NewTransactionPage /> },
+          { path: "/b/:businessId/transactions/:transactionId", element: <TransactionDetailPage /> },
+          { path: "/b/:businessId/transactions/:transactionId/edit", element: <EditTransactionPage /> },
           { path: "/b/:businessId/team", element: <TeamPage /> },
           { path: "/b/:businessId/settings", element: <BusinessSettingsPage /> },
           {

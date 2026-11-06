@@ -49,12 +49,31 @@ export type ApiCall<T> = Promise<{ data?: { data: T }; error?: unknown; response
 // (for example "any object"), this names the real shape. Use it only where the schema falls short.
 export const withShape = <T>(call: Promise<unknown>) => call as ApiCall<T>;
 
-// Turns openapi-fetch's { data, error } into the payload, or a thrown ApiError.
-export const unwrap = async <T>(call: ApiCall<T>): Promise<T> => {
+// The body of a successful answer, or a thrown ApiError.
+const readBody = async <B>(call: Promise<{ data?: B; error?: unknown; response: Response }>): Promise<B> => {
   const { data, error, response } = await call;
   if (error !== undefined || !data) {
     const body = (error ?? {}) as ErrorBody;
     throw new ApiError(response.status, body.error?.code ?? "NETWORK_ERROR", body.error?.params);
   }
-  return data.data;
+  return data;
 };
+
+// Turns openapi-fetch's { data, error } into the payload, or a thrown ApiError.
+export const unwrap = async <T>(call: ApiCall<T>): Promise<T> => (await readBody(call)).data;
+
+// One page of a long list. `nextCursor` asks for the page after it; null means this was the last.
+export interface Page<T> {
+  items: T[];
+  nextCursor: string | null;
+}
+
+export type PagedCall<T> = Promise<{ data?: { data: T[]; meta?: { nextCursor?: string | null } }; error?: unknown; response: Response }>;
+
+export const unwrapPage = async <T>(call: PagedCall<T>): Promise<Page<T>> => {
+  const body = await readBody(call);
+  return { items: body.data, nextCursor: body.meta?.nextCursor ?? null };
+};
+
+// A fresh Idempotency-Key. Sent with a create, it makes a retried or double-clicked request count once.
+export const newRequestKey = () => crypto.randomUUID();

@@ -17,6 +17,8 @@ export interface BusinessSettings {
   numberGrouping: "lakh" | "western";
   weekStart: "saturday" | "sunday" | "monday";
   transactionPrefix: string;
+  // Expenses above this (in paisa) need an owner or admin to approve them. null: no limit.
+  approvalThresholdMinor: string | null;
 }
 
 export const BUSINESS_TYPES = ["RETAIL", "SERVICES", "AGENCY", "ECOMMERCE", "MANUFACTURING", "CUSTOM"] as const;

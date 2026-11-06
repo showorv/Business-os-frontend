@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatMoney } from "./money";
+import { formatMoney, minorToInput, parseMoney } from "./money";
 
 describe("formatMoney", () => {
   it("groups in lakh and crore by default", () => {
@@ -24,5 +24,29 @@ describe("formatMoney", () => {
   it("knows other currencies", () => {
     expect(formatMoney("1999", "USD", { grouping: "western" })).toBe("$19.99");
     expect(formatMoney("1500", "JPY")).toBe("JPY 1,500");
+  });
+});
+
+describe("parseMoney", () => {
+  it("reads plain, grouped and Bangla amounts", () => {
+    expect(parseMoney("1500", "BDT")).toBe("150000");
+    expect(parseMoney("1,500.5", "BDT")).toBe("150050");
+    expect(parseMoney("৳ 2,50,000", "BDT")).toBe("25000000");
+    expect(parseMoney("১৫০০.২৫", "BDT")).toBe("150025");
+    expect(parseMoney(".5", "BDT")).toBe("50");
+  });
+
+  it("refuses what isn't an amount", () => {
+    for (const text of ["", ".", "abc", "1.234", "-5", "1.2.3", "12a"]) expect(parseMoney(text, "BDT")).toBeNull();
+  });
+
+  it("keeps huge amounts exact", () => {
+    expect(parseMoney("9007199254740993.17", "BDT")).toBe("900719925474099317");
+  });
+
+  it("goes back to input text", () => {
+    expect(minorToInput("150050", "BDT")).toBe("1500.50");
+    expect(minorToInput("5", "BDT")).toBe("0.05");
+    expect(minorToInput("1500", "JPY")).toBe("1500");
   });
 });

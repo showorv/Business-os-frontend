@@ -1,5 +1,5 @@
-import { useMutation, useQuery, useQueryClient, type QueryKey, type UseQueryOptions } from "@tanstack/react-query";
-import { unwrap, type ApiCall } from "./api";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient, type QueryKey, type UseQueryOptions } from "@tanstack/react-query";
+import { unwrap, unwrapPage, type ApiCall, type PagedCall } from "./api";
 
 // The one place TanStack Query is wired up. Feature files describe *what* to load or send, and
 // these helpers handle unwrapping the response, errors and refreshing the lists that changed.
@@ -13,6 +13,12 @@ export const queryKeys = {
   business: (businessId: string) => ["businesses", businessId],
   members: (businessId: string) => ["businesses", businessId, "members"],
   invitations: (businessId: string) => ["businesses", businessId, "invitations"],
+  accounts: (businessId: string) => ["businesses", businessId, "accounts"],
+  categories: (businessId: string) => ["businesses", businessId, "categories"],
+  // Every transaction list and transaction in a business, whatever the filters.
+  transactions: (businessId: string) => ["businesses", businessId, "transactions"],
+  transactionList: (businessId: string, filters: string) => ["businesses", businessId, "transactions", "list", filters],
+  transaction: (businessId: string, transactionId: string) => ["businesses", businessId, "transactions", transactionId],
 } as const satisfies Record<string, QueryKey | ((...ids: string[]) => QueryKey)>;
 
 type QueryExtras<T> = Omit<UseQueryOptions<T, Error>, "queryKey" | "queryFn">;
@@ -21,6 +27,18 @@ type QueryExtras<T> = Omit<UseQueryOptions<T, Error>, "queryKey" | "queryFn">;
 //   useApiQuery(queryKeys.businesses, () => api.GET("/api/v1/businesses"))
 export const useApiQuery = <T>(key: QueryKey, request: () => ApiCall<T>, extras?: QueryExtras<T>) =>
   useQuery({ queryKey: key, queryFn: () => unwrap(request()), ...extras });
+
+// A long list loaded a page at a time. `data` is every row loaded so far; `fetchNextPage()` loads more
+// and `hasNextPage` says whether there is more.
+//   useApiPages(queryKeys.transactions(id, filters), (cursor) => api.GET(".../transactions", { params: { query: { cursor } } }))
+export const useApiPages = <T>(key: QueryKey, request: (cursor: string | undefined) => PagedCall<T>) =>
+  useInfiniteQuery({
+    queryKey: key,
+    queryFn: ({ pageParam }) => unwrapPage(request(pageParam)),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (last) => last.nextCursor ?? undefined,
+    select: (data) => data.pages.flatMap((page) => page.items),
+  });
 
 interface ActionOptions<TInput, TResult> {
   // Lists to reload once the action succeeds, e.g. [queryKeys.businesses].

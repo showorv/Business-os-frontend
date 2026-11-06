@@ -1,12 +1,15 @@
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router";
 import { brand } from "@/config/brand";
+import { useAccess } from "@/features/businesses/api";
 import { cn } from "@/lib/cn";
 import { NAV_ITEMS } from "./nav";
 
 // The list of screens. On a laptop it sits on the left; on a phone it opens from the menu button.
 export const SidebarNav = ({ businessId, onNavigate }: { businessId?: string; onNavigate?: () => void }) => {
   const { t } = useTranslation(["shell", "common"]);
+  const access = useAccess(businessId);
+  const items = NAV_ITEMS.filter((item) => !item.permission || access.can(item.permission));
   return (
     <div className="flex h-full flex-col">
       <div className="flex h-16 items-center gap-2 px-5 font-semibold">
@@ -14,12 +17,13 @@ export const SidebarNav = ({ businessId, onNavigate }: { businessId?: string; on
         {brand.name}
       </div>
       <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 pb-4" aria-label={t("common:menu")}>
-        {NAV_ITEMS.map(({ key, icon: Icon, path, step }) =>
+        {items.map(({ key, icon: Icon, path, step }) =>
           path !== null && businessId ? (
             <NavLink
               key={key}
               to={`/b/${businessId}${path ? `/${path}` : ""}`}
-              end
+              // Overview is lit only on its own page; the others stay lit on their inner pages too.
+              end={path === ""}
               onClick={onNavigate}
               className={({ isActive }) =>
                 cn("flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors", isActive ? "bg-brand-soft text-brand" : "hover:bg-muted")

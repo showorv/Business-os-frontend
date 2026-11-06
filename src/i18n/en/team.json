@@ -14,7 +14,7 @@
   "changeRoleHint": "This takes effect straight away.",
   "roleHintOWNER": "Everything, including other owners and closing the business.",
   "roleHintADMIN": "Everything except changing owners.",
-  "roleHintACCOUNTANT": "Money, ledger, reports and approvals. Can't manage the team.",
+  "roleHintACCOUNTANT": "Money, ledger and reports. Can't approve large expenses or manage the team.",
   "roleHintMANAGER": "Tasks and documents. Money only if allowed below.",
   "roleHintVIEWER": "Can look, can't change anything.",
   "financeRead": "Can see finances",

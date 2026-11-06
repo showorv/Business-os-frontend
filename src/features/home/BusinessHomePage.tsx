@@ -48,7 +48,7 @@ export const BusinessHomePage = () => {
           </CardHeader>
           <CardContent>
             <ul className="space-y-3 text-sm">
-              {(["next93", "next94", "next95"] as const).map((key) => (
+              {(["next94", "next95"] as const).map((key) => (
                 <li key={key} className="flex gap-2">
                   <CircleCheck className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
                   {t(`businesses:${key}`)}
