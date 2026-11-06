@@ -65,5 +65,21 @@
   "BUDGET_LINE_DUPLICATE": "That category is already in this budget.",
   "EXPORT_NOT_READY": "The file isn't ready yet.",
   "GOAL_NOT_ACTIVE": "This goal is no longer active.",
-  "REPORTING_CURRENCY_REQUIRED": "Your businesses use different currencies. Choose one to show them in."
+  "REPORTING_CURRENCY_REQUIRED": "Your businesses use different currencies. Choose one to show them in.",
+  "CODE_TAKEN": "That code is already used by another account.",
+  "LEDGER_ACCOUNT_NOT_USABLE": "One of the accounts is hidden or belongs to another business.",
+  "LEDGER_ACCOUNT_PROTECTED": "This account can't be hidden: the app posts to it, or a money account uses it.",
+  "LEDGER_PARENT_INVALID": "An account can only sit under another account of the same kind.",
+  "LEDGER_CODE_RANGE_FULL": "There are no free codes left for this kind of account.",
+  "PERIOD_ORDER": "Close the earlier months first.",
+  "USE_YEAR_CLOSE": "The last month of the year closes with the year-end close.",
+  "YEAR_ALREADY_CLOSED": "This year is already closed.",
+  "YEAR_HAS_OPEN_PERIODS": "Lock or close every month of the year first.",
+  "JOURNAL_UNBALANCED": "Debits and credits must be equal.",
+  "JOURNAL_NOT_REVERSIBLE": "This kind of entry can't be reversed.",
+  "JOURNAL_HAS_SOURCE": "This entry came from a transaction. Reverse the transaction instead.",
+  "RECONCILIATION_ALREADY_OPEN": "This account already has a reconciliation in progress. Finish that one first.",
+  "RECONCILIATION_CLOSED": "This reconciliation is finished and can't change.",
+  "RECONCILIATION_DIFFERENCE": "There is still a difference. Tick off the missing entries, or book the difference.",
+  "JOURNAL_LINE_NOT_MATCHABLE": "Some entries can't be ticked off here. Reload and try again."
 }

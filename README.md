@@ -17,8 +17,8 @@ phone sizes, tried by you, then committed.
 | 9.2 | Businesses and team: business settings, members, invitations | **Done** |
 | 9.3 | Accounts, transactions, approvals, attachments | **Done** |
 | 9.4 | Dashboards, reports, budgets, goals, exports, all-businesses view | **Done** |
-| 9.5 | Ledger: chart of accounts, journals, closing months, reconciliation | Next |
-| 9.6 | Bank statements: import, inbox, rules | |
+| 9.5 | Ledger: chart of accounts, journals, closing months, reconciliation | **Done** |
+| 9.6 | Bank statements: import, inbox, rules | Next |
 | 9.7 | Tasks, reminders, recurring schedules, notifications, push | |
 | 9.8 | AI assistant, document search, audit history | |
 
@@ -158,6 +158,105 @@ export const useCreateBusiness = () =>
 
 The helpers turn server errors into an `ApiError` with a code, which `errorMessage()` turns into words in
 the reader's language. The names of all cached lists live in `queryKeys`, in the same file.
+
+## Step 9.5: Ledger: chart of accounts, journals, closing months, reconciliation
+
+### What you can do now
+
+Side menu → **Ledger**. It has four tabs, and the open one is kept in the address.
+
+- **Chart of accounts:** every account in the books, grouped into assets, liabilities, equity, revenue
+  and expenses, each with today's balance.
+  - Five tiles on top show each kind's total. Click one to show only that kind.
+  - Search by code or name. "Show hidden" also lists accounts that were hidden.
+  - Click an account to open a side panel: its balance, a link to its journal entries, and its name,
+    Bangla name, cash-flow group and parent account to change. An account can be hidden, except the
+    built-in ones the app posts to.
+  - **New account:** pick the kind, and a free code is suggested (for example the next round number
+    after the last expense account).
+- **Journals:** every entry in the books, newest first, with its total. Filter by kind, account and
+  dates; the filters stay in the address. "Load more" fetches the next 30.
+  - **One entry** shows its debits and credits side by side, the way a paper journal does, with a
+    "Balanced" check. It also says where the entry came from (a transaction, a reconciliation, the
+    year-end close) and links to it.
+  - **Reverse** a hand-written entry: a new entry with every side swapped is posted, and the original
+    stays, marked "Reversed by". Entries made by a transaction are reversed through the transaction.
+- **New journal entry** (the button on top): a date, a description, adjusting or standard, and lines.
+  Each line is an account with a debit or a credit; typing in one side clears the other. A bar at the
+  bottom shows both totals and how much is still to balance, and "Post entry" only wakes up once they
+  match. A new line starts with the amount that would balance the entry. Pressing twice posts once.
+- **Months:** the financial year's twelve months, each **Open**, **Locked** (only owners and admins can
+  still post) or **Closed** (final). A strip on top fills in as months are locked and closed, with a dot
+  under this month.
+  - From a month's menu: lock it, open it again (owners and admins), or close it for good. Earlier
+    months must be closed first.
+  - **Close the year** works once no month is open. It moves the year's profit or loss into Retained
+    Earnings, closes every month, and opens the next year.
+  - **Open next year** sets up the next year's months ahead of time.
+  - Locking and closing ask for a two-step code first if two-step verification is on.
+- **Reconcile:** check a bank or wallet account against its statement.
+  - **Start reconciling:** choose the account, the statement date and the balance it shows (a minus
+    sign is allowed for an overdrawn account).
+  - The page shows the statement balance, what's ticked off so far, and **Still to find**, the gap.
+    Ticking entries shows what the gap would become before you confirm. "Select all" ticks every one.
+  - Ticked entries can be unticked while it's in progress.
+  - **Finish** once the gap is zero. If something can't be found, an owner or admin can **finish and
+    book the difference** to Reconciliation Adjustments (6900).
+  - **Use statement matches** ticks off entries already matched to imported statement lines. That
+    becomes useful in step 9.6.
+
+### Who can do what
+
+| | Owner, Admin | Accountant | Manager, Viewer |
+| --- | --- | --- | --- |
+| See the ledger | Yes | Yes | Only if given "Can see finances" |
+| Add or change accounts, write journals, reconcile | Yes | Yes | No |
+| Reverse a journal, lock and close months, close the year | Yes | Yes | No |
+| Open a locked month again, post into a locked month | Yes | No | No |
+| Book a reconciliation difference | Yes | No | No |
+
+### Backend changes for this step
+
+- **Journal list:** each entry now carries its total, its number of lines and, if it was reversed,
+  the reversing entry. Before, the list had no amounts, so the page couldn't show any without asking for
+  every entry separately.
+- **Reconciliation:** one reconciliation's answer now includes:
+  - the account's name,
+  - the entries already ticked off, so they can be unticked,
+  - for a finished one, the amount written off. Before, its live figures hid that.
+- **API description** (`src/app/docs/accounting.docs.ts`): now describes these answers. The
+  reconciliation and tick-off answers had no description before.
+- **Tests:** the backend's ledger tests check the new fields. All 735 backend tests pass.
+
+### New shared pieces
+
+- `src/features/ledger/`: the data hooks, and in `parts.tsx` the account picker grouped by kind, the
+  kind badge, the pill tabs and the code suggestion.
+- `queryKeys.ledger` in `src/lib/query.ts`. Recording a transaction now also reloads the ledger, so new
+  entries show at once.
+
+### How it was checked
+
+- **Browser test** (`e2e/ledger.spec.ts`), at laptop and phone size:
+  1. Filter the chart of accounts by a tile and by search, and add an account.
+  2. Write a journal that doesn't balance (Post stays off), fix it and post it.
+  3. Reverse it, and check that the original can't be reversed again.
+  4. Filter the journals by kind.
+  5. Lock this month and open it again.
+  6. Reconcile City Bank: tick everything off, untick one and see the gap come back, then finish.
+- **All browser tests:** 27 pass, with the earlier ones (one phone-only test is skipped at laptop
+  size). One older test failed once during a full run because the test backend allows only 10 sign-ups
+  per 10 minutes, then passed when run again.
+- Lint, type-check, 56 small tests and the build pass.
+- Looked at by eye with sample data at laptop and phone size, light and dark: each tab, a journal, the
+  new-entry form, an account's panel and a reconciliation.
+
+### Fixes along the way
+
+- On phones, the search box shrank to an icon, month names were cut off ("September 2…") and a
+  journal's Credit column was pushed off-screen. All three now fit.
+- The little button that clears the kind filter had the same name as the tile ("Assets"). It now says
+  "Clear filters: Assets" to screen readers.
 
 ## Step 9.4: Dashboards, reports, budgets, goals, exports, all businesses
 

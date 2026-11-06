@@ -93,7 +93,7 @@ export const useTransaction = (businessId: string, transactionId: string) =>
 
 // A change to one transaction can move balances and every list, so all of them reload.
 const reloadMoney = (businessId: string) => ({
-  invalidates: [queryKeys.transactions(businessId), queryKeys.accounts(businessId), queryKeys.figures(businessId), queryKeys.consolidated()],
+  invalidates: [queryKeys.transactions(businessId), queryKeys.accounts(businessId), queryKeys.figures(businessId), queryKeys.ledger(businessId), queryKeys.consolidated()],
 });
 
 // `requestKey` stays the same while one form is open, so a double click or a retry creates it once.

@@ -4773,7 +4773,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List journals with filters. Needs finance.read */
+        /** List journals with filters, newest first, with each one's total. Needs finance.read */
         get: {
             parameters: {
                 query?: {
@@ -4814,6 +4814,13 @@ export interface paths {
                                 /** Format: uuid */
                                 sourceId: string | null;
                                 memo: string | null;
+                                totalMinor: string;
+                                lineCount: number;
+                                reversedBy: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    entryNo: string;
+                                } | null;
                             }[];
                         };
                     };
@@ -4970,6 +4977,11 @@ export interface paths {
                                 /** Format: uuid */
                                 sourceId: string | null;
                                 memo: string | null;
+                                reversedBy: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    entryNo: string;
+                                } | null;
                                 lines: {
                                     /** Format: uuid */
                                     id: string;
@@ -5637,7 +5649,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Current difference and the lines still unmatched. Needs finance.read */
+        /** Current difference, the lines still unmatched and those matched so far. Needs finance.read */
         get: {
             parameters: {
                 query?: never;
@@ -5659,7 +5671,52 @@ export interface paths {
                         "application/json": {
                             /** @enum {boolean} */
                             success: true;
-                            data: Record<string, never>;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                financialAccountId: string;
+                                statementDate: string;
+                                statementBalanceMinor: string;
+                                /** @enum {string} */
+                                status: "OPEN" | "CLOSED";
+                                /** Format: uuid */
+                                adjustmentEntryId: string | null;
+                                clearedMinor: string;
+                                bookBalanceMinor: string;
+                                differenceMinor: string;
+                                account: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                };
+                                closedDifferenceMinor: string | null;
+                                openStatementLines: number;
+                                latestStatementBalance: {
+                                    balanceMinor: string;
+                                    asOf: string;
+                                } | null;
+                                unmatchedLines: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    debitMinor: string;
+                                    creditMinor: string;
+                                    memo: string | null;
+                                    entryNo: string;
+                                    entryDate: string;
+                                    entryMemo: string | null;
+                                }[];
+                                matchedLines: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    debitMinor: string;
+                                    creditMinor: string;
+                                    memo: string | null;
+                                    entryNo: string;
+                                    entryDate: string;
+                                    entryMemo: string | null;
+                                }[];
+                            };
                         };
                     };
                 };
@@ -5729,7 +5786,11 @@ export interface paths {
                         "application/json": {
                             /** @enum {boolean} */
                             success: true;
-                            data: Record<string, never>;
+                            data: {
+                                clearedMinor: string;
+                                bookBalanceMinor: string;
+                                differenceMinor: string;
+                            };
                         };
                     };
                 };

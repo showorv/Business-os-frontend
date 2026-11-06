@@ -9,6 +9,7 @@ import bnGoals from "./bn/goals.json";
 import bnBudgets from "./bn/budgets.json";
 import bnReports from "./bn/reports.json";
 import bnAnalytics from "./bn/analytics.json";
+import bnLedger from "./bn/ledger.json";
 import bnFinance from "./bn/finance.json";
 import bnSettings from "./bn/settings.json";
 import bnShell from "./bn/shell.json";
@@ -23,6 +24,7 @@ import enGoals from "./en/goals.json";
 import enBudgets from "./en/budgets.json";
 import enReports from "./en/reports.json";
 import enAnalytics from "./en/analytics.json";
+import enLedger from "./en/ledger.json";
 import enFinance from "./en/finance.json";
 import enSettings from "./en/settings.json";
 import enShell from "./en/shell.json";
@@ -32,8 +34,8 @@ import enValidation from "./en/validation.json";
 // One file per screen area and language. Every key in English must also be in Bangla:
 // src/i18n/i18n.test.ts checks that.
 export const resources = {
-  en: { common: enCommon, auth: enAuth, validation: enValidation, shell: enShell, businesses: enBusinesses, settings: enSettings, team: enTeam, finance: enFinance, consolidated: enConsolidated, goals: enGoals, budgets: enBudgets, reports: enReports, analytics: enAnalytics, errors: enErrors },
-  bn: { common: bnCommon, auth: bnAuth, validation: bnValidation, shell: bnShell, businesses: bnBusinesses, settings: bnSettings, team: bnTeam, finance: bnFinance, consolidated: bnConsolidated, goals: bnGoals, budgets: bnBudgets, reports: bnReports, analytics: bnAnalytics, errors: bnErrors },
+  en: { common: enCommon, auth: enAuth, validation: enValidation, shell: enShell, businesses: enBusinesses, settings: enSettings, team: enTeam, finance: enFinance, consolidated: enConsolidated, goals: enGoals, budgets: enBudgets, reports: enReports, analytics: enAnalytics, ledger: enLedger, errors: enErrors },
+  bn: { common: bnCommon, auth: bnAuth, validation: bnValidation, shell: bnShell, businesses: bnBusinesses, settings: bnSettings, team: bnTeam, finance: bnFinance, consolidated: bnConsolidated, goals: bnGoals, budgets: bnBudgets, reports: bnReports, analytics: bnAnalytics, ledger: bnLedger, errors: bnErrors },
 } as const;
 
 export type Locale = "en" | "bn-BD";

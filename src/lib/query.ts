@@ -23,6 +23,9 @@ export const queryKeys = {
   figures: (businessId: string) => ["businesses", businessId, "figures"],
   figure: (businessId: string, name: string, params = "") => ["businesses", businessId, "figures", name, params],
   exports: (businessId: string) => ["businesses", businessId, "exports"],
+  // The books underneath: chart of accounts, journals, months and reconciliations. Posting money reloads it.
+  ledger: (businessId: string) => ["businesses", businessId, "ledger"],
+  ledgerItem: (businessId: string, name: string, params = "") => ["businesses", businessId, "ledger", name, params],
   // The all-businesses view, across every business this person can read.
   consolidated: (params = "") => ["consolidated", params],
 } as const satisfies Record<string, QueryKey | ((...ids: string[]) => QueryKey)>;
