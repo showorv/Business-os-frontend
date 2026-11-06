@@ -14,8 +14,8 @@ phone sizes, tried by you, then committed.
 | Step | What it brings | Status |
 | --- | --- | --- |
 | 9.1 | Foundation: sign up, sign in, two-step verification, password reset, the app frame, language, business switcher, profile and security | **Done** |
-| 9.2 | Businesses and team: business settings, members, invitations | Next |
-| 9.3 | Accounts, transactions, approvals, attachments | |
+| 9.2 | Businesses and team: business settings, members, invitations | **Done** |
+| 9.3 | Accounts, transactions, approvals, attachments | Next |
 | 9.4 | Dashboards, reports, budgets, goals, exports, all-businesses view | |
 | 9.5 | Ledger: chart of accounts, journals, closing months, reconciliation | |
 | 9.6 | Bank statements: import, inbox, rules | |
@@ -127,11 +127,11 @@ src/
   components/ui/        Buttons, fields, cards, menus, dialogs: the building blocks
   components/layout/    The app frame: side menu, top bar, business switcher, user menu
   config/brand.ts       Name and logo
-  features/             One folder per area: auth, businesses, home, settings
+  features/             One folder per area: auth, businesses, home, settings, team
   i18n/en, i18n/bn      The words, in English and Bangla, one file per area
   lib/                  Helpers: API calls, data loading (query.ts), the session, theme, money, dates, errors
   styles/               Colours and fonts
-e2e/                    Browser tests
+e2e/                    Browser tests: helpers.ts, foundation (9.1), team (9.2)
 ```
 
 Each feature folder keeps its screens next to an `api.ts` that holds its server calls.
@@ -158,6 +158,88 @@ export const useCreateBusiness = () =>
 
 The helpers turn server errors into an `ApiError` with a code, which `errorMessage()` turns into words in
 the reader's language. The names of all cached lists live in `queryKeys`, in the same file.
+
+## Step 9.2: Businesses and team
+
+### What you can do now
+
+- **Business settings** (side menu → Business settings), at `/b/<business>/settings`:
+  - **Details:** name, legal name, tax ID (TIN/BIN), main currency and time zone. The financial year's
+    first month is shown but locked: the backend builds the financial periods around it. The currency
+    can change only until the books have entries; the backend says so if it's too late.
+  - **Preferences:** the language for the business's emails and documents, currency as a symbol (৳) or
+    code (BDT), lakh or thousands grouping, the first day of the week, and the prefix for transaction
+    numbers. These are used from step 9.3 on.
+  - **Status:** pause (inactive) or archive the business, and reactivate it. Both make it read-only for
+    everyone, with a notice at the top of every screen. Archived businesses stay in the switcher, marked
+    "Archived", so they can still be opened and reactivated.
+- **Team** (side menu → Team), at `/b/<business>/team`:
+  - Everyone sees who is in the business and their role.
+  - **Invite someone:** email plus role (admin, accountant, manager or viewer). They get an email; the
+    dialog also shows the link, to send another way. Owners are never invited: an owner makes an existing
+    member an owner instead.
+  - **Pending invitations:** who hasn't accepted yet and when the link runs out (7 days), with a cancel button.
+  - **Change role:** from the ⋮ menu on a person. Managers and viewers can also be allowed to **see
+    finances** (view only). A short note under the role says what it can do.
+  - **Remove:** from the same menu, after an "are you sure?". Their past work stays in the history.
+- **Accepting an invitation:** the email link opens `/invitations/accept`. Someone signed out is sent to
+  sign in, or to create an account, and comes back to the link afterwards, even through the two-step code.
+  Joining takes a button press, so an email app's link preview can't accept by accident. If they're
+  signed in with a different email, they're told so and offered to sign out.
+
+### Who can do what
+
+The server decides; the screens only hide buttons someone couldn't use. The app reads the person's own
+permissions for the business from the backend (`useAccess` in `src/features/businesses/api.ts`).
+
+| | Owner | Admin | Accountant, manager, viewer |
+| --- | --- | --- | --- |
+| See business settings and team | Yes | Yes | Yes |
+| Change settings, pause, archive | Yes | Yes | No |
+| Invite, change roles, remove | Yes | Yes, except owners | No |
+| Make someone an owner, change an owner | Yes | No | No |
+
+A business always keeps at least one owner: the backend refuses to remove or demote the last one.
+Nobody removes themselves from the team screen. Changing roles and removing people need a fresh
+two-step code if the person has two-step verification on (the same code box as changing the password).
+
+### New shared pieces
+
+- `src/features/auth/useStepUpRetry.tsx`: runs an action, and if the server asks for a fresh code, shows
+  the code box and runs it again. Used by change password, change role and remove.
+- `src/components/ui/confirm-dialog.tsx`: the "are you sure?" box.
+- `src/lib/permissions.ts`: the permission and role names, the same as the backend's.
+- `src/features/businesses/options.ts`: currencies, time zones and month names, shared by set-up and settings.
+- `withShape` in `src/lib/api.ts`: names the real answer for the two routes whose generated type is too
+  loose (the member and invitation lists).
+
+### How it was checked
+
+- **Browser tests** (`e2e/team.spec.ts`), at laptop and phone size:
+  1. An owner invites someone by email. That person opens the emailed link on their own device, has no
+     account, signs up from the link, comes back to it and joins. As an accountant they see the team but
+     no invite button. The owner sees the invitation used up, makes them a manager who can see finances,
+     then removes them, and they lose the business at once.
+  2. An invitation for one email can't be accepted by a different account.
+  3. Business settings: change the name and tax ID (the switcher updates), change the week start (kept
+     after a reload), pause (read-only notice, fields locked), reactivate.
+- All 15 browser tests pass, with the 9.1 ones. Lint, type-check, 29 small tests and the build pass.
+- Looked at by eye at laptop and phone size, light and dark: team list, invite dialog, settings.
+
+### Changes and fixes along the way
+
+- **Sign-in with a two-step code now returns you where you were.** Before, the code step forgot the
+  address, so you landed on the business home. Now it behaves like sign-in without a code. The 9.1
+  test for changing the password was updated to expect the Security page afterwards.
+- **Names were squeezed on phones** in the team list, by the role badge beside them. On phones the
+  badge now sits under the name.
+
+### Known and open
+
+- The approval limit for large expenses and switching modules on or off are in the backend's business
+  settings, but not on this screen yet. The approval limit comes with transactions in step 9.3.
+- The app file grew to 833 kB (258 kB compressed). Splitting it so each area loads only when opened is
+  still planned.
 
 ## Step 9.1: Foundation
 
@@ -240,9 +322,11 @@ They need a separate test backend, so they never touch your real data:
 5. `npm run test:e2e`. It uses the Chrome already on your Mac. If a password is missing from `.env`, the
    tests stop and say which one.
 
-Each run creates fresh accounts named `owner-…@e2e.test`. The backend allows 10 sign-ups per 10 minutes
-from one address, and a run makes 9. Between runs, wait 10 minutes or clear the test limits:
-`docker exec business_os_redis sh -c "redis-cli -n 2 --scan --pattern 'ratelimit:*' | xargs -r redis-cli -n 2 del"`.
+Each run creates fresh accounts named `owner-…@e2e.test`, `karim-…@e2e.test` and so on. The backend
+allows 10 sign-ups per 10 minutes from one address, and a run makes more than that, so before each test
+the tests clear the sign-up counters in the **test** Redis database (db 2, in the `business_os_redis`
+container). Your normal backend's counters are never touched. If your container or database number
+differs, set `E2E_REDIS_CONTAINER` or `E2E_REDIS_DB` in `.env`.
 
 ### Deploying to Vercel
 

@@ -19,10 +19,14 @@ export const RequireAuth = () => {
   return <Outlet />;
 };
 
+// Where someone was heading before being sent to sign in, such as an invitation link.
+// Sign-in, register and the code page pass it along to each other, so it survives the whole way.
+export const useReturnTo = () => (useLocation().state as { from?: string } | null)?.from;
+
 // Sign-in and register. Someone already signed in goes on to where they were heading.
 export const GuestOnly = () => {
   const status = useAppSelector((state) => state.auth.status);
-  const from = (useLocation().state as { from?: string } | null)?.from;
+  const from = useReturnTo();
   if (status === "loading") return <FullPageSpinner />;
   if (status === "signedIn") return <Navigate to={from ?? "/"} replace />;
   return <Outlet />;
@@ -35,6 +39,7 @@ export const HomeRedirect = () => {
   if (businesses.isLoading) return <FullPageSpinner />;
   const list = businesses.data ?? [];
   const remembered = userId ? lastBusiness(userId) : null;
-  const target = list.find((business) => business.id === remembered) ?? list[0];
+  const open = list.filter((business) => business.status !== "ARCHIVED");
+  const target = list.find((business) => business.id === remembered) ?? open[0] ?? list[0];
   return <Navigate to={target ? `/b/${target.id}` : "/onboarding"} replace />;
 };

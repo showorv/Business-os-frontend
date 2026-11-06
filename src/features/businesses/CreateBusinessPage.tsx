@@ -9,13 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field } from "@/components/ui/field";
 import { Input, Select } from "@/components/ui/input";
-import { currentLocale } from "@/i18n";
 import { errorMessage } from "@/lib/errors";
 import { rememberBusiness } from "@/lib/preferences";
 import { BUSINESS_TYPES, useBusinesses, useCreateBusiness } from "./api";
-
-const CURRENCIES = ["BDT", "USD", "EUR", "GBP", "INR"];
-const COMMON_TIMEZONES = ["Asia/Dhaka", "Asia/Kolkata", "Asia/Dubai", "Asia/Singapore", "Europe/London", "America/New_York", "UTC"];
+import { COMMON_TIMEZONES, CURRENCIES, monthName } from "./options";
 
 const schema = z.object({
   name: z.string().trim().min(1, "required").max(200, "tooLong"),
@@ -37,7 +34,6 @@ export const CreateBusinessPage = () => {
     defaultValues: { name: "", type: "RETAIL", baseCurrency: "BDT", fiscalYearStartMonth: 7, timezone: "Asia/Dhaka" },
   });
   const nameError = form.formState.errors.name;
-  const monthName = new Intl.DateTimeFormat(currentLocale(), { month: "long" });
 
   const submit = form.handleSubmit((values) =>
     create.mutate(values, {
@@ -81,7 +77,7 @@ export const CreateBusinessPage = () => {
               <Select {...form.register("fiscalYearStartMonth")}>
                 {Array.from({ length: 12 }, (_, index) => (
                   <option key={index} value={index + 1}>
-                    {monthName.format(new Date(2026, index, 1))}
+                    {monthName(index + 1)}
                   </option>
                 ))}
               </Select>

@@ -1,45 +1,7 @@
-import { expect, test, type Page } from "@playwright/test";
-import { TOTP } from "otpauth";
+import { expect, test } from "@playwright/test";
+import { createBusiness, freshCode, freshEmail, linkFromEmail, newPassword, password, register, resetRateLimits } from "./helpers";
 
-// Never write a password here: they come from .env (see .env.example), which is never committed.
-const needEnv = (name: string) => {
-  const value = process.env[name];
-  if (!value) throw new Error(`Set ${name} in .env before running the browser tests (copy .env.example).`);
-  return value;
-};
-const password = needEnv("E2E_PASSWORD");
-const newPassword = needEnv("E2E_NEW_PASSWORD");
-
-// Each run makes its own account, so runs never collide.
-const freshEmail = (project: string) => `owner-${project}-${Date.now()}@e2e.test`;
-
-const register = async (page: Page, email: string) => {
-  await page.goto("/register");
-  await page.getByLabel("Your name").fill("Rahim Uddin");
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password", { exact: true }).fill(password);
-  await page.getByRole("button", { name: "Create account" }).click();
-  await expect(page).toHaveURL(/\/onboarding$/);
-};
-
-const createBusiness = async (page: Page, name: string) => {
-  await page.getByLabel("Business name").fill(name);
-  await page.getByRole("button", { name: "Create business" }).click();
-  await expect(page.getByRole("heading", { name: `Welcome to ${name}` })).toBeVisible();
-};
-
-// A code from a window the server hasn't seen yet: it refuses a code used twice.
-const freshCode = async (secret: string, used: Set<string>) => {
-  const totp = new TOTP({ secret });
-  for (;;) {
-    const code = totp.generate();
-    if (!used.has(code)) {
-      used.add(code);
-      return code;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 1_000));
-  }
-};
+test.beforeEach(resetRateLimits);
 
 test("sign up, set up a business, stay signed in after a reload, sign out and back in", async ({ page }, info) => {
   const email = freshEmail(info.project.name);
@@ -104,7 +66,9 @@ test("two-step verification: turn on, sign in with a code, confirm a password ch
   await expect(page.getByText("That code didn't work.", { exact: false })).toBeVisible();
   await page.getByLabel("Code", { exact: true }).fill(await freshCode(secret, used));
   await page.getByRole("button", { name: "Verify" }).click();
-  await expect(page.getByRole("heading", { name: "Welcome to Rahim Traders" })).toBeVisible();
+  // Back where the password was changed: the return address survives the code step.
+  await expect(page).toHaveURL(/\/settings\/security$/);
+  await expect(page.getByRole("button", { name: "Turn off" })).toBeVisible();
 });
 
 test("forgotten password: the emailed link sets a new one", async ({ page, request }, info) => {
@@ -119,19 +83,7 @@ test("forgotten password: the emailed link sets a new one", async ({ page, reque
   await page.getByRole("button", { name: "Send link" }).click();
   await expect(page.getByText("a reset link is on its way", { exact: false })).toBeVisible();
 
-  // Mailpit, the local mail catcher, holds the email.
-  const mailpit = process.env.MAILPIT_URL || "http://localhost:8025";
-  let link: string | undefined;
-  await expect(async () => {
-    const list = (await (await request.get(`${mailpit}/api/v1/search?query=${encodeURIComponent(`to:${email}`)}`)).json()) as { messages: { ID: string }[] };
-    const id = list.messages[0]?.ID;
-    expect(id).toBeTruthy();
-    const message = (await (await request.get(`${mailpit}/api/v1/message/${id}`)).json()) as { Text: string };
-    link = /http\S+\/reset-password\?token=\S+/.exec(message.Text)?.[0];
-    expect(link).toBeTruthy();
-  }).toPass({ timeout: 20_000 });
-
-  await page.goto(new URL(link!).pathname + new URL(link!).search);
+  await page.goto(await linkFromEmail(request, email, /\/reset-password\?token=/));
   await page.getByLabel("New password", { exact: true }).fill(newPassword);
   await page.getByLabel("Confirm new password").fill(newPassword);
   await page.getByRole("button", { name: "Set new password" }).click();

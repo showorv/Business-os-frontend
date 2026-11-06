@@ -10,6 +10,8 @@ import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { errorMessage } from "@/lib/errors";
 import { useLogin } from "./api";
+import { useReturnTo } from "@/app/guards";
+import { InvitationNotice } from "./InvitationNotice";
 import { AuthCard } from "./AuthCard";
 import { loginSchema } from "./schemas";
 
@@ -20,6 +22,7 @@ export const LoginPage = () => {
   // Kept by this page, and cleared from the store, so it shows once and not on a later visit.
   const storedNotice = useAppSelector((state) => state.auth.notice);
   const [notice] = useState(storedNotice);
+  const from = useReturnTo();
   const login = useLogin();
   const form = useForm({ resolver: zodResolver(loginSchema), defaultValues: { email: "", password: "" } });
   const { errors } = form.formState;
@@ -30,7 +33,7 @@ export const LoginPage = () => {
 
   const submit = form.handleSubmit(async (values) => {
     const result = await login.mutateAsync(values).catch(() => null);
-    if (result && "challengeToken" in result) void navigate("/login/mfa", { state: { challengeToken: result.challengeToken } });
+    if (result && "challengeToken" in result) void navigate("/login/mfa", { state: { challengeToken: result.challengeToken, from } });
   });
 
   const noticeText = notice === "passwordChanged" ? t("settings:passwordChanged") : notice === "resetDone" ? t("auth:resetDone") : notice ? t("auth:sessionEnded") : null;
@@ -42,7 +45,7 @@ export const LoginPage = () => {
       footer={
         <>
           {t("auth:noAccount")}{" "}
-          <Link to="/register" className="font-medium text-brand hover:underline">
+          <Link to="/register" state={{ from }} className="font-medium text-brand hover:underline">
             {t("auth:createAccount")}
           </Link>
         </>
@@ -50,6 +53,7 @@ export const LoginPage = () => {
     >
       <form onSubmit={submit} className="space-y-4" noValidate>
         {noticeText && !login.isError ? <Alert>{noticeText}</Alert> : null}
+        <InvitationNotice from={from} />
         {login.isError ? <Alert tone="danger">{errorMessage(login.error)}</Alert> : null}
         <Field label={t("auth:email")} error={errors.email && t(`validation:${errors.email.message}`)}>
           <Input type="email" autoComplete="email" autoFocus {...form.register("email")} />

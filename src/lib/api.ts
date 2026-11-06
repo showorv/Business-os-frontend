@@ -45,6 +45,10 @@ export const api = createClient<paths>({ baseUrl: window.location.origin, fetch:
 // What every api.GET / api.POST / ... call gives back.
 export type ApiCall<T> = Promise<{ data?: { data: T }; error?: unknown; response: Response }>;
 
+// For the few routes whose generated type is looser than what the server really sends
+// (for example "any object"), this names the real shape. Use it only where the schema falls short.
+export const withShape = <T>(call: Promise<unknown>) => call as ApiCall<T>;
+
 // Turns openapi-fetch's { data, error } into the payload, or a thrown ApiError.
 export const unwrap = async <T>(call: ApiCall<T>): Promise<T> => {
   const { data, error, response } = await call;

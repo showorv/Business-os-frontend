@@ -21,5 +21,14 @@
   "MFA_INVALID_CODE": "That code didn't work. Codes change every 30 seconds.",
   "TOKEN_INVALID": "You were signed out. Sign in again.",
   "REFRESH_INVALID": "Your session ended. Sign in again.",
-  "INTERNAL_ERROR": "Something went wrong on the server. Please try again."
+  "INTERNAL_ERROR": "Something went wrong on the server. Please try again.",
+  "ALREADY_MEMBER": "That person is already in this business.",
+  "LAST_OWNER": "A business needs at least one owner. Make someone else an owner first.",
+  "ROLE_NOT_ASSIGNABLE": "Only an owner can change owners.",
+  "PERMISSION_NOT_GRANTABLE": "That role can't be given this extra permission.",
+  "INVITATION_INVALID": "This invitation has expired, was cancelled or was already used. Ask for a new one.",
+  "INVITATION_EMAIL_MISMATCH": "This invitation is for a different email address. Sign in with that email to accept it.",
+  "FISCAL_START_LOCKED": "The financial year start can't change after set-up.",
+  "BASE_CURRENCY_LOCKED": "The main currency can't change once the books have entries.",
+  "INVALID_STATUS_CHANGE": "The business can't move to that status from here."
 }

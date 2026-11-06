@@ -14,7 +14,8 @@ import { codeSchema } from "./schemas";
 // The challenge token lives only in this page's state: never in the URL, where it could be shared.
 export const MfaPage = () => {
   const { t } = useTranslation(["auth", "validation"]);
-  const challengeToken = (useLocation().state as { challengeToken?: string } | null)?.challengeToken;
+  const state = useLocation().state as { challengeToken?: string; from?: string } | null;
+  const challengeToken = state?.challengeToken;
   const verify = useVerifyMfa();
   const form = useForm({ resolver: zodResolver(codeSchema), defaultValues: { code: "" } });
 
@@ -28,7 +29,7 @@ export const MfaPage = () => {
       title={t("auth:mfaTitle")}
       subtitle={t("auth:mfaSubtitle")}
       footer={
-        <Link to="/login" className="text-brand hover:underline">
+        <Link to="/login" state={{ from: state?.from }} className="text-brand hover:underline">
           {t("auth:backToLogin")}
         </Link>
       }

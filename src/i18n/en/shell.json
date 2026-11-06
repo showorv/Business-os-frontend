@@ -21,5 +21,9 @@
   "roleADMIN": "Admin",
   "roleACCOUNTANT": "Accountant",
   "roleMANAGER": "Manager",
-  "roleVIEWER": "Viewer"
+  "roleVIEWER": "Viewer",
+  "readOnlyINACTIVE": "This business is paused, so nothing in it can change. An owner or admin can reactivate it in Business settings.",
+  "readOnlyARCHIVED": "This business is archived, so nothing in it can change. An owner or admin can reactivate it in Business settings.",
+  "statusINACTIVE": "Paused",
+  "statusARCHIVED": "Archived"
 }

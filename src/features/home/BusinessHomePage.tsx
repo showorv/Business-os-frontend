@@ -3,19 +3,18 @@ import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCurrentBusiness } from "@/features/businesses/useCurrentBusiness";
-import { currentLocale } from "@/i18n";
+import { monthName } from "@/features/businesses/options";
 
 // A placeholder home until the dashboard arrives in step 9.4.
 export const BusinessHomePage = () => {
   const { t } = useTranslation(["businesses", "shell"]);
   const { business } = useCurrentBusiness();
   if (!business) return null;
-  const month = new Intl.DateTimeFormat(currentLocale(), { month: "long" }).format(new Date(2026, business.fiscalYearStartMonth - 1, 1));
 
   const rows: [string, string][] = [
     [t("businesses:type"), t(`businesses:type${business.type}`, { defaultValue: business.type })],
     [t("businesses:currency"), business.baseCurrency],
-    [t("businesses:fiscalStart"), month],
+    [t("businesses:fiscalStart"), monthName(business.fiscalYearStartMonth)],
     [t("businesses:timezone"), business.timezone],
     [t("businesses:role"), t(`shell:role${business.roleKey}`, { defaultValue: business.roleKey })],
   ];
@@ -49,7 +48,7 @@ export const BusinessHomePage = () => {
           </CardHeader>
           <CardContent>
             <ul className="space-y-3 text-sm">
-              {(["next92", "next93", "next94"] as const).map((key) => (
+              {(["next93", "next94", "next95"] as const).map((key) => (
                 <li key={key} className="flex gap-2">
                   <CircleCheck className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
                   {t(`businesses:${key}`)}

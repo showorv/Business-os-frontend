@@ -35,6 +35,6 @@ export const NAV_ITEMS: NavItem[] = [
   { key: "tasks", icon: ListChecks, path: null, step: "9.7" },
   { key: "documents", icon: FileText, path: null, step: "9.8" },
   { key: "assistant", icon: Bot, path: null, step: "9.8" },
-  { key: "team", icon: Users, path: null, step: "9.2" },
-  { key: "businessSettings", icon: Building2, path: null, step: "9.2" },
+  { key: "team", icon: Users, path: "team" },
+  { key: "businessSettings", icon: Building2, path: "settings" },
 ];

@@ -9,11 +9,14 @@ import { Input } from "@/components/ui/input";
 import { currentLocale } from "@/i18n";
 import { errorMessage } from "@/lib/errors";
 import { useRegister } from "./api";
+import { useReturnTo } from "@/app/guards";
+import { InvitationNotice } from "./InvitationNotice";
 import { AuthCard } from "./AuthCard";
 import { registerSchema } from "./schemas";
 
 export const RegisterPage = () => {
   const { t } = useTranslation(["auth", "validation"]);
+  const from = useReturnTo();
   const register = useRegister();
   const form = useForm({ resolver: zodResolver(registerSchema), defaultValues: { name: "", email: "", password: "" } });
   const { errors } = form.formState;
@@ -28,7 +31,7 @@ export const RegisterPage = () => {
       footer={
         <>
           {t("auth:haveAccount")}{" "}
-          <Link to="/login" className="font-medium text-brand hover:underline">
+          <Link to="/login" state={{ from }} className="font-medium text-brand hover:underline">
             {t("auth:signIn")}
           </Link>
         </>
@@ -36,6 +39,7 @@ export const RegisterPage = () => {
     >
       <form onSubmit={submit} className="space-y-4" noValidate>
         {register.isError ? <Alert tone="danger">{errorMessage(register.error)}</Alert> : null}
+        <InvitationNotice from={from} />
         <Field label={t("auth:name")} error={errors.name && t(`validation:${errors.name.message}`)}>
           <Input autoComplete="name" autoFocus {...form.register("name")} />
         </Field>

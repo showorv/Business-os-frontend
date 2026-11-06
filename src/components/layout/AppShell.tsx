@@ -2,6 +2,7 @@ import { Menu } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Navigate, Outlet } from "react-router";
+import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Spinner } from "@/components/ui/spinner";
@@ -48,6 +49,11 @@ export const AppShell = () => {
           </div>
         </header>
         <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:py-8">
+          {business && business.status !== "ACTIVE" ? (
+            <Alert tone="warning" className="mb-6">
+              {t(`readOnly${business.status}`)}
+            </Alert>
+          ) : null}
           <Outlet />
         </main>
       </div>

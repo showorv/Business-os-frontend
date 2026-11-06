@@ -39,7 +39,10 @@ export const BusinessSwitcher = () => {
           <DropdownMenuItem key={item.id} onSelect={() => open(item.id)}>
             <span className="min-w-0 flex-1">
               <span className="block truncate">{item.name}</span>
-              <span className="block text-xs text-muted-foreground">{t(`role${item.roleKey}`, { defaultValue: item.roleKey })}</span>
+              <span className="block text-xs text-muted-foreground">
+                {t(`role${item.roleKey}`, { defaultValue: item.roleKey })}
+                {item.status !== "ACTIVE" ? ` · ${t(`status${item.status}`)}` : ""}
+              </span>
             </span>
             {item.id === business?.id ? <Check className="size-4 text-brand" /> : null}
           </DropdownMenuItem>

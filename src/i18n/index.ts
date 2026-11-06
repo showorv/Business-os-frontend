@@ -6,6 +6,7 @@ import bnCommon from "./bn/common.json";
 import bnErrors from "./bn/errors.json";
 import bnSettings from "./bn/settings.json";
 import bnShell from "./bn/shell.json";
+import bnTeam from "./bn/team.json";
 import bnValidation from "./bn/validation.json";
 import enAuth from "./en/auth.json";
 import enBusinesses from "./en/businesses.json";
@@ -13,13 +14,14 @@ import enCommon from "./en/common.json";
 import enErrors from "./en/errors.json";
 import enSettings from "./en/settings.json";
 import enShell from "./en/shell.json";
+import enTeam from "./en/team.json";
 import enValidation from "./en/validation.json";
 
 // One file per screen area and language. Every key in English must also be in Bangla:
 // src/i18n/i18n.test.ts checks that.
 export const resources = {
-  en: { common: enCommon, auth: enAuth, validation: enValidation, shell: enShell, businesses: enBusinesses, settings: enSettings, errors: enErrors },
-  bn: { common: bnCommon, auth: bnAuth, validation: bnValidation, shell: bnShell, businesses: bnBusinesses, settings: bnSettings, errors: bnErrors },
+  en: { common: enCommon, auth: enAuth, validation: enValidation, shell: enShell, businesses: enBusinesses, settings: enSettings, team: enTeam, errors: enErrors },
+  bn: { common: bnCommon, auth: bnAuth, validation: bnValidation, shell: bnShell, businesses: bnBusinesses, settings: bnSettings, team: bnTeam, errors: bnErrors },
 } as const;
 
 export type Locale = "en" | "bn-BD";

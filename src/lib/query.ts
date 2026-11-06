@@ -5,10 +5,15 @@ import { unwrap, type ApiCall } from "./api";
 // these helpers handle unwrapping the response, errors and refreshing the lists that changed.
 
 // Every cached list has its name here, so a screen that changes data can say which lists to reload.
+// Keys inside one business start with ["businesses", id], so reloading ["businesses"] reloads them all.
 export const queryKeys = {
   sessions: ["sessions"],
+  roles: ["roles"],
   businesses: ["businesses"],
-} as const satisfies Record<string, QueryKey>;
+  business: (businessId: string) => ["businesses", businessId],
+  members: (businessId: string) => ["businesses", businessId, "members"],
+  invitations: (businessId: string) => ["businesses", businessId, "invitations"],
+} as const satisfies Record<string, QueryKey | ((...ids: string[]) => QueryKey)>;
 
 type QueryExtras<T> = Omit<UseQueryOptions<T, Error>, "queryKey" | "queryFn">;
 
