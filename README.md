@@ -34,8 +34,8 @@ Payments go through a demo gateway for now; SSLCommerz and bKash plug in once th
 | 11.2 | Paying through a demo gateway (success, fail, cancel), receipts, reminder emails, grace period | **Done** |
 | 11.3 | Platform admin panel: accounts, changing plans, giving Pro free until a date, prices and limits, coupons, AI cap, suspending, revenue, announcements | **Done** |
 | 11.4 | Customers and suppliers | **Done** |
-| 11.5 | Invoices, bills, baki and aging, PDF and email, posting to the books | Next |
-| 11.6 | VAT on lines and a monthly VAT summary (help with Mushak) | |
+| 11.5 | Invoices, bills, baki and aging, PDF and email, posting to the books | **Done** |
+| 11.6 | VAT on lines and a monthly VAT summary (help with Mushak) | Next |
 | 11.7 | Products and stock | |
 | 11.8 | Public home and pricing pages, terms and privacy, data export, full-width assistant | |
 
@@ -176,6 +176,54 @@ export const useCreateBusiness = () =>
 The helpers turn server errors into an `ApiError` with a code, which `errorMessage()` turns into words in
 the reader's language. The names of all cached lists live in `queryKeys`, in the same file.
 
+## Step 11.5: Invoices, bills and dues (baki)
+
+### What you can do now
+
+- **Invoices**, **Bills** and **Dues (baki)** in the sidebar, for people who can see money.
+- **New invoice:** pick a customer (or add one without leaving the form), the date and due date
+  (with quick buttons: on receipt, 7, 15 or 30 days), an optional order number, and lines: what it
+  is for, quantity (2.5 works), unit price and income category. Each line's total and the invoice
+  total update as you type. *Save as draft* keeps it changeable; *Save and issue* gives it a number
+  (INV-2026-000001) and records the sale in the books.
+- **New bill:** the same for a supplier, with expense categories and their own bill number.
+  *Save and record* puts what you owe in the books.
+- **An invoice's page:** the items, total, paid and balance due, and every payment. *Record
+  payment* (the amount starts at what is due, and more than that is refused), *Undo payment*,
+  *PDF* (in the language you are using), *Email* (to the customer's address, with the PDF attached
+  and an optional message), *Void* with a reason (only with no payments), and a link to its entry
+  in the books. A draft has *Issue*, *Edit* and *Delete draft*.
+- **The lists:** what customers owe you (or you owe suppliers) and how much of it is overdue at the
+  top, then every invoice newest first, filtered by Draft, Unpaid, Part paid, Overdue, Paid or Void,
+  and searchable by number, reference or name.
+- **Dues (baki):** *Owed to you* and *You owe*, with the total, the overdue part and what is more
+  than 60 days late; a bar by how late (darker greys for older debts, with every amount written
+  out); and a table per customer or supplier with not due yet, 1–30, 31–60, 61–90 and over 90 days.
+  A name opens their invoices.
+- **A contact's page** now shows what they still owe you (or you owe them), how much is overdue,
+  their latest invoices or bills, and *New invoice* / *New bill* with them already chosen. Its
+  received and paid totals include invoice and bill payments.
+- English and Bangla, light and dark, laptop and phone.
+
+### How it was checked
+
+- Type check, lint, unit tests (76) and the build pass.
+- A new browser test (`e2e/invoices.spec.ts`, laptop and phone): an invoice refused without a
+  customer; two lines adding up to ৳5,150; issued as INV-2026-000001; a part payment leaves ৳3,150
+  due; the PDF downloads with its number as the name; the email reaches Mailpit with one
+  attachment; an older invoice shows as overdue and on the Dues page; paying the rest marks it
+  Paid; the customer's page shows ৳1,000 still owed and ৳5,150 received. A bill with its supplier
+  added from the form is saved as a draft, changed (2.5 to 3), recorded as BILL-2026-000001 and
+  paid; a second one is voided with a reason; *You owe* ends empty.
+- Full run: 45 passed; the two known flaky tests (two-step sign-in, statements) failed once and
+  passed on their own.
+- Screenshots of the list, form, an invoice's page and the Dues page were reviewed.
+
+### Fixes along the way
+
+- The browser test first paid the wrong invoice: the list is newest first, so it now picks the
+  invoice by its number.
+
 ## Step 11.4: Customers and suppliers
 
 ### What you can do now
@@ -196,7 +244,7 @@ the reader's language. The names of all cached lists live in `queryKeys`, in the
 - Archived contacts disappear from lists and pickers but stay named on old transactions.
 - English and Bangla, light and dark, laptop and phone.
 
-Money a customer still owes you, or you owe a supplier (baki), comes with invoices and bills in 11.5.
+Money a customer still owes you, or you owe a supplier (baki), shows from 11.5 (below).
 
 ### How it was checked
 

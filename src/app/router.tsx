@@ -22,6 +22,10 @@ import { BusinessSettingsPage } from "@/features/businesses/settings/BusinessSet
 import { AccountsPage } from "@/features/finance/accounts/AccountsPage";
 import { ContactDetailPage } from "@/features/contacts/ContactDetailPage";
 import { ContactsPage } from "@/features/contacts/ContactsPage";
+import { DuesPage } from "@/features/invoices/DuesPage";
+import { InvoiceDetailPage } from "@/features/invoices/InvoiceDetailPage";
+import { EditInvoicePage, NewInvoicePage } from "@/features/invoices/InvoiceFormPage";
+import { InvoicesPage } from "@/features/invoices/InvoicesPage";
 import { TransactionDetailPage } from "@/features/finance/transactions/TransactionDetailPage";
 import { EditTransactionPage, NewTransactionPage } from "@/features/finance/transactions/TransactionFormPages";
 import { TransactionsPage } from "@/features/finance/transactions/TransactionsPage";
@@ -125,6 +129,17 @@ export const router = createBrowserRouter([
           { path: "/b/:businessId/accounts", element: <AccountsPage /> },
           { path: "/b/:businessId/contacts", element: <ContactsPage /> },
           { path: "/b/:businessId/contacts/:contactId", element: <ContactDetailPage /> },
+          // Invoices and bills share their pages; `key` makes React start fresh when switching between them.
+          ...(["SALE", "BILL"] as const).flatMap((kind) => {
+            const base = `/b/:businessId/${kind === "SALE" ? "invoices" : "bills"}`;
+            return [
+              { path: base, element: <InvoicesPage key={kind} kind={kind} /> },
+              { path: `${base}/new`, element: <NewInvoicePage key={kind} kind={kind} /> },
+              { path: `${base}/:invoiceId`, element: <InvoiceDetailPage key={kind} kind={kind} /> },
+              { path: `${base}/:invoiceId/edit`, element: <EditInvoicePage key={kind} kind={kind} /> },
+            ];
+          }),
+          { path: "/b/:businessId/dues", element: <DuesPage /> },
           { path: "/b/:businessId/transactions", element: <TransactionsPage /> },
           { path: "/b/:businessId/transactions/new", element: <NewTransactionPage /> },
           { path: "/b/:businessId/transactions/:transactionId", element: <TransactionDetailPage /> },

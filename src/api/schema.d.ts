@@ -4970,6 +4970,1435 @@ export interface paths {
         };
         trace?: never;
     };
+    "/api/v1/businesses/{businessId}/invoices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Invoices or bills, newest first. overdue=true lists open ones past their due date. Needs finance.read */
+        get: {
+            parameters: {
+                query: {
+                    limit?: number;
+                    cursor?: string;
+                    kind: "SALE" | "BILL";
+                    status?: "DRAFT" | "ISSUED" | "PARTIALLY_PAID" | "PAID" | "VOID";
+                    overdue?: string;
+                    contactId?: string;
+                    search?: string;
+                };
+                header?: never;
+                path: {
+                    businessId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** @enum {string} */
+                                kind: "SALE" | "BILL";
+                                number: string | null;
+                                /** @enum {string} */
+                                status: "DRAFT" | "ISSUED" | "PARTIALLY_PAID" | "PAID" | "VOID";
+                                /** Format: uuid */
+                                contactId: string;
+                                issueDate: string;
+                                dueDate: string;
+                                currency: string;
+                                totalMinor: string;
+                                paidMinor: string;
+                                dueMinor: string;
+                                isOverdue: boolean;
+                                referenceNo: string | null;
+                                notes: string | null;
+                                /** Format: uuid */
+                                journalEntryId: string | null;
+                                issuedAt: string | null;
+                                voidedAt: string | null;
+                                voidReason: string | null;
+                                emailedAt: string | null;
+                                createdAt: string;
+                                contact: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                };
+                            }[];
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Make an invoice (kind SALE, for a customer) or a bill (kind BILL, from a supplier) as a draft, or issue it at once with issue: true. Needs finance.write */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    businessId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        kind: "SALE" | "BILL";
+                        /** Format: uuid */
+                        contactId: string;
+                        issueDate: string;
+                        dueDate: string;
+                        referenceNo?: string | null;
+                        notes?: string | null;
+                        lines: {
+                            description: string;
+                            quantity: string;
+                            unitPriceMinor: string;
+                            /** Format: uuid */
+                            categoryId: string;
+                        }[];
+                        /** @default false */
+                        issue?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Success */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** @enum {string} */
+                                kind: "SALE" | "BILL";
+                                number: string | null;
+                                /** @enum {string} */
+                                status: "DRAFT" | "ISSUED" | "PARTIALLY_PAID" | "PAID" | "VOID";
+                                /** Format: uuid */
+                                contactId: string;
+                                issueDate: string;
+                                dueDate: string;
+                                currency: string;
+                                totalMinor: string;
+                                paidMinor: string;
+                                dueMinor: string;
+                                isOverdue: boolean;
+                                referenceNo: string | null;
+                                notes: string | null;
+                                /** Format: uuid */
+                                journalEntryId: string | null;
+                                issuedAt: string | null;
+                                voidedAt: string | null;
+                                voidReason: string | null;
+                                emailedAt: string | null;
+                                createdAt: string;
+                                contact: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** @enum {string} */
+                                    kind: "CUSTOMER" | "SUPPLIER" | "BOTH";
+                                    name: string;
+                                    company: string | null;
+                                    phone: string | null;
+                                    email: string | null;
+                                    address: string | null;
+                                    taxId: string | null;
+                                };
+                                lines: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    lineNo: number;
+                                    description: string;
+                                    quantity: string;
+                                    unitPriceMinor: string;
+                                    amountMinor: string;
+                                    /** Format: uuid */
+                                    categoryId: string;
+                                    category: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string;
+                                        nameBn: string | null;
+                                    };
+                                }[];
+                                payments: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** Format: uuid */
+                                    accountId: string;
+                                    account: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    paidOn: string;
+                                    amountMinor: string;
+                                    note: string | null;
+                                    /** Format: uuid */
+                                    journalEntryId: string;
+                                    voidedAt: string | null;
+                                    /** Format: uuid */
+                                    reversalJournalId: string | null;
+                                    createdAt: string;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{businessId}/invoices/aging": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Baki: what is still owed on open invoices (or bills), per contact, by days past due. Needs finance.read */
+        get: {
+            parameters: {
+                query: {
+                    kind: "SALE" | "BILL";
+                    contactId?: string;
+                    asOf?: string;
+                };
+                header?: never;
+                path: {
+                    businessId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** @enum {string} */
+                                kind: "SALE" | "BILL";
+                                asOf: string;
+                                currency: string;
+                                totals: {
+                                    current: string;
+                                    days1to30: string;
+                                    days31to60: string;
+                                    days61to90: string;
+                                    over90: string;
+                                    totalMinor: string;
+                                };
+                                rows: {
+                                    /** Format: uuid */
+                                    contactId: string;
+                                    contactName: string;
+                                    invoices: number;
+                                    oldestDueDate: string;
+                                    current: string;
+                                    days1to30: string;
+                                    days31to60: string;
+                                    days61to90: string;
+                                    over90: string;
+                                    totalMinor: string;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{businessId}/invoices/{invoiceId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One invoice or bill, with its lines and payments. Needs finance.read */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    businessId: string;
+                    invoiceId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** @enum {string} */
+                                kind: "SALE" | "BILL";
+                                number: string | null;
+                                /** @enum {string} */
+                                status: "DRAFT" | "ISSUED" | "PARTIALLY_PAID" | "PAID" | "VOID";
+                                /** Format: uuid */
+                                contactId: string;
+                                issueDate: string;
+                                dueDate: string;
+                                currency: string;
+                                totalMinor: string;
+                                paidMinor: string;
+                                dueMinor: string;
+                                isOverdue: boolean;
+                                referenceNo: string | null;
+                                notes: string | null;
+                                /** Format: uuid */
+                                journalEntryId: string | null;
+                                issuedAt: string | null;
+                                voidedAt: string | null;
+                                voidReason: string | null;
+                                emailedAt: string | null;
+                                createdAt: string;
+                                contact: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** @enum {string} */
+                                    kind: "CUSTOMER" | "SUPPLIER" | "BOTH";
+                                    name: string;
+                                    company: string | null;
+                                    phone: string | null;
+                                    email: string | null;
+                                    address: string | null;
+                                    taxId: string | null;
+                                };
+                                lines: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    lineNo: number;
+                                    description: string;
+                                    quantity: string;
+                                    unitPriceMinor: string;
+                                    amountMinor: string;
+                                    /** Format: uuid */
+                                    categoryId: string;
+                                    category: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string;
+                                        nameBn: string | null;
+                                    };
+                                }[];
+                                payments: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** Format: uuid */
+                                    accountId: string;
+                                    account: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    paidOn: string;
+                                    amountMinor: string;
+                                    note: string | null;
+                                    /** Format: uuid */
+                                    journalEntryId: string;
+                                    voidedAt: string | null;
+                                    /** Format: uuid */
+                                    reversalJournalId: string | null;
+                                    createdAt: string;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete a draft. Issued ones are voided instead. Needs finance.write */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    businessId: string;
+                    invoiceId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: Record<string, never>;
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Change a draft. Sending lines replaces them all. Needs finance.write */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    businessId: string;
+                    invoiceId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        contactId?: string;
+                        issueDate?: string;
+                        dueDate?: string;
+                        referenceNo?: string | null;
+                        notes?: string | null;
+                        lines?: {
+                            description: string;
+                            quantity: string;
+                            unitPriceMinor: string;
+                            /** Format: uuid */
+                            categoryId: string;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** @enum {string} */
+                                kind: "SALE" | "BILL";
+                                number: string | null;
+                                /** @enum {string} */
+                                status: "DRAFT" | "ISSUED" | "PARTIALLY_PAID" | "PAID" | "VOID";
+                                /** Format: uuid */
+                                contactId: string;
+                                issueDate: string;
+                                dueDate: string;
+                                currency: string;
+                                totalMinor: string;
+                                paidMinor: string;
+                                dueMinor: string;
+                                isOverdue: boolean;
+                                referenceNo: string | null;
+                                notes: string | null;
+                                /** Format: uuid */
+                                journalEntryId: string | null;
+                                issuedAt: string | null;
+                                voidedAt: string | null;
+                                voidReason: string | null;
+                                emailedAt: string | null;
+                                createdAt: string;
+                                contact: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** @enum {string} */
+                                    kind: "CUSTOMER" | "SUPPLIER" | "BOTH";
+                                    name: string;
+                                    company: string | null;
+                                    phone: string | null;
+                                    email: string | null;
+                                    address: string | null;
+                                    taxId: string | null;
+                                };
+                                lines: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    lineNo: number;
+                                    description: string;
+                                    quantity: string;
+                                    unitPriceMinor: string;
+                                    amountMinor: string;
+                                    /** Format: uuid */
+                                    categoryId: string;
+                                    category: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string;
+                                        nameBn: string | null;
+                                    };
+                                }[];
+                                payments: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** Format: uuid */
+                                    accountId: string;
+                                    account: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    paidOn: string;
+                                    amountMinor: string;
+                                    note: string | null;
+                                    /** Format: uuid */
+                                    journalEntryId: string;
+                                    voidedAt: string | null;
+                                    /** Format: uuid */
+                                    reversalJournalId: string | null;
+                                    createdAt: string;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/businesses/{businessId}/invoices/{invoiceId}/issue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Issue a draft: gives it a number and posts it (receivables or payables against the line categories). Needs finance.write */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    businessId: string;
+                    invoiceId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** @enum {string} */
+                                kind: "SALE" | "BILL";
+                                number: string | null;
+                                /** @enum {string} */
+                                status: "DRAFT" | "ISSUED" | "PARTIALLY_PAID" | "PAID" | "VOID";
+                                /** Format: uuid */
+                                contactId: string;
+                                issueDate: string;
+                                dueDate: string;
+                                currency: string;
+                                totalMinor: string;
+                                paidMinor: string;
+                                dueMinor: string;
+                                isOverdue: boolean;
+                                referenceNo: string | null;
+                                notes: string | null;
+                                /** Format: uuid */
+                                journalEntryId: string | null;
+                                issuedAt: string | null;
+                                voidedAt: string | null;
+                                voidReason: string | null;
+                                emailedAt: string | null;
+                                createdAt: string;
+                                contact: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** @enum {string} */
+                                    kind: "CUSTOMER" | "SUPPLIER" | "BOTH";
+                                    name: string;
+                                    company: string | null;
+                                    phone: string | null;
+                                    email: string | null;
+                                    address: string | null;
+                                    taxId: string | null;
+                                };
+                                lines: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    lineNo: number;
+                                    description: string;
+                                    quantity: string;
+                                    unitPriceMinor: string;
+                                    amountMinor: string;
+                                    /** Format: uuid */
+                                    categoryId: string;
+                                    category: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string;
+                                        nameBn: string | null;
+                                    };
+                                }[];
+                                payments: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** Format: uuid */
+                                    accountId: string;
+                                    account: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    paidOn: string;
+                                    amountMinor: string;
+                                    note: string | null;
+                                    /** Format: uuid */
+                                    journalEntryId: string;
+                                    voidedAt: string | null;
+                                    /** Format: uuid */
+                                    reversalJournalId: string | null;
+                                    createdAt: string;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{businessId}/invoices/{invoiceId}/void": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Void an issued invoice with no payments; its journal is reversed. Needs finance.write */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    businessId: string;
+                    invoiceId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** @enum {string} */
+                                kind: "SALE" | "BILL";
+                                number: string | null;
+                                /** @enum {string} */
+                                status: "DRAFT" | "ISSUED" | "PARTIALLY_PAID" | "PAID" | "VOID";
+                                /** Format: uuid */
+                                contactId: string;
+                                issueDate: string;
+                                dueDate: string;
+                                currency: string;
+                                totalMinor: string;
+                                paidMinor: string;
+                                dueMinor: string;
+                                isOverdue: boolean;
+                                referenceNo: string | null;
+                                notes: string | null;
+                                /** Format: uuid */
+                                journalEntryId: string | null;
+                                issuedAt: string | null;
+                                voidedAt: string | null;
+                                voidReason: string | null;
+                                emailedAt: string | null;
+                                createdAt: string;
+                                contact: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** @enum {string} */
+                                    kind: "CUSTOMER" | "SUPPLIER" | "BOTH";
+                                    name: string;
+                                    company: string | null;
+                                    phone: string | null;
+                                    email: string | null;
+                                    address: string | null;
+                                    taxId: string | null;
+                                };
+                                lines: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    lineNo: number;
+                                    description: string;
+                                    quantity: string;
+                                    unitPriceMinor: string;
+                                    amountMinor: string;
+                                    /** Format: uuid */
+                                    categoryId: string;
+                                    category: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string;
+                                        nameBn: string | null;
+                                    };
+                                }[];
+                                payments: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** Format: uuid */
+                                    accountId: string;
+                                    account: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    paidOn: string;
+                                    amountMinor: string;
+                                    note: string | null;
+                                    /** Format: uuid */
+                                    journalEntryId: string;
+                                    voidedAt: string | null;
+                                    /** Format: uuid */
+                                    reversalJournalId: string | null;
+                                    createdAt: string;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{businessId}/invoices/{invoiceId}/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record money received for an invoice, or paid for a bill, up to what is due. Needs finance.write */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    businessId: string;
+                    invoiceId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        accountId: string;
+                        amountMinor: string;
+                        paidOn: string;
+                        note?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Success */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** @enum {string} */
+                                kind: "SALE" | "BILL";
+                                number: string | null;
+                                /** @enum {string} */
+                                status: "DRAFT" | "ISSUED" | "PARTIALLY_PAID" | "PAID" | "VOID";
+                                /** Format: uuid */
+                                contactId: string;
+                                issueDate: string;
+                                dueDate: string;
+                                currency: string;
+                                totalMinor: string;
+                                paidMinor: string;
+                                dueMinor: string;
+                                isOverdue: boolean;
+                                referenceNo: string | null;
+                                notes: string | null;
+                                /** Format: uuid */
+                                journalEntryId: string | null;
+                                issuedAt: string | null;
+                                voidedAt: string | null;
+                                voidReason: string | null;
+                                emailedAt: string | null;
+                                createdAt: string;
+                                contact: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** @enum {string} */
+                                    kind: "CUSTOMER" | "SUPPLIER" | "BOTH";
+                                    name: string;
+                                    company: string | null;
+                                    phone: string | null;
+                                    email: string | null;
+                                    address: string | null;
+                                    taxId: string | null;
+                                };
+                                lines: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    lineNo: number;
+                                    description: string;
+                                    quantity: string;
+                                    unitPriceMinor: string;
+                                    amountMinor: string;
+                                    /** Format: uuid */
+                                    categoryId: string;
+                                    category: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string;
+                                        nameBn: string | null;
+                                    };
+                                }[];
+                                payments: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** Format: uuid */
+                                    accountId: string;
+                                    account: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    paidOn: string;
+                                    amountMinor: string;
+                                    note: string | null;
+                                    /** Format: uuid */
+                                    journalEntryId: string;
+                                    voidedAt: string | null;
+                                    /** Format: uuid */
+                                    reversalJournalId: string | null;
+                                    createdAt: string;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{businessId}/invoices/{invoiceId}/payments/{paymentId}/void": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Undo a payment entered by mistake; its journal is reversed. Needs finance.write */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    businessId: string;
+                    invoiceId: string;
+                    paymentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** @enum {string} */
+                                kind: "SALE" | "BILL";
+                                number: string | null;
+                                /** @enum {string} */
+                                status: "DRAFT" | "ISSUED" | "PARTIALLY_PAID" | "PAID" | "VOID";
+                                /** Format: uuid */
+                                contactId: string;
+                                issueDate: string;
+                                dueDate: string;
+                                currency: string;
+                                totalMinor: string;
+                                paidMinor: string;
+                                dueMinor: string;
+                                isOverdue: boolean;
+                                referenceNo: string | null;
+                                notes: string | null;
+                                /** Format: uuid */
+                                journalEntryId: string | null;
+                                issuedAt: string | null;
+                                voidedAt: string | null;
+                                voidReason: string | null;
+                                emailedAt: string | null;
+                                createdAt: string;
+                                contact: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** @enum {string} */
+                                    kind: "CUSTOMER" | "SUPPLIER" | "BOTH";
+                                    name: string;
+                                    company: string | null;
+                                    phone: string | null;
+                                    email: string | null;
+                                    address: string | null;
+                                    taxId: string | null;
+                                };
+                                lines: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    lineNo: number;
+                                    description: string;
+                                    quantity: string;
+                                    unitPriceMinor: string;
+                                    amountMinor: string;
+                                    /** Format: uuid */
+                                    categoryId: string;
+                                    category: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string;
+                                        nameBn: string | null;
+                                    };
+                                }[];
+                                payments: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** Format: uuid */
+                                    accountId: string;
+                                    account: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    paidOn: string;
+                                    amountMinor: string;
+                                    note: string | null;
+                                    /** Format: uuid */
+                                    journalEntryId: string;
+                                    voidedAt: string | null;
+                                    /** Format: uuid */
+                                    reversalJournalId: string | null;
+                                    createdAt: string;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{businessId}/invoices/{invoiceId}/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The invoice or bill as a PDF file (application/pdf, not JSON). Needs finance.read */
+        get: {
+            parameters: {
+                query?: {
+                    locale?: "en" | "bn-BD";
+                };
+                header?: never;
+                path: {
+                    businessId: string;
+                    invoiceId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: Record<string, never>;
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{businessId}/invoices/{invoiceId}/email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Email an issued sales invoice, with its PDF, to the customer (or to `to`). Needs finance.write and SMTP on the server */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    businessId: string;
+                    invoiceId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        /** Format: email */
+                        to?: string;
+                        message?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** @enum {string} */
+                                kind: "SALE" | "BILL";
+                                number: string | null;
+                                /** @enum {string} */
+                                status: "DRAFT" | "ISSUED" | "PARTIALLY_PAID" | "PAID" | "VOID";
+                                /** Format: uuid */
+                                contactId: string;
+                                issueDate: string;
+                                dueDate: string;
+                                currency: string;
+                                totalMinor: string;
+                                paidMinor: string;
+                                dueMinor: string;
+                                isOverdue: boolean;
+                                referenceNo: string | null;
+                                notes: string | null;
+                                /** Format: uuid */
+                                journalEntryId: string | null;
+                                issuedAt: string | null;
+                                voidedAt: string | null;
+                                voidReason: string | null;
+                                emailedAt: string | null;
+                                createdAt: string;
+                                contact: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** @enum {string} */
+                                    kind: "CUSTOMER" | "SUPPLIER" | "BOTH";
+                                    name: string;
+                                    company: string | null;
+                                    phone: string | null;
+                                    email: string | null;
+                                    address: string | null;
+                                    taxId: string | null;
+                                };
+                                lines: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    lineNo: number;
+                                    description: string;
+                                    quantity: string;
+                                    unitPriceMinor: string;
+                                    amountMinor: string;
+                                    /** Format: uuid */
+                                    categoryId: string;
+                                    category: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string;
+                                        nameBn: string | null;
+                                    };
+                                }[];
+                                payments: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** Format: uuid */
+                                    accountId: string;
+                                    account: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string;
+                                    };
+                                    paidOn: string;
+                                    amountMinor: string;
+                                    note: string | null;
+                                    /** Format: uuid */
+                                    journalEntryId: string;
+                                    voidedAt: string | null;
+                                    /** Format: uuid */
+                                    reversalJournalId: string | null;
+                                    createdAt: string;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/businesses/{businessId}/documents/uploads": {
         parameters: {
             query?: never;

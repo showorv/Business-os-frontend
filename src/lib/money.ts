@@ -34,7 +34,7 @@ export const formatMoney = (minor: string | bigint, currency: string, { digitSty
 };
 
 const LATIN_ZERO = 48;
-const fromBanglaDigits = (text: string) => text.replace(/[০-৯]/g, (digit) => String.fromCharCode(LATIN_ZERO + digit.charCodeAt(0) - BANGLA_ZERO));
+export const fromBanglaDigits = (text: string) => text.replace(/[০-৯]/g, (digit) => String.fromCharCode(LATIN_ZERO + digit.charCodeAt(0) - BANGLA_ZERO));
 
 // What someone typed ("1,500.5", "১৫০০", "৳ 2,50,000") as whole paisa in a string, or null if it isn't
 // an amount. Never goes through a float, so 0.1 + 0.2 problems can't happen.

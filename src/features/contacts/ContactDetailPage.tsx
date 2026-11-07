@@ -22,6 +22,7 @@ import { Permission } from "@/lib/permissions";
 import { useFormatting } from "@/lib/preferences";
 import { useContact, useUpdateContact } from "./api";
 import { ContactDialog } from "./ContactDialog";
+import { ContactDues } from "./ContactDues";
 import { KindBadge, totalsIn } from "./parts";
 
 const Stat = ({ label, value, note, testId }: { label: string; value: string; note?: string; testId?: string }) => (
@@ -145,6 +146,8 @@ export const ContactDetailPage = () => {
         </p>
       ) : null}
       <p className="text-xs text-muted-foreground">{t("totalsNote")}</p>
+
+      <ContactDues businessId={businessId} contact={data} canWrite={canWrite} />
 
       <section className="space-y-3">
         <h2 className="font-semibold">{t("shell:transactions")}</h2>

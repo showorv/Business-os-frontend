@@ -37,5 +37,8 @@
   "pro": "Pro",
   "plan": "Plan",
   "platformAdmin": "Platform admin",
-  "contacts": "Customers & suppliers"
+  "contacts": "Customers & suppliers",
+  "invoices": "Invoices",
+  "bills": "Bills",
+  "dues": "Dues (baki)"
 }

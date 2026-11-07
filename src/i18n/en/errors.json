@@ -130,5 +130,15 @@
   "WORKSPACE_SUSPENDED": "This account is suspended. Please contact support.",
   "AI_PAUSED": "The AI assistant is paused for a short while. Please try again later.",
   "SIGNUPS_CLOSED": "New sign-ups are closed for now. You can join if someone invites you.",
-  "CONTACT_NOT_USABLE": "That customer or supplier is archived or belongs to another business."
+  "CONTACT_NOT_USABLE": "That customer or supplier is archived or belongs to another business.",
+  "INVOICE_NOT_DRAFT": "Only a draft can be changed or deleted. Void an issued one instead.",
+  "INVOICE_NOT_OPEN": "This isn't open for payments: it is a draft, already paid or void.",
+  "INVOICE_TOTAL_ZERO": "Add at least one line with an amount before issuing.",
+  "INVOICE_HAS_PAYMENTS": "Undo its payments first, then void it.",
+  "PAYMENT_EXCEEDS_DUE": "That is more than is still due.",
+  "PAYMENT_ALREADY_VOID": "This payment was already undone.",
+  "CONTACT_KIND_MISMATCH": "An invoice needs a customer, and a bill a supplier.",
+  "EMAIL_NOT_CONFIGURED": "Email isn't set up on the server yet, so invoices can't be sent. Download the PDF instead.",
+  "INVOICE_NOT_SENDABLE": "Only an issued invoice can be emailed, and the customer needs an email address.",
+  "DOWNLOAD_FAILED": "The file couldn't be downloaded. Please try again."
 }

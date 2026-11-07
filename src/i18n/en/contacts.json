@@ -39,13 +39,13 @@
   "archivedDone": "Archived. Old transactions keep the name.",
   "restored": "Restored",
   "received": "Received from them",
-  "receivedNote": "Income recorded with them",
+  "receivedNote": "Income and invoice payments",
   "paid": "Paid to them",
-  "paidNote": "Expenses and refunds",
+  "paidNote": "Expenses, refunds and bill payments",
   "net": "Difference",
   "lastOn": "Last on {{date}}",
   "otherCurrency": "Also received {{received}}, paid {{paid}}",
-  "totalsNote": "Only posted transactions count. Money they still owe you, or you owe them, comes with invoices and bills.",
+  "totalsNote": "Posted transactions and payments on invoices and bills count. What is still owed shows under Dues.",
   "noTransactions": "No transactions with them yet",
   "noTransactionsHint": "Pick them as the customer or supplier when you record money."
 }
