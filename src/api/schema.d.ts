@@ -3408,6 +3408,7 @@ export interface paths {
                     type?: "INCOME" | "EXPENSE" | "TRANSFER" | "REFUND" | "ADJUSTMENT";
                     accountId?: string;
                     categoryId?: string;
+                    contactId?: string;
                     from?: string;
                     to?: string;
                     possibleDuplicate?: string;
@@ -3441,6 +3442,8 @@ export interface paths {
                                 toAccountId: string | null;
                                 /** Format: uuid */
                                 categoryId: string | null;
+                                /** Format: uuid */
+                                contactId: string | null;
                                 amountMinor: string;
                                 feeMinor: string;
                                 currency: string;
@@ -3511,6 +3514,8 @@ export interface paths {
                         toAccountId?: string;
                         /** Format: uuid */
                         categoryId?: string;
+                        /** Format: uuid */
+                        contactId?: string;
                         amountMinor: string;
                         /** @default 0 */
                         feeMinor?: string;
@@ -3546,6 +3551,8 @@ export interface paths {
                                 toAccountId: string | null;
                                 /** Format: uuid */
                                 categoryId: string | null;
+                                /** Format: uuid */
+                                contactId: string | null;
                                 amountMinor: string;
                                 feeMinor: string;
                                 currency: string;
@@ -3639,6 +3646,8 @@ export interface paths {
                                 toAccountId: string | null;
                                 /** Format: uuid */
                                 categoryId: string | null;
+                                /** Format: uuid */
+                                contactId: string | null;
                                 amountMinor: string;
                                 feeMinor: string;
                                 currency: string;
@@ -3718,6 +3727,8 @@ export interface paths {
                         toAccountId?: string | null;
                         /** Format: uuid */
                         categoryId?: string | null;
+                        /** Format: uuid */
+                        contactId?: string | null;
                         amountMinor?: string;
                         feeMinor?: string;
                         txnDate?: string;
@@ -3749,6 +3760,8 @@ export interface paths {
                                 toAccountId: string | null;
                                 /** Format: uuid */
                                 categoryId: string | null;
+                                /** Format: uuid */
+                                contactId: string | null;
                                 amountMinor: string;
                                 feeMinor: string;
                                 currency: string;
@@ -3840,6 +3853,8 @@ export interface paths {
                                 toAccountId: string | null;
                                 /** Format: uuid */
                                 categoryId: string | null;
+                                /** Format: uuid */
+                                contactId: string | null;
                                 amountMinor: string;
                                 feeMinor: string;
                                 currency: string;
@@ -3935,6 +3950,8 @@ export interface paths {
                                 toAccountId: string | null;
                                 /** Format: uuid */
                                 categoryId: string | null;
+                                /** Format: uuid */
+                                contactId: string | null;
                                 amountMinor: string;
                                 feeMinor: string;
                                 currency: string;
@@ -4030,6 +4047,8 @@ export interface paths {
                                 toAccountId: string | null;
                                 /** Format: uuid */
                                 categoryId: string | null;
+                                /** Format: uuid */
+                                contactId: string | null;
                                 amountMinor: string;
                                 feeMinor: string;
                                 currency: string;
@@ -4125,6 +4144,8 @@ export interface paths {
                                 toAccountId: string | null;
                                 /** Format: uuid */
                                 categoryId: string | null;
+                                /** Format: uuid */
+                                contactId: string | null;
                                 amountMinor: string;
                                 feeMinor: string;
                                 currency: string;
@@ -4227,6 +4248,112 @@ export interface paths {
                                 toAccountId: string | null;
                                 /** Format: uuid */
                                 categoryId: string | null;
+                                /** Format: uuid */
+                                contactId: string | null;
+                                amountMinor: string;
+                                feeMinor: string;
+                                currency: string;
+                                txnDate: string;
+                                paymentMethod: string | null;
+                                referenceNo: string | null;
+                                description: string | null;
+                                source: string;
+                                possibleDuplicate: boolean;
+                                /** Format: uuid */
+                                duplicateOfId: string | null;
+                                /** Format: uuid */
+                                journalEntryId: string | null;
+                                /** Format: uuid */
+                                reversalEntryId: string | null;
+                                /** Format: uuid */
+                                approvedBy: string | null;
+                                approvedAt: string | null;
+                                /** Format: uuid */
+                                createdBy: string;
+                                createdAt: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{businessId}/transactions/{transactionId}/contact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Set or clear the customer or supplier. Works after posting too (not on a voided one). Needs finance.write */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    businessId: string;
+                    transactionId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        contactId: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                number: string;
+                                type: string;
+                                status: string;
+                                /** Format: uuid */
+                                accountId: string;
+                                /** Format: uuid */
+                                toAccountId: string | null;
+                                /** Format: uuid */
+                                categoryId: string | null;
+                                /** Format: uuid */
+                                contactId: string | null;
                                 amountMinor: string;
                                 feeMinor: string;
                                 currency: string;
@@ -4322,6 +4449,8 @@ export interface paths {
                                 toAccountId: string | null;
                                 /** Format: uuid */
                                 categoryId: string | null;
+                                /** Format: uuid */
+                                contactId: string | null;
                                 amountMinor: string;
                                 feeMinor: string;
                                 currency: string;
@@ -4504,6 +4633,341 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{businessId}/contacts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Customers and suppliers by name, with what was received from and paid to each. kind=CUSTOMER also lists BOTH. Needs finance.read */
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                    cursor?: string;
+                    kind?: "CUSTOMER" | "SUPPLIER";
+                    search?: string;
+                    includeArchived?: string;
+                };
+                header?: never;
+                path: {
+                    businessId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** @enum {string} */
+                                kind: "CUSTOMER" | "SUPPLIER" | "BOTH";
+                                name: string;
+                                company: string | null;
+                                phone: string | null;
+                                email: string | null;
+                                address: string | null;
+                                taxId: string | null;
+                                notes: string | null;
+                                isActive: boolean;
+                                createdAt: string;
+                                totals: {
+                                    currency: string;
+                                    receivedMinor: string;
+                                    paidMinor: string;
+                                    transactions: number;
+                                    lastDate: string | null;
+                                }[];
+                            }[];
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Add a customer or supplier. Needs finance.write */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    businessId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        kind: "CUSTOMER" | "SUPPLIER" | "BOTH";
+                        name: string;
+                        company?: string | null;
+                        phone?: string | null;
+                        /** Format: email */
+                        email?: string | null;
+                        address?: string | null;
+                        taxId?: string | null;
+                        notes?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Success */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** @enum {string} */
+                                kind: "CUSTOMER" | "SUPPLIER" | "BOTH";
+                                name: string;
+                                company: string | null;
+                                phone: string | null;
+                                email: string | null;
+                                address: string | null;
+                                taxId: string | null;
+                                notes: string | null;
+                                isActive: boolean;
+                                createdAt: string;
+                                totals: {
+                                    currency: string;
+                                    receivedMinor: string;
+                                    paidMinor: string;
+                                    transactions: number;
+                                    lastDate: string | null;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{businessId}/contacts/{contactId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One contact, with totals. Its transactions: GET /transactions?contactId=. Needs finance.read */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    businessId: string;
+                    contactId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** @enum {string} */
+                                kind: "CUSTOMER" | "SUPPLIER" | "BOTH";
+                                name: string;
+                                company: string | null;
+                                phone: string | null;
+                                email: string | null;
+                                address: string | null;
+                                taxId: string | null;
+                                notes: string | null;
+                                isActive: boolean;
+                                createdAt: string;
+                                totals: {
+                                    currency: string;
+                                    receivedMinor: string;
+                                    paidMinor: string;
+                                    transactions: number;
+                                    lastDate: string | null;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Change details, or archive with isActive: false. Needs finance.write */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    businessId: string;
+                    contactId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        kind?: "CUSTOMER" | "SUPPLIER" | "BOTH";
+                        name?: string;
+                        company?: string | null;
+                        phone?: string | null;
+                        /** Format: email */
+                        email?: string | null;
+                        address?: string | null;
+                        taxId?: string | null;
+                        notes?: string | null;
+                        isActive?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                /** @enum {string} */
+                                kind: "CUSTOMER" | "SUPPLIER" | "BOTH";
+                                name: string;
+                                company: string | null;
+                                phone: string | null;
+                                email: string | null;
+                                address: string | null;
+                                taxId: string | null;
+                                notes: string | null;
+                                isActive: boolean;
+                                createdAt: string;
+                                totals: {
+                                    currency: string;
+                                    receivedMinor: string;
+                                    paidMinor: string;
+                                    transactions: number;
+                                    lastDate: string | null;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
         trace?: never;
     };
     "/api/v1/businesses/{businessId}/documents/uploads": {

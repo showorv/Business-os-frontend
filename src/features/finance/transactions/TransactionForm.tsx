@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import type { Contact } from "@/features/contacts/api";
 import { useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
@@ -26,6 +27,7 @@ const schema = z.object({
   accountId: z.string().min(1, "required"),
   toAccountId: z.string(),
   categoryId: z.string(),
+  contactId: z.string(),
   fee: z.string(),
   description: z.string().trim().max(1000, "tooLong"),
   referenceNo: z.string().trim().max(100, "tooLong"),
@@ -42,6 +44,7 @@ export interface TransactionInput {
   accountId: string;
   toAccountId: string | null;
   categoryId: string | null;
+  contactId: string | null;
   description: string | null;
   referenceNo: string | null;
   paymentMethod: string | null;
@@ -52,6 +55,12 @@ interface TransactionFormProps {
   today: string;
   accounts: Account[];
   categories: Category[];
+  // Customers and suppliers to pick from (archived ones only show if already chosen).
+  contacts: Contact[];
+  // Filled in when the form is opened from a contact: who, and income or expense.
+  initial?: { contactId?: string; type?: TransactionType };
+  // Opens the "add a customer or supplier" dialog; it calls back with the new one.
+  onAddContact?: (kind: Contact["kind"], pick: (contact: Contact) => void) => void;
   // Set when editing a draft. Its type can't change: void it and make a new one instead.
   existing?: TransactionDetail;
   // Expenses above this need a second person (null: no limit).
@@ -64,7 +73,7 @@ interface TransactionFormProps {
   onCancel: () => void;
 }
 
-export const TransactionForm = ({ currency, today, accounts, categories, existing, approvalThresholdMinor, error, pending, actions, onSubmit, onCancel }: TransactionFormProps) => {
+export const TransactionForm = ({ currency, today, accounts, categories, contacts, initial, onAddContact, existing, approvalThresholdMinor, error, pending, actions, onSubmit, onCancel }: TransactionFormProps) => {
   const { t } = useTranslation(["finance", "common", "validation"]);
   const locale = currentLocale();
   const [moreTypes, setMoreTypes] = useState(existing ? !MAIN_TYPES.includes(existing.type as (typeof MAIN_TYPES)[number]) : false);
@@ -73,19 +82,22 @@ export const TransactionForm = ({ currency, today, accounts, categories, existin
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      type: (existing?.type as TransactionType) ?? "EXPENSE",
+      type: (existing?.type as TransactionType) ?? initial?.type ?? "EXPENSE",
       amount: existing ? minorToInput(existing.amountMinor, existing.currency) : "",
       txnDate: existing?.txnDate ?? today,
       accountId: existing?.accountId ?? usable[0]?.id ?? "",
       toAccountId: existing?.toAccountId ?? "",
       categoryId: existing?.categoryId ?? "",
+      contactId: existing?.contactId ?? initial?.contactId ?? "",
       fee: existing && existing.feeMinor !== "0" ? minorToInput(existing.feeMinor, existing.currency) : "",
       description: existing?.description ?? "",
       referenceNo: existing?.referenceNo ?? "",
       paymentMethod: existing?.paymentMethod ?? "",
     },
   });
-  const [type, amount, accountId] = useWatch({ control: form.control, name: ["type", "amount", "accountId"] });
+  const [type, amount, accountId, contactId] = useWatch({ control: form.control, name: ["type", "amount", "accountId", "contactId"] });
+  // Contacts added from this form show at once, before the list reloads.
+  const [added, setAdded] = useState<Contact[]>([]);
   const { errors } = form.formState;
   const message = (key?: string) => key && t(`validation:${key}`);
 
@@ -94,6 +106,13 @@ export const TransactionForm = ({ currency, today, accounts, categories, existin
     .filter((category) => (neededCategory ? category.type === neededCategory : type === "ADJUSTMENT"))
     .filter((category) => category.isActive || category.id === existing?.categoryId)
     .sort((a, b) => categoryName(a, locale).localeCompare(categoryName(b, locale)));
+
+  // Customers for money in, suppliers for money out; "both" fit either. Everyone for other types.
+  const contactKind = type === "INCOME" || type === "REFUND" ? "CUSTOMER" : type === "EXPENSE" ? "SUPPLIER" : null;
+  const contactChoices = [...contacts, ...added.filter((extra) => !contacts.some((contact) => contact.id === extra.id))]
+    .filter((contact) => contact.isActive || contact.id === existing?.contactId)
+    .filter((contact) => !contactKind || contact.kind === contactKind || contact.kind === "BOTH" || contact.id === contactId);
+  const contactLabel = contactKind === "CUSTOMER" ? t("finance:customer") : contactKind === "SUPPLIER" ? t("finance:supplier") : t("finance:contact");
 
   // Tells the person before they save that a large expense will wait for an owner or admin.
   const amountMinor = parseMoney(amount, currency);
@@ -126,6 +145,7 @@ export const TransactionForm = ({ currency, today, accounts, categories, existin
           accountId: values.accountId,
           toAccountId: values.type === "TRANSFER" ? values.toAccountId : null,
           categoryId: values.type === "TRANSFER" ? null : values.categoryId || null,
+          contactId: values.type === "TRANSFER" ? null : values.contactId || null,
           description: values.description || null,
           referenceNo: values.referenceNo || null,
           paymentMethod: values.paymentMethod || null,
@@ -219,6 +239,26 @@ export const TransactionForm = ({ currency, today, accounts, categories, existin
               </Field>
             )}
           </div>
+
+          {type !== "TRANSFER" ? (
+            <Field label={`${contactLabel} (${t("common:optional")})`}>
+              <div className="flex gap-2">
+                <Select value={contactId} onChange={(event) => form.setValue("contactId", event.target.value)} aria-label={contactLabel}>
+                  <option value="">{t("finance:noContact")}</option>
+                  {contactChoices.map((contact) => (
+                    <option key={contact.id} value={contact.id}>
+                      {contact.company ? `${contact.name} (${contact.company})` : contact.name}
+                    </option>
+                  ))}
+                </Select>
+                {onAddContact ? (
+                  <Button variant="outline" className="shrink-0" onClick={() => onAddContact(contactKind ?? "CUSTOMER", (contact) => (setAdded((list) => [...list, contact]), form.setValue("contactId", contact.id)))}>
+                    {t("finance:newContact")}
+                  </Button>
+                ) : null}
+              </div>
+            </Field>
+          ) : null}
 
           {type === "TRANSFER" ? (
             <Field label={`${t("finance:fee")} (${t("common:optional")})`} error={message(errors.fee?.message)} hint={t("finance:feeHint")}>

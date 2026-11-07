@@ -20,6 +20,8 @@ import { ReportsPage } from "@/features/reports/ReportsPage";
 import { CreateBusinessPage } from "@/features/businesses/CreateBusinessPage";
 import { BusinessSettingsPage } from "@/features/businesses/settings/BusinessSettingsPage";
 import { AccountsPage } from "@/features/finance/accounts/AccountsPage";
+import { ContactDetailPage } from "@/features/contacts/ContactDetailPage";
+import { ContactsPage } from "@/features/contacts/ContactsPage";
 import { TransactionDetailPage } from "@/features/finance/transactions/TransactionDetailPage";
 import { EditTransactionPage, NewTransactionPage } from "@/features/finance/transactions/TransactionFormPages";
 import { TransactionsPage } from "@/features/finance/transactions/TransactionsPage";
@@ -121,6 +123,8 @@ export const router = createBrowserRouter([
           { path: "/b/:businessId/audit", element: <AuditPage /> },
           { path: "/notifications", element: <NotificationsPage /> },
           { path: "/b/:businessId/accounts", element: <AccountsPage /> },
+          { path: "/b/:businessId/contacts", element: <ContactsPage /> },
+          { path: "/b/:businessId/contacts/:contactId", element: <ContactDetailPage /> },
           { path: "/b/:businessId/transactions", element: <TransactionsPage /> },
           { path: "/b/:businessId/transactions/new", element: <NewTransactionPage /> },
           { path: "/b/:businessId/transactions/:transactionId", element: <TransactionDetailPage /> },

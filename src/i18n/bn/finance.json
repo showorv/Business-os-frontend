@@ -29,7 +29,6 @@
   "inactive": "লুকানো",
   "noAccounts": "এখনো কোনো অ্যাকাউন্ট নেই",
   "noAccountsHint": "প্রথমে আপনার ক্যাশ বাক্স, ব্যাংক অ্যাকাউন্ট বা ওয়ালেট যোগ করুন।",
-
   "categories": "ক্যাটাগরি",
   "categoriesHint": "আয় ও খরচ ভাগ করে রাখুন, যাতে রিপোর্টে দেখা যায় টাকা কোথা থেকে আসে আর কোথায় যায়।",
   "categoryType_INCOME": "আয়",
@@ -42,7 +41,6 @@
   "hideCategory": "{{name}} লুকান",
   "showCategory": "{{name}} আবার দেখান",
   "hidden": "লুকানো",
-
   "transactionsSubtitle": "প্রতিটি টাকার আসা-যাওয়া, কে লিখেছেন সহ।",
   "newTransaction": "নতুন লেনদেন",
   "needAccountFirst": "আগে একটি অ্যাকাউন্ট যোগ করুন, যাতে টাকা রাখার জায়গা থাকে।",
@@ -81,7 +79,6 @@
   "noMatchesHint": "অন্য ফিল্টার দিন, বা ফিল্টার মুছুন।",
   "loadMore": "আরও দেখুন",
   "possibleDuplicate": "সম্ভবত দুবার লেখা",
-
   "amount": "পরিমাণ",
   "date": "তারিখ",
   "receivedInto": "যে অ্যাকাউন্টে এসেছে",
@@ -104,7 +101,6 @@
   "draftSaved": "খসড়া সেভ হয়েছে",
   "posted": "হিসাবে পোস্ট হয়েছে",
   "sentForApproval": "অনুমোদনের জন্য পাঠানো হয়েছে",
-
   "details": "বিস্তারিত",
   "source": "যেভাবে লেখা",
   "source_MANUAL": "হাতে",
@@ -155,7 +151,6 @@
   "done_reject": "বাতিল হয়েছে",
   "done_reverse": "রিভার্স হয়েছে",
   "done_dismissDuplicate": "সতর্কতা সরানো হয়েছে",
-
   "attachments": "রসিদ ও ফাইল",
   "attachmentsHint": "PDF বা ছবি (PNG, JPEG, WebP), প্রতিটি সর্বোচ্চ ২৫ MB।",
   "attachFile": "ফাইল যুক্ত করুন",
@@ -167,9 +162,15 @@
   "uploadFailed": "ফাইল আপলোড হয়নি। সংযোগ দেখে আবার চেষ্টা করুন।",
   "downloadFile": "{{name}} ডাউনলোড করুন",
   "removeFile": "{{name}} সরান",
-
   "approvalLimit": "অনুমোদন সীমা",
   "approvalLimitHint": "এর বেশি খরচ হিসাবে যাওয়ার আগে মালিক বা অ্যাডমিনের অনুমোদনের অপেক্ষায় থাকে। সীমা না চাইলে খালি রাখুন।",
   "approvalLimitLabel": "এর বেশি খরচ",
-  "noLimit": "কোনো সীমা নেই"
+  "noLimit": "কোনো সীমা নেই",
+  "customer": "ক্রেতা",
+  "supplier": "সরবরাহকারী",
+  "contact": "ক্রেতা বা সরবরাহকারী",
+  "noContact": "কেউ না",
+  "newContact": "নতুন",
+  "change": "বদলান",
+  "addContact": "যোগ করুন"
 }

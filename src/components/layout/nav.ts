@@ -1,5 +1,6 @@
 import {
   BookOpen,
+  BookUser,
   Bot,
   Building2,
   ChartColumn,
@@ -34,6 +35,7 @@ export const NAV_ITEMS: NavItem[] = [
   { key: "dashboard", icon: LayoutDashboard, path: "" },
   { key: "transactions", icon: ReceiptText, path: "transactions", permission: Permission.FINANCE_READ },
   { key: "accounts", icon: WalletCards, path: "accounts", permission: Permission.FINANCE_READ },
+  { key: "contacts", icon: BookUser, path: "contacts", permission: Permission.FINANCE_READ },
   { key: "reports", icon: ChartColumn, path: "reports", permission: Permission.FINANCE_READ },
   { key: "budgets", icon: PiggyBank, path: "budgets", permission: Permission.FINANCE_READ },
   { key: "goals", icon: Target, path: "goals", permission: Permission.FINANCE_READ },

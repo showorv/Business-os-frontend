@@ -21,7 +21,7 @@ import { amountSign, StatusBadge } from "./parts";
 
 // The filters live in the address (?status=DRAFT&accountId=…), so a filtered list can be bookmarked,
 // shared, or reached from an account card.
-const FILTER_KEYS = ["status", "type", "accountId", "from", "to", "possibleDuplicate"] as const;
+const FILTER_KEYS = ["status", "type", "accountId", "contactId", "from", "to", "possibleDuplicate"] as const;
 
 export const TransactionsPage = () => {
   const { t } = useTranslation(["finance", "shell"]);
@@ -153,13 +153,15 @@ export const TransactionsPage = () => {
 
 interface RowProps {
   transaction: Transaction;
+  // Where the row opens. Defaults to the transaction, from the transactions list.
+  to?: string;
   accountName: string;
   toAccountName?: string;
   categoryLabel: string;
 }
 
 // One line on a laptop; two on a phone. The whole row opens the transaction.
-const TransactionRow = ({ transaction, accountName, toAccountName, categoryLabel }: RowProps) => {
+export const TransactionRow = ({ transaction, to, accountName, toAccountName, categoryLabel }: RowProps) => {
   const { t } = useTranslation("finance");
   const money = useMoney();
   const { locale, digitStyle } = useFormatting();
@@ -174,7 +176,7 @@ const TransactionRow = ({ transaction, accountName, toAccountName, categoryLabel
         {formatDate(transaction.txnDate, locale, digitStyle)}
       </span>
       <div className="min-w-0">
-        <Link to={transaction.id} className="block truncate font-medium after:absolute after:inset-0">
+        <Link to={to ?? transaction.id} className="block truncate font-medium after:absolute after:inset-0">
           {title}
         </Link>
         <p className="truncate text-sm text-muted-foreground">

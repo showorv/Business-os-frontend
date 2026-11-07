@@ -29,7 +29,6 @@
   "inactive": "Hidden",
   "noAccounts": "No accounts yet",
   "noAccountsHint": "Add the cash box, bank account or wallet you use first.",
-
   "categories": "Categories",
   "categoriesHint": "Group income and spending, so reports show where money comes from and goes.",
   "categoryType_INCOME": "Income",
@@ -42,7 +41,6 @@
   "hideCategory": "Hide {{name}}",
   "showCategory": "Show {{name}} again",
   "hidden": "Hidden",
-
   "transactionsSubtitle": "Every taka in and out, with who recorded it.",
   "newTransaction": "New transaction",
   "needAccountFirst": "Add an account first, so there's somewhere for the money to go.",
@@ -81,7 +79,6 @@
   "noMatchesHint": "Try other filters, or clear them.",
   "loadMore": "Load more",
   "possibleDuplicate": "Possible duplicate",
-
   "amount": "Amount",
   "date": "Date",
   "receivedInto": "Received into",
@@ -104,7 +101,6 @@
   "draftSaved": "Draft saved",
   "posted": "Posted to the books",
   "sentForApproval": "Sent for approval",
-
   "details": "Details",
   "source": "Recorded by",
   "source_MANUAL": "By hand",
@@ -155,7 +151,6 @@
   "done_reject": "Rejected",
   "done_reverse": "Reversed",
   "done_dismissDuplicate": "Warning removed",
-
   "attachments": "Receipts and files",
   "attachmentsHint": "PDF or photo (PNG, JPEG, WebP), up to 25 MB each.",
   "attachFile": "Attach file",
@@ -167,9 +162,15 @@
   "uploadFailed": "The file couldn't be uploaded. Check your connection and try again.",
   "downloadFile": "Download {{name}}",
   "removeFile": "Remove {{name}}",
-
   "approvalLimit": "Approval limit",
   "approvalLimitHint": "Expenses above this wait for an owner or admin before they reach the books. Leave it empty for no limit.",
   "approvalLimitLabel": "Expenses above",
-  "noLimit": "No limit"
+  "noLimit": "No limit",
+  "customer": "Customer",
+  "supplier": "Supplier",
+  "contact": "Customer or supplier",
+  "noContact": "Nobody",
+  "newContact": "New",
+  "change": "Change",
+  "addContact": "Add"
 }

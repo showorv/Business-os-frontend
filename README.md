@@ -33,8 +33,8 @@ Payments go through a demo gateway for now; SSLCommerz and bKash plug in once th
 | 11.1 | Plans and limits: a 14-day Pro trial, limits checked by the server, the Plan page, upgrade prompts | **Done** |
 | 11.2 | Paying through a demo gateway (success, fail, cancel), receipts, reminder emails, grace period | **Done** |
 | 11.3 | Platform admin panel: accounts, changing plans, giving Pro free until a date, prices and limits, coupons, AI cap, suspending, revenue, announcements | **Done** |
-| 11.4 | Customers and suppliers | Next |
-| 11.5 | Invoices, bills, baki and aging, PDF and email, posting to the books | |
+| 11.4 | Customers and suppliers | **Done** |
+| 11.5 | Invoices, bills, baki and aging, PDF and email, posting to the books | Next |
 | 11.6 | VAT on lines and a monthly VAT summary (help with Mushak) | |
 | 11.7 | Products and stock | |
 | 11.8 | Public home and pricing pages, terms and privacy, data export, full-width assistant | |
@@ -175,6 +175,51 @@ export const useCreateBusiness = () =>
 
 The helpers turn server errors into an `ApiError` with a code, which `errorMessage()` turns into words in
 the reader's language. The names of all cached lists live in `queryKeys`, in the same file.
+
+## Step 11.4: Customers and suppliers
+
+### What you can do now
+
+- **Customers & suppliers** in the sidebar (for people who can see money). The list is sorted by
+  name, with tabs for All, Customers and Suppliers, a search by name, phone or email, and archived
+  ones on request. Each row shows what you received from them or paid them.
+- **Add a contact:** customer, supplier or both, a name, and optionally a shop or company, phone,
+  email, address, BIN/TIN and notes.
+- **A contact's page:** how to reach them (the phone and email are tappable), received from them,
+  paid to them, the difference and the last date, and every transaction with them. From there:
+  *Record money* opens the transaction form as income (or expense, for a supplier) with them
+  already chosen; *Edit*; *Archive* or *Restore*.
+- **On the transaction form:** a *Customer* box for income and refunds, *Supplier* for expenses (a
+  "both" contact shows in either). *New* adds one without leaving the form and picks it.
+- **On a transaction's page:** the customer or supplier, linked to their page, with *Change* (or
+  *Add*). This works after posting too, since it doesn't touch the books.
+- Archived contacts disappear from lists and pickers but stay named on old transactions.
+- English and Bangla, light and dark, laptop and phone.
+
+Money a customer still owes you, or you owe a supplier (baki), comes with invoices and bills in 11.5.
+
+### How it was checked
+
+- Type check, lint, unit tests (76) and the build pass.
+- A new browser test (`e2e/contacts.spec.ts`, laptop and phone): add a customer and a supplier; the
+  tabs and the phone search narrow the list; record a sale from the customer's page (the form opens
+  as income with them chosen); add a supplier from inside the expense form; tag a posted income
+  afterwards; see ৳7,500 received over two transactions; archive the customer and check they leave
+  the list and the form.
+- Full run: 42 passed; the flaky statements test failed once and passed on its own, and the admin
+  test passed.
+- Screenshots of the list, the dialog, the form, a transaction and a contact page, on laptop and
+  phone, light and dark, were reviewed.
+
+### Fixes along the way
+
+- A supplier added from inside the form was chosen before it appeared in the list, so the box showed
+  "Nobody". The box now shows a new contact at once.
+- Since 11.3, every page also asks for the announcement, so the browser tests' many sessions from one
+  address went over the test backend's 300-requests-a-minute limit. That limit is now a backend
+  setting, and the test backend allows 3000.
+- On phones, the list now shows what was received or paid under each name.
+- The search box moved to the shared components, for the admin pages and the contacts list.
 
 ## Step 11.3: Platform admin panel
 
@@ -1129,7 +1174,9 @@ They need a separate test backend, so they never touch your real data:
 5. For the assistant test (step 9.8), start the stand-in AI with `node e2e/fake-ai.mjs` (port 5099), and
    give the test backend `AI_BASE_URL=http://localhost:5099/v1`, `AI_CHAT_MODEL=fake-e2e` and any made-up
    `AI_API_KEY` (the stand-in doesn't check it). Also set `CLAMAV_HOST=` (empty) for the test backend: no
-   virus scanner runs on the Mac, so uploads are marked "not scanned" instead of waiting for one.
+   virus scanner runs on the Mac, so uploads are marked "not scanned" instead of waiting for one. And set
+   `RATE_LIMIT_PER_MINUTE=3000`: every test comes from the same address, and the usual 300 a minute is
+   too few once several run at the same time.
 6. `npm run test:e2e`. It uses the Chrome already on your Mac. If a password is missing from `.env`, the
    tests stop and say which one.
 

@@ -7,7 +7,8 @@ import { Select } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { errorMessage } from "@/lib/errors";
 import { useWorkspaces, type WorkspaceRow } from "./api";
-import { Cell, PageTitle, Pager, SearchBox, StateBadge, Table, useAdminFormat } from "./parts";
+import { Cell, PageTitle, Pager, StateBadge, Table, useAdminFormat } from "./parts";
+import { SearchBox } from "@/components/ui/search-box";
 
 const STATES = ["trial", "active", "granted", "grace", "expired", "free"] as const;
 

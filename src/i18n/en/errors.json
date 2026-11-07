@@ -129,5 +129,6 @@
   "PLATFORM_ADMIN_MFA_REQUIRED": "Turn on two-step sign-in to use the admin panel.",
   "WORKSPACE_SUSPENDED": "This account is suspended. Please contact support.",
   "AI_PAUSED": "The AI assistant is paused for a short while. Please try again later.",
-  "SIGNUPS_CLOSED": "New sign-ups are closed for now. You can join if someone invites you."
+  "SIGNUPS_CLOSED": "New sign-ups are closed for now. You can join if someone invites you.",
+  "CONTACT_NOT_USABLE": "That customer or supplier is archived or belongs to another business."
 }

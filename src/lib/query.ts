@@ -26,6 +26,10 @@ export const queryKeys = {
   invitations: (businessId: string) => ["businesses", businessId, "invitations"],
   accounts: (businessId: string) => ["businesses", businessId, "accounts"],
   categories: (businessId: string) => ["businesses", businessId, "categories"],
+  // Customers and suppliers; every list and contact in a business sits under this key.
+  contacts: (businessId: string) => ["businesses", businessId, "contacts"],
+  contactList: (businessId: string, filters: string) => ["businesses", businessId, "contacts", "list", filters],
+  contact: (businessId: string, contactId: string) => ["businesses", businessId, "contacts", contactId],
   // Every transaction list and transaction in a business, whatever the filters.
   transactions: (businessId: string) => ["businesses", businessId, "transactions"],
   transactionList: (businessId: string, filters: string) => ["businesses", businessId, "transactions", "list", filters],

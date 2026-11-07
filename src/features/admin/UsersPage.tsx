@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
 import { errorMessage } from "@/lib/errors";
 import { useUsers } from "./api";
-import { Cell, PageTitle, Pager, SearchBox, Table, useAdminFormat } from "./parts";
+import { Cell, PageTitle, Pager, Table, useAdminFormat } from "./parts";
+import { SearchBox } from "@/components/ui/search-box";
 
 export const UsersPage = () => {
   const { t } = useTranslation("admin");

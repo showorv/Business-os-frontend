@@ -1,9 +1,8 @@
-import { ChevronLeft, ChevronRight, Search } from "lucide-react";
-import { useRef, useState, type ReactNode } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/cn";
 import { formatDate, formatDateTime } from "@/lib/dates";
 import { formatCount } from "@/lib/numbers";
@@ -47,29 +46,6 @@ export const StateBadge = ({ state }: { state: PlanState }) => {
     <Badge className={cn("border bg-transparent", (state === "grace" || state === "expired") && "border-danger/40 text-danger", state === "active" && "border-foreground")}>
       {t(`state_${state}`)}
     </Badge>
-  );
-};
-
-// A search box that searches when you press Enter or stop typing for a moment.
-export const SearchBox = ({ value, onChange, placeholder }: { value: string; onChange: (value: string) => void; placeholder: string }) => {
-  const [text, setText] = useState(value);
-  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const type = (next: string) => {
-    setText(next);
-    clearTimeout(timer.current);
-    timer.current = setTimeout(() => onChange(next.trim()), 400);
-  };
-  return (
-    <form
-      className="relative w-full max-w-xs"
-      onSubmit={(event) => {
-        event.preventDefault();
-        onChange(text.trim());
-      }}
-    >
-      <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-      <Input type="search" value={text} onChange={(event) => type(event.target.value)} onBlur={() => onChange(text.trim())} placeholder={placeholder} aria-label={placeholder} className="pl-9" />
-    </form>
   );
 };
 

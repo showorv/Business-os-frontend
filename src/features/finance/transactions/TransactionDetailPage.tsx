@@ -20,6 +20,7 @@ import { Permission } from "@/lib/permissions";
 import { useFormatting } from "@/lib/preferences";
 import { useAccounts, useCategories, useReverseTransaction, useTransaction, useTransactionStep, type TransactionDetail, type TransactionStep } from "../api";
 import { categoryName } from "../names";
+import { TransactionContact } from "@/features/contacts/TransactionContact";
 import { AttachmentsCard } from "./AttachmentsCard";
 import { amountSign, StatusBadge } from "./parts";
 
@@ -49,6 +50,20 @@ export const TransactionDetailPage = () => {
     ...(txn.type === "TRANSFER" ? ([[t("finance:toAccount"), toAccount?.name ?? "—"]] as [string, ReactNode][]) : []),
     ...(txn.feeMinor !== "0" ? ([[t("finance:fee"), money(txn.feeMinor, txn.currency)]] as [string, ReactNode][]) : []),
     ...(category ? ([[t("finance:category"), categoryName(category, currentLocale())]] as [string, ReactNode][]) : []),
+    ...(txn.type !== "TRANSFER"
+      ? ([
+          [
+            t("finance:contact"),
+            <TransactionContact
+              key="contact"
+              businessId={businessId}
+              transactionId={txn.id}
+              contactId={txn.contactId}
+              canChange={txn.status !== "VOID" && access.can(Permission.FINANCE_WRITE) && access.writable}
+            />,
+          ],
+        ] as [string, ReactNode][])
+      : []),
     ...(txn.paymentMethod ? ([[t("finance:paymentMethod"), txn.paymentMethod]] as [string, ReactNode][]) : []),
     ...(txn.referenceNo ? ([[t("finance:referenceNo"), txn.referenceNo]] as [string, ReactNode][]) : []),
     [t("finance:source"), t(`finance:source_${txn.source}`, { defaultValue: txn.source })],

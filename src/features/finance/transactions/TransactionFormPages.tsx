@@ -1,7 +1,9 @@
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, Navigate, useNavigate, useParams } from "react-router";
+import { Link, Navigate, useNavigate, useParams, useSearchParams } from "react-router";
+import { useAllContacts, type Contact } from "@/features/contacts/api";
+import { ContactDialog } from "@/features/contacts/ContactDialog";
 import { toast } from "sonner";
 import { Alert } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
@@ -11,6 +13,7 @@ import { todayIn } from "@/lib/dates";
 import { errorMessage } from "@/lib/errors";
 import { Permission } from "@/lib/permissions";
 import { newRequestKey, useAccounts, useCategories, useCreateTransaction, useTransaction, useUpdateTransaction } from "../api";
+import { isTransactionType } from "./parts";
 import { TransactionForm, type TransactionInput } from "./TransactionForm";
 
 // Fields the server wants left out rather than sent empty when creating.
@@ -29,12 +32,18 @@ const useFormContext = (businessId: string) => {
   const { business } = useCurrentBusiness();
   const accounts = useAccounts(businessId);
   const categories = useCategories(businessId);
+  const contacts = useAllContacts(businessId);
+  // The "add a customer or supplier" dialog, opened from the form; `pick` selects the new one.
+  const [adding, setAdding] = useState<{ kind: Contact["kind"]; pick: (contact: Contact) => void } | null>(null);
   const settings = business?.settings as Partial<BusinessSettings> | undefined;
   return {
     business,
     accounts: accounts.data,
     categories: categories.data,
-    ready: Boolean(business && accounts.data && categories.data),
+    contacts: contacts.data ?? [],
+    ready: Boolean(business && accounts.data && categories.data && (contacts.data || contacts.isError)),
+    onAddContact: (kind: Contact["kind"], pick: (contact: Contact) => void) => setAdding({ kind, pick }),
+    contactDialog: adding ? <ContactDialog businessId={businessId} kind={adding.kind} onCreated={adding.pick} onClose={() => setAdding(null)} /> : null,
     approvalThresholdMinor: settings?.approvalThresholdMinor ?? null,
   };
 };
@@ -48,6 +57,10 @@ export const NewTransactionPage = () => {
   const create = useCreateTransaction(businessId);
   // One key for this form, so a double click or a retry after a dropped connection creates it once.
   const [requestKey] = useState(newRequestKey);
+  // Opened from a contact's page: ?contactId=…&type=INCOME
+  const [params] = useSearchParams();
+  const initialType = params.get("type");
+  const initial = { contactId: params.get("contactId") ?? undefined, type: isTransactionType(initialType) ? initialType : undefined };
   if (!context.ready || access.isLoading) return <Spinner className="mt-16" />;
   if (!access.can(Permission.FINANCE_WRITE) || !access.writable) return <Navigate to=".." relative="path" replace />;
 
@@ -75,6 +88,9 @@ export const NewTransactionPage = () => {
           today={todayIn(context.business!.timezone)}
           accounts={context.accounts!}
           categories={context.categories!}
+          contacts={context.contacts}
+          initial={initial}
+          onAddContact={context.onAddContact}
           approvalThresholdMinor={context.approvalThresholdMinor}
           error={create.error}
           pending={create.isPending}
@@ -84,6 +100,7 @@ export const NewTransactionPage = () => {
           onCancel={() => void navigate("..", { relative: "path" })}
         />
       )}
+      {context.contactDialog}
     </div>
   );
 };
@@ -118,6 +135,8 @@ export const EditTransactionPage = () => {
         today={todayIn(context.business!.timezone)}
         accounts={context.accounts!}
         categories={context.categories!}
+        contacts={context.contacts}
+        onAddContact={context.onAddContact}
         existing={transaction.data}
         approvalThresholdMinor={context.approvalThresholdMinor}
         error={update.error}
@@ -126,6 +145,7 @@ export const EditTransactionPage = () => {
         onSubmit={submit}
         onCancel={() => void navigate("..", { relative: "path" })}
       />
+      {context.contactDialog}
     </div>
   );
 };
