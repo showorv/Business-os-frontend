@@ -19,6 +19,9 @@ import bnRecurring from "./bn/recurring.json";
 import bnNotifications from "./bn/notifications.json";
 import bnTeam from "./bn/team.json";
 import bnValidation from "./bn/validation.json";
+import bnDocuments from "./bn/documents.json";
+import bnAssistant from "./bn/assistant.json";
+import bnAudit from "./bn/audit.json";
 import enAuth from "./en/auth.json";
 import enBusinesses from "./en/businesses.json";
 import enCommon from "./en/common.json";
@@ -38,12 +41,15 @@ import enRecurring from "./en/recurring.json";
 import enNotifications from "./en/notifications.json";
 import enTeam from "./en/team.json";
 import enValidation from "./en/validation.json";
+import enDocuments from "./en/documents.json";
+import enAssistant from "./en/assistant.json";
+import enAudit from "./en/audit.json";
 
 // One file per screen area and language. Every key in English must also be in Bangla:
 // src/i18n/i18n.test.ts checks that.
 export const resources = {
-  en: { common: enCommon, auth: enAuth, validation: enValidation, shell: enShell, businesses: enBusinesses, settings: enSettings, team: enTeam, finance: enFinance, consolidated: enConsolidated, goals: enGoals, budgets: enBudgets, reports: enReports, analytics: enAnalytics, ledger: enLedger, statements: enStatements, tasks: enTasks, recurring: enRecurring, notifications: enNotifications, errors: enErrors },
-  bn: { common: bnCommon, auth: bnAuth, validation: bnValidation, shell: bnShell, businesses: bnBusinesses, settings: bnSettings, team: bnTeam, finance: bnFinance, consolidated: bnConsolidated, goals: bnGoals, budgets: bnBudgets, reports: bnReports, analytics: bnAnalytics, ledger: bnLedger, statements: bnStatements, tasks: bnTasks, recurring: bnRecurring, notifications: bnNotifications, errors: bnErrors },
+  en: { common: enCommon, auth: enAuth, validation: enValidation, shell: enShell, businesses: enBusinesses, settings: enSettings, team: enTeam, finance: enFinance, consolidated: enConsolidated, goals: enGoals, budgets: enBudgets, reports: enReports, analytics: enAnalytics, ledger: enLedger, statements: enStatements, tasks: enTasks, recurring: enRecurring, notifications: enNotifications, documents: enDocuments, assistant: enAssistant, audit: enAudit, errors: enErrors },
+  bn: { common: bnCommon, auth: bnAuth, validation: bnValidation, shell: bnShell, businesses: bnBusinesses, settings: bnSettings, team: bnTeam, finance: bnFinance, consolidated: bnConsolidated, goals: bnGoals, budgets: bnBudgets, reports: bnReports, analytics: bnAnalytics, ledger: bnLedger, statements: bnStatements, tasks: bnTasks, recurring: bnRecurring, notifications: bnNotifications, documents: bnDocuments, assistant: bnAssistant, audit: bnAudit, errors: bnErrors },
 } as const;
 
 export type Locale = "en" | "bn-BD";

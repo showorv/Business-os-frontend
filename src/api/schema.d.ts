@@ -1224,7 +1224,24 @@ export interface paths {
                         "application/json": {
                             /** @enum {boolean} */
                             success: true;
-                            data: Record<string, never>;
+                            data: {
+                                items: {
+                                    id: string;
+                                    /** Format: uuid */
+                                    actorUserId: string | null;
+                                    action: string;
+                                    entityType: string | null;
+                                    /** Format: uuid */
+                                    entityId: string | null;
+                                    before?: unknown;
+                                    after?: unknown;
+                                    ip: string | null;
+                                    actorVia: string;
+                                    requestId: string | null;
+                                    at: string;
+                                }[];
+                                nextCursor: string | null;
+                            };
                         };
                     };
                 };
@@ -1290,7 +1307,24 @@ export interface paths {
                         "application/json": {
                             /** @enum {boolean} */
                             success: true;
-                            data: Record<string, never>;
+                            data: {
+                                items: {
+                                    id: string;
+                                    /** Format: uuid */
+                                    actorUserId: string | null;
+                                    action: string;
+                                    entityType: string | null;
+                                    /** Format: uuid */
+                                    entityId: string | null;
+                                    before?: unknown;
+                                    after?: unknown;
+                                    ip: string | null;
+                                    actorVia: string;
+                                    requestId: string | null;
+                                    at: string;
+                                }[];
+                                nextCursor: string | null;
+                            };
                         };
                     };
                 };
@@ -3920,6 +3954,9 @@ export interface paths {
                                     sha256: string | null;
                                     scanStatus: string;
                                     ingestStatus: string;
+                                    /** Format: uuid */
+                                    createdBy: string;
+                                    createdAt: string;
                                 };
                                 uploadUrl: string;
                                 expiresIn: number;
@@ -3997,6 +4034,9 @@ export interface paths {
                                 sha256: string | null;
                                 scanStatus: string;
                                 ingestStatus: string;
+                                /** Format: uuid */
+                                createdBy: string;
+                                createdAt: string;
                             };
                         };
                     };
@@ -4072,6 +4112,9 @@ export interface paths {
                                 sha256: string | null;
                                 scanStatus: string;
                                 ingestStatus: string;
+                                /** Format: uuid */
+                                createdBy: string;
+                                createdAt: string;
                             }[];
                         };
                     };
@@ -12646,6 +12689,8 @@ export interface paths {
                                     /** Format: uuid */
                                     resultId: string | null;
                                     expiresAt: string;
+                                    decidedAt?: string | null;
+                                    createdAt?: string;
                                 }[];
                                 usage: {
                                     promptTokens: number;
@@ -12780,7 +12825,39 @@ export interface paths {
                         "application/json": {
                             /** @enum {boolean} */
                             success: true;
-                            data: Record<string, never>;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                title: string;
+                                createdAt: string;
+                                messages: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    /** @enum {string} */
+                                    role: "USER" | "ASSISTANT";
+                                    content: string;
+                                    language: string | null;
+                                    sources: {
+                                        tool: string;
+                                        businesses: string[];
+                                        period?: string;
+                                        asOf?: string;
+                                        currency?: string[];
+                                        /** @enum {string} */
+                                        basis?: "POSTED_ACTUALS" | "PLAN" | "DOCUMENT" | "PROPOSAL";
+                                        documents?: {
+                                            /** Format: uuid */
+                                            documentId: string;
+                                            fileName: string;
+                                            page: number;
+                                        }[];
+                                        /** Format: uuid */
+                                        proposalId?: string;
+                                    }[];
+                                    guardStatus: string | null;
+                                    createdAt: string;
+                                }[];
+                            };
                         };
                     };
                 };
@@ -12861,6 +12938,8 @@ export interface paths {
                                     /** Format: uuid */
                                     resultId: string | null;
                                     expiresAt: string;
+                                    decidedAt?: string | null;
+                                    createdAt?: string;
                                 }[];
                                 nextCursor: string | null;
                             };
@@ -12950,6 +13029,8 @@ export interface paths {
                                 /** Format: uuid */
                                 resultId: string | null;
                                 expiresAt: string;
+                                decidedAt?: string | null;
+                                createdAt?: string;
                             };
                         };
                     };
@@ -13011,7 +13092,9 @@ export interface paths {
                         "application/json": {
                             /** @enum {boolean} */
                             success: true;
-                            data: Record<string, never>;
+                            data: {
+                                rejected: boolean;
+                            };
                         };
                     };
                 };

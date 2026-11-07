@@ -20,7 +20,7 @@ phone sizes, tried by you, then committed.
 | 9.5 | Ledger: chart of accounts, journals, closing months, reconciliation | **Done** |
 | 9.6 | Bank statements: import, inbox, rules | **Done** |
 | 9.7 | Tasks, reminders, recurring schedules, notifications, push | **Done** |
-| 9.8 | AI assistant, document search, audit history | Next |
+| 9.8 | AI assistant, document search, audit history | **Done** |
 
 ## Decisions made before starting
 
@@ -131,7 +131,7 @@ src/
   i18n/en, i18n/bn      The words, in English and Bangla, one file per area
   lib/                  Helpers: API calls, data loading (query.ts), the session, theme, money, dates, errors
   styles/               Colours and fonts
-e2e/                    Browser tests: helpers.ts, foundation (9.1), team (9.2), finance (9.3)
+e2e/                    Browser tests: helpers.ts, one file per step, and fake-ai.mjs (a stand-in AI)
 ```
 
 Each feature folder keeps its screens next to an `api.ts` that holds its server calls.
@@ -158,6 +158,119 @@ export const useCreateBusiness = () =>
 
 The helpers turn server errors into an `ApiError` with a code, which `errorMessage()` turns into words in
 the reader's language. The names of all cached lists live in `queryKeys`, in the same file.
+
+## Step 9.8: AI assistant, document search, activity history
+
+### What you can do now
+
+**Documents** (menu: Documents, `/b/<business>/documents`)
+
+- **Upload** one or many files at once: drag them onto the box or click to choose. PDF, PNG, JPG, WebP,
+  CSV or XLSX, up to 25 MB each. Each file gets a kind (invoice, receipt, contract, policy, note,
+  statement), guessed from its name and changeable before uploading. A file of the wrong type or too big
+  is marked in red and the rest still go up.
+- **Reading in the background.** After upload, the server reads each file's text. The list shows
+  "Reading…" and checks again every 3 seconds on its own until it says "Searchable", "No text found" or
+  "Couldn't read". Statements are kept but not read.
+- **Search inside documents**, by words and by meaning, in English or Bangla. Results show the file, the
+  page, the heading, the passage with the searched words in bold, and a bar for how closely it matches.
+  Clicking a result opens the file. The search is kept in the address, so it can be shared.
+- **Filter** by kind with the chips; **open, read again or delete** from each row's menu. A file attached
+  to a transaction can't be deleted.
+
+**AI assistant** (menu: AI assistant, `/b/<business>/assistant`)
+
+- **Ask in plain English or Bangla**: "How much money do we have?", "What was our profit last month?".
+  Four suggested questions start an empty chat. Enter sends, Shift+Enter starts a new line.
+- **Every answer shows its sources** under it: which figures it used (balances, profit and loss, budgets
+  and so on), for which period, and whether they're posted books or a plan. Answers from documents link
+  to the file and page. If the server had to correct or hold back a figure, a note says so.
+- **It can draft, never write.** Ask it to "remind me to…" or record an expense, and it shows a card with
+  the task or transaction. Nothing is saved until you press **Add task** / **Add transaction**; "Not now"
+  dismisses it. People who can post to the books can tick "Post it to the books now". Once added, the card
+  links to the new task or transaction. Cards expire after a while.
+- **Chats are kept.** The list on the left (a panel behind the button on phones) opens old chats.
+- **This business or all businesses**: with more than one business, a switch chooses what it may look at.
+- **Today's allowance**: a thin bar shows how much of the day's AI use is left.
+- If the server has no AI key, the page says the assistant isn't switched on; the rest of the app works.
+
+**Activity history** (menu: Activity history, `/b/<business>/audit`, owners and admins)
+
+- A **day-by-day timeline** of who did what: "Rahim Uddin recorded a transaction", "Business OS finished
+  reading a document". Actions done through the assistant are marked "via assistant".
+- **Filter** by person and by what happened (grouped: money, books, planning, work, files, people, setup).
+- **Show changes** opens what changed, field by field, with the old value struck through next to the new.
+- Each entry links to the thing it changed (the transaction, task, budget, journal…) when it has a page.
+- **Settings → Activity** shows your own sign-ins and changes across all businesses, so you can spot
+  anything that wasn't you.
+
+### Who can do what
+
+| | Owner, Admin | Accountant | Manager | Viewer |
+| --- | --- | --- | --- | --- |
+| See and search documents | Yes | Yes | Yes | Yes |
+| Upload, re-read, delete documents | Yes | Yes | Yes | No |
+| Use the assistant | Yes | Yes | Yes | Yes |
+| Confirm a drafted task | Yes | Yes | Yes | No |
+| Confirm a drafted transaction | Yes | Yes | No | No |
+| See the business's activity history | Yes | No | No | No |
+| See your own activity | Everyone | | | |
+
+The assistant only reads what the person asking may read: a manager without finance access gets no money
+figures.
+
+### Backend changes for this step
+
+Only the API description, so the frontend's types match what the server already sends. No behaviour
+change; all 736 backend tests pass.
+
+- `src/app/docs/documents.docs.ts`: documents list who uploaded them and when.
+- `src/app/docs/ai.docs.ts`: one chat's messages (with their sources), when a suggestion was made and
+  decided, and the answer to "not now".
+- `src/app/docs/audit.docs.ts`: the fields of each history entry, and that both history lists come a page
+  at a time.
+
+### New shared pieces
+
+- `src/features/documents/`: hooks (upload, search, list that re-checks while reading), the page and the
+  upload dialog.
+- `src/features/assistant/`: hooks, the chat page, and `parts.tsx` (message text, source chips, the
+  draft cards, the thinking dots).
+- `src/features/audit/`: hooks, the timeline, the history page and Settings → Activity. Every action has
+  words in `src/i18n/*/audit.json`; one not worded yet still shows in a readable form.
+- `src/lib/query.ts`: keys for documents, history and the assistant. A paged list can now re-check on a
+  timer, decided from the rows it has (used while documents are being read).
+- Two small animations in `src/styles/index.css`: the thinking dots and a new message sliding in. Both
+  are off for people who ask for less motion.
+- `e2e/fake-ai.mjs`: a stand-in AI service that answers the same way every time, so the assistant can be
+  tested without a real AI key or cost.
+
+### How it was checked
+
+- **Browser tests** (`e2e/assistant.spec.ts`), at laptop and phone size:
+  1. Upload a lease PDF and a text file together: the text file is refused, the lease is guessed to be a
+     contract and goes up. It turns "Searchable" by itself. Filtering by Receipt shows nothing.
+     Searching "late payment fee" finds it on page 1 with the words in bold.
+  2. The history shows the upload by name, filtering to another action shows nothing, and Settings →
+     Activity shows the account being created.
+  3. A suggested question gets an answer with an "Account balances" source. Asking for a reminder shows
+     a draft task card; pressing Add task adds it, the card says Added, and its link opens the task.
+     After a reload the chat is still there. The history shows the confirmed suggestion.
+- **All browser tests:** 37 pass. Two older ones failed once in the full run (the two-step verification
+  test, which waits for a fresh code, and statements on phone) and passed when run again.
+- Lint, type-check, 70 small tests (including the English/Bangla key check) and the build pass.
+- Looked at by eye at laptop and phone size, light and dark.
+
+### Fixes along the way
+
+- The source chip crashed on "as of today": the server sends the word "today", not a date. It now shows
+  "as of today", a formatted date, or the text as sent. Periods like "2026-10-01 to 2026-10-31" are shown
+  as dates in the reader's language.
+- The test backend tried to reach a virus scanner that doesn't run on the Mac, so uploads never finished
+  reading. The test backend now runs without one (see "Browser tests").
+- On phones the draft card's heading wrapped; the business name is hidden there. The document list's
+  details line and the search hint were shortened to fit.
+- "Finished reading a document" and two integration actions had no words yet; added.
 
 ## Step 9.7: Tasks, reminders, recurring schedules, notifications, push
 
@@ -849,7 +962,11 @@ They need a separate test backend, so they never touch your real data:
    `npx prisma migrate deploy`, then `npm run dev` and `npm run worker`.
 4. Here, in `.env`: set `API_TARGET=http://localhost:5002`, and make up two passwords for
    `E2E_PASSWORD` and `E2E_NEW_PASSWORD` (at least 10 characters each). Then `npm run dev`.
-5. `npm run test:e2e`. It uses the Chrome already on your Mac. If a password is missing from `.env`, the
+5. For the assistant test (step 9.8), start the stand-in AI with `node e2e/fake-ai.mjs` (port 5099), and
+   give the test backend `AI_BASE_URL=http://localhost:5099/v1`, `AI_CHAT_MODEL=fake-e2e` and any made-up
+   `AI_API_KEY` (the stand-in doesn't check it). Also set `CLAMAV_HOST=` (empty) for the test backend: no
+   virus scanner runs on the Mac, so uploads are marked "not scanned" instead of waiting for one.
+6. `npm run test:e2e`. It uses the Chrome already on your Mac. If a password is missing from `.env`, the
    tests stop and say which one.
 
 Each run creates fresh accounts named `owner-…@e2e.test`, `karim-…@e2e.test` and so on. The backend

@@ -32,6 +32,9 @@ import { NotificationSettingsPage } from "@/features/notifications/NotificationS
 import { NotificationsPage } from "@/features/notifications/NotificationsPage";
 import { RecurringPage } from "@/features/recurring/RecurringPage";
 import { TasksPage } from "@/features/tasks/TasksPage";
+import { DocumentsPage } from "@/features/documents/DocumentsPage";
+import { AssistantPage } from "@/features/assistant/AssistantPage";
+import { AuditPage, MyActivityPage } from "@/features/audit/AuditPage";
 import { GuestOnly, HomeRedirect, RequireAuth } from "./guards";
 
 // Every address in the app. Business screens live under /b/:businessId, so a link opens the right one.
@@ -81,6 +84,9 @@ export const router = createBrowserRouter([
           { path: "/b/:businessId/statements/import", element: <ImportPage /> },
           { path: "/b/:businessId/recurring", element: <RecurringPage /> },
           { path: "/b/:businessId/tasks", element: <TasksPage /> },
+          { path: "/b/:businessId/documents", element: <DocumentsPage /> },
+          { path: "/b/:businessId/assistant", element: <AssistantPage /> },
+          { path: "/b/:businessId/audit", element: <AuditPage /> },
           { path: "/notifications", element: <NotificationsPage /> },
           { path: "/b/:businessId/accounts", element: <AccountsPage /> },
           { path: "/b/:businessId/transactions", element: <TransactionsPage /> },
@@ -97,6 +103,7 @@ export const router = createBrowserRouter([
               { path: "profile", element: <ProfilePage /> },
               { path: "security", element: <SecurityPage /> },
               { path: "notifications", element: <NotificationSettingsPage /> },
+              { path: "activity", element: <MyActivityPage /> },
             ],
           },
         ],

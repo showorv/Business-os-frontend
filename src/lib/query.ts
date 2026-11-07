@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient, type QueryKey, type UseQueryOptions } from "@tanstack/react-query";
 import { useCallback } from "react";
-import { unwrap, unwrapPage, type ApiCall, type PagedCall } from "./api";
+import { unwrap, unwrapPage, type ApiCall, type Page, type PagedCall } from "./api";
 
 // The one place TanStack Query is wired up. Feature files describe *what* to load or send, and
 // these helpers handle unwrapping the response, errors and refreshing the lists that changed.
@@ -34,6 +34,13 @@ export const queryKeys = {
   schedules: (businessId: string) => ["businesses", businessId, "schedules"],
   scheduleItem: (businessId: string, name: string, params = "") => ["businesses", businessId, "schedules", name, params],
   // This person's notifications, across every business.
+  documents: (businessId: string) => ["businesses", businessId, "documents"],
+  documentItem: (businessId: string, name: string, params = "") => ["businesses", businessId, "documents", name, params],
+  audit: (businessId: string, params = "") => ["businesses", businessId, "audit", params],
+  myAudit: (params = "") => ["audit", "me", params],
+  // The assistant is per person, across businesses.
+  assistant: ["assistant"],
+  assistantItem: (name: string, params = "") => ["assistant", name, params],
   notifications: ["notifications"],
   notificationItem: (name: string, params = "") => ["notifications", name, params],
   // Bank statements: imports, the review inbox, rules and saved file formats.
@@ -53,8 +60,11 @@ export const useApiQuery = <T>(key: QueryKey, request: () => ApiCall<T>, extras?
 // A long list loaded a page at a time. `data` is every row loaded so far; `fetchNextPage()` loads more
 // and `hasNextPage` says whether there is more.
 //   useApiPages(queryKeys.transactions(id, filters), (cursor) => api.GET(".../transactions", { params: { query: { cursor } } }))
-export const useApiPages = <T>(key: QueryKey, request: (cursor: string | undefined) => PagedCall<T>) =>
-  useInfiniteQuery({
+// `refetchInterval` keeps checking while something on the list is still changing: a number of
+// milliseconds, or a function of the rows loaded so far that returns one (or false to stop).
+export const useApiPages = <T>(key: QueryKey, request: (cursor: string | undefined) => PagedCall<T>, refetchInterval: number | false | ((rows: T[]) => number | false) = false) =>
+  useInfiniteQuery<Page<T>, Error, T[], QueryKey, string | undefined>({
+    refetchInterval: typeof refetchInterval === "function" ? (query) => refetchInterval(query.state.data?.pages.flatMap((page) => page.items) ?? []) : refetchInterval,
     queryKey: key,
     queryFn: ({ pageParam }) => unwrapPage(request(pageParam)),
     initialPageParam: undefined as string | undefined,

@@ -71,7 +71,32 @@
     opacity: 0;
   }
 }
+/* The assistant's "thinking" dots, and a new message sliding up into place. */
+@keyframes typing-dot {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+@keyframes message-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
 @layer utilities {
+  .animate-typing-dot {
+    animation: typing-dot 1.2s ease-in-out infinite;
+  }
+  .animate-message-in {
+    animation: message-in 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
   .animate-chart-draw {
     stroke-dasharray: var(--chart-length, 2000);
     animation: chart-draw 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -92,7 +117,9 @@
     .animate-chart-draw,
     .animate-chart-rise,
     .animate-chart-grow,
-    .animate-chart-fade {
+    .animate-chart-fade,
+    .animate-typing-dot,
+    .animate-message-in {
       animation: none;
     }
   }

@@ -97,5 +97,11 @@
   "SALARY_CATEGORY_INVALID": "Salaries must use a category linked to the Salaries account. Add one in Accounts → Categories.",
   "SCHEDULE_NOT_ACTIVE": "This schedule isn't running.",
   "SCHEDULE_NO_FUTURE_OCCURRENCE": "This schedule would never run. Pick a first date that's today or later.",
-  "PUSH_NOT_CONFIGURED": "Push notifications aren't set up on this server."
+  "PUSH_NOT_CONFIGURED": "Push notifications aren't set up on this server.",
+  "AI_BUDGET_EXCEEDED": "The assistant has used today’s allowance. It resets tomorrow.",
+  "AI_NOT_CONFIGURED": "The AI assistant isn’t set up on this server.",
+  "AI_NO_BUSINESS_ACCESS": "You can’t ask about that business.",
+  "AI_PROPOSAL_NOT_PENDING": "This suggestion was already handled or has expired.",
+  "AI_PROVIDER_BUSY": "The assistant is busy. Try again in a minute.",
+  "AI_PROVIDER_FAILED": "The assistant couldn’t answer just now. Try again."
 }

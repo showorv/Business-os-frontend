@@ -18,6 +18,9 @@ export const SettingsLayout = () => {
         <NavLink to="/settings/notifications" className={tab}>
           {t("notifications")}
         </NavLink>
+        <NavLink to="/settings/activity" className={tab}>
+          {t("activity")}
+        </NavLink>
       </nav>
       <Outlet />
     </div>
