@@ -32,6 +32,7 @@ import { NotificationSettingsPage } from "@/features/notifications/NotificationS
 import { NotificationsPage } from "@/features/notifications/NotificationsPage";
 import { RecurringPage } from "@/features/recurring/RecurringPage";
 import { TasksPage } from "@/features/tasks/TasksPage";
+import { PlanPage } from "@/features/billing/PlanPage";
 import { DocumentsPage } from "@/features/documents/DocumentsPage";
 import { AssistantPage } from "@/features/assistant/AssistantPage";
 import { AuditPage, MyActivityPage } from "@/features/audit/AuditPage";
@@ -103,6 +104,7 @@ export const router = createBrowserRouter([
               { path: "profile", element: <ProfilePage /> },
               { path: "security", element: <SecurityPage /> },
               { path: "notifications", element: <NotificationSettingsPage /> },
+              { path: "plan", element: <PlanPage /> },
               { path: "activity", element: <MyActivityPage /> },
             ],
           },

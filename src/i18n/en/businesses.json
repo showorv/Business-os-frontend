@@ -61,5 +61,8 @@
   "statusChangedACTIVE": "Business reactivated",
   "statusChangedINACTIVE": "Business paused",
   "statusChangedARCHIVED": "Business archived",
-  "next95": "Step 9.5: ledger, chart of accounts and closing months"
+  "next95": "Step 9.5: ledger, chart of accounts and closing months",
+  "limitTitle": "Your plan is full",
+  "limitBody_one": "The {{plan}} plan has room for {{count}} business. Upgrade to Pro to run several side by side, or archive one you no longer use.",
+  "limitBody_other": "The {{plan}} plan has room for {{count}} businesses. Upgrade for more, or archive one you no longer use."
 }

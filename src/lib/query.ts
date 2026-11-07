@@ -9,6 +9,9 @@ import { unwrap, unwrapPage, type ApiCall, type Page, type PagedCall } from "./a
 // Keys inside one business start with ["businesses", id], so reloading ["businesses"] reloads them all.
 export const queryKeys = {
   sessions: ["sessions"],
+  // The plans on offer, and the signed-in person's own workspace plan.
+  plans: ["plans"],
+  myPlan: ["plans", "mine"],
   roles: ["roles"],
   businesses: ["businesses"],
   business: (businessId: string) => ["businesses", businessId],

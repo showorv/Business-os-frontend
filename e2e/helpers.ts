@@ -92,3 +92,16 @@ export const secondPerson = async (browser: Browser, info: TestInfo) => {
   });
   return context.newPage();
 };
+
+// Moves an account's plan the way the clock or the admin panel would, in the test database only
+// (business_os_e2e by default), then clears the cached business contexts in the test Redis.
+export const setPlan = (email: string, set: string) => {
+  const pg = process.env.E2E_POSTGRES_CONTAINER || "business_os_postgres";
+  const database = process.env.E2E_DATABASE || "business_os_e2e";
+  const where = `workspace_id in (select w.id from workspaces w join users u on u.id = w.owner_user_id where u.email = '${email.replace(/'/g, "''")}')`;
+  const sql = `update workspace_subscriptions set ${set} where ${where};`;
+  execSync(`docker exec -i ${pg} sh -c 'psql -q -U "$POSTGRES_USER" -d ${database}'`, { input: sql, stdio: ["pipe", "ignore", "inherit"] });
+  const container = process.env.E2E_REDIS_CONTAINER || "business_os_redis";
+  const db = process.env.E2E_REDIS_DB || "2";
+  execSync(`docker exec ${container} sh -c "redis-cli -n ${db} --scan --pattern 'business-context:*' | xargs -r redis-cli -n ${db} del"`, { stdio: "ignore" });
+};

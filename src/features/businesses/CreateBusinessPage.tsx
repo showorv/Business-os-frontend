@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field } from "@/components/ui/field";
 import { Input, Select } from "@/components/ui/input";
+import { useMyPlan } from "@/features/billing/api";
+import { UpgradePrompt } from "@/features/billing/parts";
+import { ApiError } from "@/lib/api";
 import { errorMessage } from "@/lib/errors";
 import { rememberBusiness } from "@/lib/preferences";
 import { BUSINESS_TYPES, useBusinesses, useCreateBusiness } from "./api";
@@ -34,6 +37,10 @@ export const CreateBusinessPage = () => {
     defaultValues: { name: "", type: "RETAIL", baseCurrency: "BDT", fiscalYearStartMonth: 7, timezone: "Asia/Dhaka" },
   });
   const nameError = form.formState.errors.name;
+  const plan = useMyPlan().data;
+  // Already at the plan's limit: say so before the form is filled in, not after.
+  const atLimit = plan && plan.plan.maxBusinesses !== null && plan.usage.businesses >= plan.plan.maxBusinesses;
+  const overLimit = atLimit || (create.error instanceof ApiError && create.error.code === "PLAN_LIMIT");
 
   const submit = form.handleSubmit((values) =>
     create.mutate(values, {
@@ -43,6 +50,24 @@ export const CreateBusinessPage = () => {
       },
     }),
   );
+
+  if (overLimit && plan) {
+    return (
+      <div className="space-y-4">
+        <UpgradePrompt
+          title={t("businesses:limitTitle")}
+          body={t("businesses:limitBody", { count: plan.plan.maxBusinesses ?? 1, plan: plan.plan.name })}
+        />
+        {hasBusinesses ? (
+          <p className="text-center text-sm">
+            <Link to="/" className="text-muted-foreground hover:text-foreground hover:underline">
+              {t("common:back")}
+            </Link>
+          </p>
+        ) : null}
+      </div>
+    );
+  }
 
   return (
     <Card>

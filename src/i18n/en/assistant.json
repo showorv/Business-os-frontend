@@ -70,5 +70,7 @@
   "taskAdded": "Task added.",
   "transactionAdded": "Transaction added.",
   "dismissed": "Suggestion dismissed.",
-  "against": "vs"
+  "against": "vs",
+  "planTitle": "The AI assistant comes with Pro",
+  "planBody": "Ask about your money, budgets and documents in English or Bangla, and let it draft tasks and transactions for you to confirm."
 }

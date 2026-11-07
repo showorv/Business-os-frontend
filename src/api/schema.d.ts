@@ -1357,6 +1357,170 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/billing/plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The plans on offer, for the pricing page. No sign-in needed */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                key: string;
+                                name: string;
+                                nameBn: string | null;
+                                description: string | null;
+                                descriptionBn: string | null;
+                                currency: string;
+                                priceMonthlyMinor: string;
+                                priceYearlyMinor: string;
+                                maxBusinesses: number | null;
+                                maxMembers: number | null;
+                                storageMb: number | null;
+                                aiEnabled: boolean;
+                                aiDailyTokens: number;
+                            }[];
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/billing/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My workspace's plan, what it uses, and whether I may change it */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                plan: {
+                                    key: string;
+                                    name: string;
+                                    nameBn: string | null;
+                                    description: string | null;
+                                    descriptionBn: string | null;
+                                    currency: string;
+                                    priceMonthlyMinor: string;
+                                    priceYearlyMinor: string;
+                                    maxBusinesses: number | null;
+                                    maxMembers: number | null;
+                                    storageMb: number | null;
+                                    aiEnabled: boolean;
+                                    aiDailyTokens: number;
+                                };
+                                /** @enum {string} */
+                                state: "free" | "trial" | "active" | "grace" | "expired" | "granted";
+                                subscribedPlanKey: string;
+                                /** @enum {string} */
+                                source: "FREE" | "TRIAL" | "PAID" | "GRANT";
+                                /** @enum {string|null} */
+                                billingCycle: "MONTHLY" | "YEARLY" | null;
+                                endsAt: string | null;
+                                graceEndsAt: string | null;
+                                isOwner: boolean;
+                                usage: {
+                                    businesses: number;
+                                    members: number;
+                                    storageBytes: string;
+                                    aiTokensToday: number;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/businesses": {
         parameters: {
             query?: never;
@@ -1573,6 +1737,14 @@ export interface paths {
                                 membership: {
                                     roleKey: string;
                                     permissions: string[];
+                                };
+                                plan: {
+                                    key: string;
+                                    name: string;
+                                    /** @enum {string} */
+                                    state: "free" | "trial" | "active" | "grace" | "expired" | "granted";
+                                    aiEnabled: boolean;
+                                    locked: boolean;
                                 };
                             };
                         };
@@ -12572,6 +12744,7 @@ export interface paths {
                             data: {
                                 configured: boolean;
                                 model: string | null;
+                                planAllowsAi: boolean;
                                 tokensUsedToday: number;
                                 dailyTokenLimit: number;
                             };

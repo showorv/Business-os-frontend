@@ -52,8 +52,11 @@ export const useAccess = (businessId: string | undefined) => {
     isLoading: business.isLoading,
     roleKey: membership?.roleKey as RoleKey | undefined,
     isOwner: membership?.roleKey === "OWNER",
-    // Only an active business can change. Inactive and archived ones are read-only.
-    writable: business.data?.status === "ACTIVE",
+    // Only an active business can change. Inactive and archived ones are read-only, and so is one
+    // beyond the plan's business limit after the plan lapsed.
+    writable: business.data?.status === "ACTIVE" && !business.data.plan.locked,
+    // The plan of the workspace that owns this business.
+    plan: business.data?.plan,
     can: (permission: Permission) => permissions.has(permission),
   };
 };

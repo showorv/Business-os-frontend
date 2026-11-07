@@ -103,5 +103,14 @@
   "AI_NO_BUSINESS_ACCESS": "You can’t ask about that business.",
   "AI_PROPOSAL_NOT_PENDING": "This suggestion was already handled or has expired.",
   "AI_PROVIDER_BUSY": "The assistant is busy. Try again in a minute.",
-  "AI_PROVIDER_FAILED": "The assistant couldn’t answer just now. Try again."
+  "AI_PROVIDER_FAILED": "The assistant couldn’t answer just now. Try again.",
+  "PLAN_LIMIT": "Your plan doesn't have room for this. See Settings → Plan.",
+  "PLAN_LIMIT_businesses_one": "Your plan has room for {{count}} business. Upgrade in Settings → Plan, or archive one.",
+  "PLAN_LIMIT_businesses_other": "Your plan has room for {{count}} businesses. Upgrade in Settings → Plan, or archive one.",
+  "PLAN_LIMIT_members_one": "Your plan has room for {{count}} person. Upgrade in Settings → Plan for a bigger team.",
+  "PLAN_LIMIT_members_other": "Your plan has room for {{count}} people. Upgrade in Settings → Plan for a bigger team.",
+  "PLAN_LIMIT_storage_one": "This would go over your plan's {{count}} MB of document storage. Upgrade in Settings → Plan, or delete old files.",
+  "PLAN_LIMIT_storage_other": "This would go over your plan's {{count}} MB of document storage. Upgrade in Settings → Plan, or delete old files.",
+  "PLAN_FEATURE_REQUIRED": "This comes with Pro. See Settings → Plan.",
+  "PLAN_BUSINESS_LOCKED": "This business is read-only on your current plan. Upgrade in Settings → Plan, or archive another business."
 }

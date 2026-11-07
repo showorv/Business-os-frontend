@@ -33,5 +33,7 @@
   "openNotifications": "Notifications, {{count}} unread",
   "openNotifications_zero": "Notifications",
   "audit": "Activity history",
-  "activity": "Activity"
+  "activity": "Activity",
+  "pro": "Pro",
+  "plan": "Plan"
 }

@@ -22,6 +22,23 @@ phone sizes, tried by you, then committed.
 | 9.7 | Tasks, reminders, recurring schedules, notifications, push | **Done** |
 | 9.8 | AI assistant, document search, audit history | **Done** |
 
+## Phase 11 plan: making it a SaaS product
+
+Free: one business, no AI. Pro: several businesses, a bigger team, more storage and the AI assistant,
+paid monthly or yearly. The platform admin can give Pro free to anyone and change prices and limits.
+Payments go through a demo gateway for now; SSLCommerz and bKash plug in once the merchant accounts exist.
+
+| Step | What it brings | Status |
+| --- | --- | --- |
+| 11.1 | Plans and limits: a 14-day Pro trial, limits checked by the server, the Plan page, upgrade prompts | **Done** |
+| 11.2 | Paying through a demo gateway (success, fail, cancel), receipts, reminder emails, grace period | Next |
+| 11.3 | Platform admin panel: accounts, changing plans, giving Pro free until a date, prices and limits, coupons, AI cap, suspending, revenue, announcements | |
+| 11.4 | Customers and suppliers | |
+| 11.5 | Invoices, bills, baki and aging, PDF and email, posting to the books | |
+| 11.6 | VAT on lines and a monthly VAT summary (help with Mushak) | |
+| 11.7 | Products and stock | |
+| 11.8 | Public home and pricing pages, terms and privacy, data export, full-width assistant | |
+
 ## Decisions made before starting
 
 - **English first, Bangla alongside.** English is the default. A button switches to Bangla. Once you
@@ -158,6 +175,50 @@ export const useCreateBusiness = () =>
 
 The helpers turn server errors into an `ApiError` with a code, which `errorMessage()` turns into words in
 the reader's language. The names of all cached lists live in `queryKeys`, in the same file.
+
+## Step 11.1: Plans and limits
+
+### What you can see now
+
+- **Settings → Plan.** Your plan and how it stands ("Pro trial: 12 days left, until 19 Nov 2026"),
+  with four meters: businesses, people, document storage and AI used today. A meter turns red when it's
+  full. Below, the Free and Pro plans side by side, with a Monthly/Yearly switch and what a year saves.
+  The upgrade button says paying online arrives in the next step (11.2).
+- **A reminder above every page**, for the account's owner only: the trial ending within 7 days, a paid
+  plan in its 7 days of grace, or (for two weeks) that the trial or plan has ended.
+- **A read-only business.** If the plan now has room for fewer businesses than you have, the newer
+  ones show a warning and every edit button is hidden. Archive one, or upgrade, and they work again.
+- **Upgrade prompts** instead of errors: on the new-business page when the plan is full, and on the
+  AI assistant on Free. The assistant in the menu carries a small "Pro" tag on Free.
+- **Clear errors** if a limit is reached some other way: "Your plan has room for 3 people. Upgrade in
+  Settings → Plan for a bigger team."
+- Everything in English and Bangla, light and dark, laptop and phone.
+
+### How it fits together
+
+- The server decides everything; the app only shows it. `GET /billing/me` gives the plan and usage;
+  each business carries `plan.locked` and `plan.aiEnabled`.
+- `useAccess` now treats a locked business like a paused one, so every page's edit buttons follow it
+  without changes page by page.
+- New files in `src/features/billing/`: `api.ts` (queries), `parts.tsx` (price, storage, the upgrade
+  prompt, the meter), `PlanPage.tsx`, `PlanBanner.tsx`.
+
+### How it was checked
+
+- Typecheck, lint, unit tests (including Bangla and English having the same keys) and the build pass.
+- New browser test `e2e/billing.spec.ts`, at laptop and phone sizes: the trial and usage on the Plan
+  page, the price switch, the "3 days left" reminder, the trial ending, the newer business read-only,
+  no third business, no assistant, the way to the Plan page, and a free grant from the admin unlocking
+  everything. To move a test account's plan it changes the **test** database only (`business_os_e2e`),
+  through Docker, never Neon.
+- The whole browser suite passes (the two-step-verification and phone statements tests are timing
+  sensitive under a full parallel run and pass on their own, as before).
+- Screenshots reviewed in light and dark, laptop and phone.
+
+### Known and open
+
+- The upgrade button is disabled until 11.2 brings payments.
+- Accounts that existed before plans were given Pro free with no end date by the backend migration.
 
 ## Step 9.8: AI assistant, document search, activity history
 

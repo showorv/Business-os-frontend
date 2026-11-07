@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Spinner } from "@/components/ui/spinner";
 import { useCurrentBusiness } from "@/features/businesses/useCurrentBusiness";
+import { PlanBanner } from "@/features/billing/PlanBanner";
 import { NotificationBell } from "@/features/notifications/NotificationBell";
 import { BusinessSwitcher } from "./BusinessSwitcher";
 import { LanguageSwitch } from "./LanguageSwitch";
@@ -55,7 +56,9 @@ export const AppShell = () => {
             <Alert tone="warning" className="mb-6">
               {t(`readOnly${business.status}`)}
             </Alert>
-          ) : null}
+          ) : (
+            <PlanBanner businessId={business?.id} />
+          )}
           <Outlet />
         </main>
       </div>

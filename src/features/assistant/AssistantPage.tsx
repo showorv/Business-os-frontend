@@ -10,6 +10,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Segmented } from "@/components/ui/segmented";
 import { Spinner } from "@/components/ui/spinner";
 import { useAccess } from "@/features/businesses/api";
+import { UpgradePrompt } from "@/features/billing/parts";
 import { useCurrentBusiness } from "@/features/businesses/useCurrentBusiness";
 import { cn } from "@/lib/cn";
 import { formatRelative } from "@/lib/dates";
@@ -48,6 +49,14 @@ export const AssistantPage = () => {
       <Card>
         <EmptyState icon={Bot} title={t("noAccess")} body={t("noAccessHint")} />
       </Card>
+    );
+  // The assistant comes with the plan of the workspace that owns this business.
+  if (access.plan && !access.plan.aiEnabled)
+    return (
+      <div className="mx-auto max-w-2xl space-y-6">
+        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{t("shell:assistant")}</h1>
+        <UpgradePrompt title={t("planTitle")} body={t("planBody")} />
+      </div>
     );
   if (status.data && !status.data.configured)
     return (
