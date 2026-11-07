@@ -1,4 +1,4 @@
-import { Bot, MessageSquare, PanelLeft, Plus, SendHorizontal } from "lucide-react";
+import { Bot, MessageSquare, PanelLeft, PauseCircle, Plus, SendHorizontal } from "lucide-react";
 import { Dialog } from "radix-ui";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
@@ -64,6 +64,17 @@ export const AssistantPage = () => {
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{t("shell:assistant")}</h1>
         <Card>
           <EmptyState icon={Bot} title={t("notConfigured")} body={t("notConfiguredHint")} />
+        </Card>
+      </div>
+    );
+
+  // A platform admin can pause the assistant for everyone, for example while the AI service has trouble.
+  if (status.data?.paused)
+    return (
+      <div className="mx-auto max-w-2xl space-y-6">
+        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{t("shell:assistant")}</h1>
+        <Card data-testid="assistant-paused">
+          <EmptyState icon={PauseCircle} title={t("pausedTitle")} body={t("pausedHint")} />
         </Card>
       </div>
     );

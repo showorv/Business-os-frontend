@@ -118,5 +118,16 @@
   "BILLING_NOT_NEEDED": "You already have this plan free with no end date, so there's nothing to pay.",
   "PAYMENT_NOT_PENDING": "This payment is already finished.",
   "PAYMENT_EXPIRED": "This payment page was open too long. Start again from Settings → Plan.",
-  "PAYMENT_GATEWAY_UNAVAILABLE": "Paying online isn't available right now. Please try again later."
+  "PAYMENT_GATEWAY_UNAVAILABLE": "Paying online isn't available right now. Please try again later.",
+  "COUPON_INVALID": "That coupon can't be used.",
+  "COUPON_INVALID_not_found": "There's no coupon with that code.",
+  "COUPON_INVALID_inactive": "That coupon has been switched off.",
+  "COUPON_INVALID_expired": "That coupon has expired.",
+  "COUPON_INVALID_used_up": "That coupon has been used as many times as it allows.",
+  "COUPON_INVALID_wrong_plan": "That coupon isn't for this plan.",
+  "PLATFORM_ADMIN_ONLY": "Only platform admins can open this.",
+  "PLATFORM_ADMIN_MFA_REQUIRED": "Turn on two-step sign-in to use the admin panel.",
+  "WORKSPACE_SUSPENDED": "This account is suspended. Please contact support.",
+  "AI_PAUSED": "The AI assistant is paused for a short while. Please try again later.",
+  "SIGNUPS_CLOSED": "New sign-ups are closed for now. You can join if someone invites you."
 }

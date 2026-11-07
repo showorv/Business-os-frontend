@@ -72,5 +72,7 @@
   "dismissed": "Suggestion dismissed.",
   "against": "vs",
   "planTitle": "The AI assistant comes with Pro",
-  "planBody": "Ask about your money, budgets and documents in English or Bangla, and let it draft tasks and transactions for you to confirm."
+  "planBody": "Ask about your money, budgets and documents in English or Bangla, and let it draft tasks and transactions for you to confirm.",
+  "pausedTitle": "The AI assistant is paused",
+  "pausedHint": "It's switched off for everyone for a short while. Your conversations are safe; please try again later."
 }

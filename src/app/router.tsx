@@ -38,6 +38,16 @@ import { AssistantPage } from "@/features/assistant/AssistantPage";
 import { DemoPayPage } from "@/features/billing/DemoPayPage";
 import { ReceiptPage } from "@/features/billing/ReceiptPage";
 import { AuditPage, MyActivityPage } from "@/features/audit/AuditPage";
+import { AdminLayout } from "@/features/admin/AdminLayout";
+import { ActivityPage } from "@/features/admin/ActivityPage";
+import { CouponsPage } from "@/features/admin/CouponsPage";
+import { OverviewPage } from "@/features/admin/OverviewPage";
+import { PaymentsPage } from "@/features/admin/PaymentsPage";
+import { PlansPage } from "@/features/admin/PlansPage";
+import { SettingsPage as AdminSettingsPage } from "@/features/admin/SettingsPage";
+import { UsersPage } from "@/features/admin/UsersPage";
+import { WorkspaceDetailPage } from "@/features/admin/WorkspaceDetailPage";
+import { WorkspacesPage } from "@/features/admin/WorkspacesPage";
 import { GuestOnly, HomeRedirect, RequireAuth } from "./guards";
 
 // Every address in the app. Business screens live under /b/:businessId, so a link opens the right one.
@@ -71,6 +81,22 @@ export const router = createBrowserRouter([
           // The stand-in payment page until a real gateway is connected, and a printable receipt.
           { path: "/pay/demo/:paymentId", element: <DemoPayPage /> },
           { path: "/settings/plan/receipts/:paymentId", element: <ReceiptPage /> },
+        ],
+      },
+      // The platform admin panel: plans, accounts, payments and settings for the whole product.
+      {
+        path: "/admin",
+        element: <AdminLayout />,
+        children: [
+          { index: true, element: <OverviewPage /> },
+          { path: "workspaces", element: <WorkspacesPage /> },
+          { path: "workspaces/:workspaceId", element: <WorkspaceDetailPage /> },
+          { path: "users", element: <UsersPage /> },
+          { path: "plans", element: <PlansPage /> },
+          { path: "coupons", element: <CouponsPage /> },
+          { path: "payments", element: <PaymentsPage /> },
+          { path: "settings", element: <AdminSettingsPage /> },
+          { path: "activity", element: <ActivityPage /> },
         ],
       },
       {

@@ -1,4 +1,4 @@
-import { LogOut, ShieldCheck, UserRound } from "lucide-react";
+import { LogOut, ShieldCheck, ShieldUser, UserRound } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { useAppSelector } from "@/app/store";
@@ -43,6 +43,12 @@ export const UserMenu = () => {
           <ShieldCheck className="size-4" />
           {t("shell:security")}
         </DropdownMenuItem>
+        {user.isPlatformAdmin ? (
+          <DropdownMenuItem onSelect={() => void navigate("/admin")}>
+            <ShieldUser className="size-4" />
+            {t("shell:platformAdmin")}
+          </DropdownMenuItem>
+        ) : null}
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={() => logout.mutate(false)}>
           <LogOut className="size-4" />

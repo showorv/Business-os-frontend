@@ -90,5 +90,10 @@
   "reference": "Reference",
   "period": "{{from}} to {{to}}",
   "totalPaid": "Total paid",
-  "demoReceipt": "Made with the demo payment page while testing: no money was taken."
+  "demoReceipt": "Made with the demo payment page while testing: no money was taken.",
+  "haveCoupon": "Have a coupon?",
+  "coupon": "Coupon code",
+  "couponPlaceholder": "Coupon code",
+  "apply": "Apply",
+  "couponApplied": "{{code}} takes {{amount}} off."
 }

@@ -1,6 +1,7 @@
 import { Outlet } from "react-router";
 import { brand } from "@/config/brand";
 import { cn } from "@/lib/cn";
+import { Announcement } from "./Announcement";
 import { LanguageSwitch } from "./LanguageSwitch";
 import { ThemeSwitch } from "./ThemeSwitch";
 import { UserMenu } from "./UserMenu";
@@ -19,6 +20,7 @@ export const AuthLayout = ({ wide = false }: { wide?: boolean }) => (
         <UserMenu />
       </div>
     </header>
+    <Announcement className="mx-4 sm:mx-8 print:hidden" />
     <main className="flex flex-1 items-start justify-center px-4 pt-6 pb-16 sm:items-center sm:pt-0">
       <div className={cn("w-full", wide ? "max-w-lg" : "max-w-sm")}>
         <Outlet />

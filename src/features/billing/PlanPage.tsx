@@ -1,18 +1,19 @@
 import { Check, CheckCircle2, Minus, XCircle } from "lucide-react";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Segmented } from "@/components/ui/segmented";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/cn";
 import { formatDate } from "@/lib/dates";
 import { errorMessage } from "@/lib/errors";
 import { useFormatting } from "@/lib/preferences";
-import { daysUntil, dhakaDay, paymentPlanName, planDescription, planName, useCheckout, useMyPlan, usePayment, usePayments, usePlans, type MyPlan, type Plan } from "./api";
+import { daysUntil, dhakaDay, paymentPlanName, planDescription, planName, useCheckPrice, useCheckout, useMyPlan, usePayment, usePayments, usePlans, type MyPlan, type Plan } from "./api";
 import { bytesText, priceText, storageText, UsageMeter } from "./parts";
 
 type Cycle = "MONTHLY" | "YEARLY";
@@ -153,9 +154,19 @@ const PlanCard = ({ plan, cycle, mine }: { plan: Plan; cycle: Cycle; mine: MyPla
   const keepsTime = samePlan && mine.endsAt && (mine.state === "trial" || mine.state === "granted" || mine.state === "active");
   const startsAfter = keepsTime ? formatDate(dhakaDay(mine.endsAt!), locale, digitStyle) : null;
 
+  // A coupon, once the backend has said what it takes off this plan and cycle.
+  const [couponOpen, setCouponOpen] = useState(false);
+  const [code, setCode] = useState("");
+  const priceCheck = useCheckPrice();
+  const applied = priceCheck.data && priceCheck.data.billingCycle === cycle && priceCheck.data.couponCode ? priceCheck.data : null;
+  const applyCoupon = (event: FormEvent) => {
+    event.preventDefault();
+    if (code.trim()) priceCheck.mutate({ planKey: plan.key, billingCycle: cycle, couponCode: code.trim() });
+  };
+
   const pay = () =>
     checkout.mutate(
-      { planKey: plan.key, billingCycle: cycle },
+      { planKey: plan.key, billingCycle: cycle, couponCode: applied?.couponCode ?? undefined },
       // The payment page is the gateway's, outside this app.
       { onSuccess: (result) => window.location.assign(result.redirectUrl) },
     );
@@ -169,7 +180,10 @@ const PlanCard = ({ plan, cycle, mine }: { plan: Plan; cycle: Cycle; mine: MyPla
       <p className="text-lg font-semibold">{planName(plan, i18n.language)}</p>
       <p className="mt-1 min-h-10 text-sm text-muted-foreground">{planDescription(plan, i18n.language)}</p>
       <p className="mt-4 flex items-baseline gap-1">
-        <span className="text-4xl font-semibold tracking-tight tabular-nums">{free ? t("free") : priceText(price, plan.currency, digitStyle)}</span>
+        {applied ? <span className="text-lg text-muted-foreground tabular-nums line-through">{priceText(price, plan.currency, digitStyle)}</span> : null}
+        <span className="text-4xl font-semibold tracking-tight tabular-nums" data-testid="plan-price">
+          {free ? t("free") : priceText(applied?.amountMinor ?? price, plan.currency, digitStyle)}
+        </span>
         {!free ? <span className="text-sm text-muted-foreground">{cycle === "YEARLY" ? t("perYear") : t("perMonth")}</span> : null}
       </p>
       <p className="mt-1 h-5 text-xs text-muted-foreground">
@@ -205,6 +219,35 @@ const PlanCard = ({ plan, cycle, mine }: { plan: Plan; cycle: Cycle; mine: MyPla
                   : t("upgradeTo", { plan: planName(plan, i18n.language) })}
             </Button>
             <p className="text-center text-xs text-muted-foreground">{startsAfter ? t("startsAfter", { date: startsAfter }) : t("payMethods")}</p>
+            {mine.isOwner ? (
+              couponOpen ? (
+                <form onSubmit={applyCoupon} className="space-y-2 pt-1" data-testid="coupon-box">
+                  <div className="flex gap-2">
+                    <Input
+                      value={code}
+                      onChange={(event) => (setCode(event.target.value.toUpperCase()), priceCheck.reset())}
+                      placeholder={t("couponPlaceholder")}
+                      aria-label={t("coupon")}
+                      maxLength={40}
+                      className="font-mono"
+                    />
+                    <Button type="submit" variant="outline" disabled={!code.trim() || priceCheck.isPending}>
+                      {t("apply")}
+                    </Button>
+                  </div>
+                  {priceCheck.isError ? <p className="text-xs text-danger">{errorMessage(priceCheck.error)}</p> : null}
+                  {applied ? (
+                    <p className="text-xs text-muted-foreground" data-testid="coupon-applied">
+                      {t("couponApplied", { code: applied.couponCode, amount: priceText(applied.discountMinor, applied.currency, digitStyle) })}
+                    </p>
+                  ) : null}
+                </form>
+              ) : (
+                <button type="button" className="mx-auto block text-xs underline underline-offset-4 hover:text-foreground text-muted-foreground" onClick={() => setCouponOpen(true)}>
+                  {t("haveCoupon")}
+                </button>
+              )
+            ) : null}
           </>
         )}
       </div>

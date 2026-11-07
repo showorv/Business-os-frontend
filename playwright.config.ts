@@ -19,7 +19,15 @@ export default defineConfig({
     trace: "retain-on-failure",
   },
   projects: [
-    { name: "laptop", use: { ...devices["Desktop Chrome"], channel: "chrome", viewport: { width: 1366, height: 800 } } },
-    { name: "phone", use: { ...devices["Pixel 7"], channel: "chrome" } },
+    { name: "laptop", testIgnore: /admin\.spec\.ts/, use: { ...devices["Desktop Chrome"], channel: "chrome", viewport: { width: 1366, height: 800 } } },
+    { name: "phone", testIgnore: /admin\.spec\.ts/, use: { ...devices["Pixel 7"], channel: "chrome" } },
+    // The platform admin test changes settings every account sees (the announcement), so it runs on its own,
+    // after the others, on a laptop screen.
+    {
+      name: "platform-admin",
+      testMatch: /admin\.spec\.ts/,
+      dependencies: ["laptop", "phone"],
+      use: { ...devices["Desktop Chrome"], channel: "chrome", viewport: { width: 1366, height: 800 } },
+    },
   ],
 });

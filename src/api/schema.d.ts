@@ -55,6 +55,7 @@ export interface paths {
                                     /** @enum {string} */
                                     status: "ACTIVE" | "DISABLED";
                                     mfaEnabled: boolean;
+                                    isPlatformAdmin: boolean;
                                     locale: string;
                                     digitStyle: string;
                                     lastLoginAt: string | null;
@@ -139,6 +140,7 @@ export interface paths {
                                     /** @enum {string} */
                                     status: "ACTIVE" | "DISABLED";
                                     mfaEnabled: boolean;
+                                    isPlatformAdmin: boolean;
                                     locale: string;
                                     digitStyle: string;
                                     lastLoginAt: string | null;
@@ -228,6 +230,7 @@ export interface paths {
                                     /** @enum {string} */
                                     status: "ACTIVE" | "DISABLED";
                                     mfaEnabled: boolean;
+                                    isPlatformAdmin: boolean;
                                     locale: string;
                                     digitStyle: string;
                                     lastLoginAt: string | null;
@@ -306,6 +309,7 @@ export interface paths {
                                     /** @enum {string} */
                                     status: "ACTIVE" | "DISABLED";
                                     mfaEnabled: boolean;
+                                    isPlatformAdmin: boolean;
                                     locale: string;
                                     digitStyle: string;
                                     lastLoginAt: string | null;
@@ -1093,6 +1097,7 @@ export interface paths {
                                 /** @enum {string} */
                                 status: "ACTIVE" | "DISABLED";
                                 mfaEnabled: boolean;
+                                isPlatformAdmin: boolean;
                                 locale: string;
                                 digitStyle: string;
                                 lastLoginAt: string | null;
@@ -1164,6 +1169,7 @@ export interface paths {
                                 /** @enum {string} */
                                 status: "ACTIVE" | "DISABLED";
                                 mfaEnabled: boolean;
+                                isPlatformAdmin: boolean;
                                 locale: string;
                                 digitStyle: string;
                                 lastLoginAt: string | null;
@@ -1544,6 +1550,7 @@ export interface paths {
                         planKey: string;
                         /** @enum {string} */
                         billingCycle: "MONTHLY" | "YEARLY";
+                        couponCode?: string;
                     };
                 };
             };
@@ -1563,6 +1570,83 @@ export interface paths {
                                 redirectUrl: string;
                                 amountMinor: string;
                                 currency: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/billing/price": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** What a plan costs with a coupon, before paying. COUPON_INVALID says why a code can't be used */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        planKey: string;
+                        /** @enum {string} */
+                        billingCycle: "MONTHLY" | "YEARLY";
+                        couponCode: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                planKey: string;
+                                /** @enum {string} */
+                                billingCycle: "MONTHLY" | "YEARLY";
+                                currency: string;
+                                listAmountMinor: string;
+                                discountMinor: string;
+                                amountMinor: string;
+                                couponCode: string | null;
                             };
                         };
                     };
@@ -1629,6 +1713,9 @@ export interface paths {
                                 /** @enum {string} */
                                 billingCycle: "MONTHLY" | "YEARLY";
                                 amountMinor: string;
+                                listAmountMinor: string;
+                                discountMinor: string;
+                                couponCode: string | null;
                                 currency: string;
                                 /** @enum {string} */
                                 status: "PENDING" | "PAID" | "FAILED" | "CANCELLED";
@@ -1716,6 +1803,9 @@ export interface paths {
                                 /** @enum {string} */
                                 billingCycle: "MONTHLY" | "YEARLY";
                                 amountMinor: string;
+                                listAmountMinor: string;
+                                discountMinor: string;
+                                couponCode: string | null;
                                 currency: string;
                                 /** @enum {string} */
                                 status: "PENDING" | "PAID" | "FAILED" | "CANCELLED";
@@ -1814,6 +1904,9 @@ export interface paths {
                                 /** @enum {string} */
                                 billingCycle: "MONTHLY" | "YEARLY";
                                 amountMinor: string;
+                                listAmountMinor: string;
+                                discountMinor: string;
+                                couponCode: string | null;
                                 currency: string;
                                 /** @enum {string} */
                                 status: "PENDING" | "PAID" | "FAILED" | "CANCELLED";
@@ -13084,6 +13177,7 @@ export interface paths {
                             success: true;
                             data: {
                                 configured: boolean;
+                                paused: boolean;
                                 model: string | null;
                                 planAllowsAi: boolean;
                                 tokensUsedToday: number;
@@ -13769,6 +13863,1819 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/announcement": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The message shown at the top of the app, or null. No sign-in needed */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** @enum {string} */
+                                tone: "info" | "warning";
+                                en: string;
+                                bn: string;
+                            } | null;
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Accounts by plan state, people, and money received. Platform admins with two-step verification only, like every /admin route */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                workspaces: {
+                                    total: number;
+                                    suspended: number;
+                                    byState: {
+                                        free?: number;
+                                        trial?: number;
+                                        active?: number;
+                                        grace?: number;
+                                        expired?: number;
+                                        granted?: number;
+                                    };
+                                };
+                                users: {
+                                    total: number;
+                                    last30Days: number;
+                                };
+                                revenue: {
+                                    currency: string;
+                                    thisMonthMinor: string;
+                                    mrrMinor: string;
+                                    payingWorkspaces: number;
+                                    months: {
+                                        month: string;
+                                        amountMinor: string;
+                                        payments: number;
+                                    }[];
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/workspaces": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Accounts, newest first. Search by owner, account or business name; filter by plan state */
+        get: {
+            parameters: {
+                query?: {
+                    search?: string;
+                    state?: "free" | "trial" | "active" | "grace" | "expired" | "granted";
+                    suspended?: "true" | "false";
+                    page?: number;
+                    pageSize?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                items: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    owner: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string;
+                                        email: string;
+                                    } | null;
+                                    planKey: string;
+                                    /** @enum {string} */
+                                    source: "FREE" | "TRIAL" | "PAID" | "GRANT";
+                                    /** @enum {string} */
+                                    state: "free" | "trial" | "active" | "grace" | "expired" | "granted";
+                                    endsAt: string | null;
+                                    businesses: number;
+                                    suspendedAt: string | null;
+                                    createdAt: string;
+                                }[];
+                                total: number;
+                                page: number;
+                                pageSize: number;
+                                pages: number;
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/workspaces/{workspaceId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One account: plan, usage, businesses, payments and what admins changed */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    workspaceId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                                owner: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    email: string;
+                                    mfaEnabled: boolean;
+                                    lastLoginAt: string | null;
+                                    createdAt: string;
+                                } | null;
+                                createdAt: string;
+                                suspendedAt: string | null;
+                                suspendedReason: string | null;
+                                plan: {
+                                    key: string;
+                                    name: string;
+                                    nameBn: string | null;
+                                    description: string | null;
+                                    descriptionBn: string | null;
+                                    currency: string;
+                                    priceMonthlyMinor: string;
+                                    priceYearlyMinor: string;
+                                    maxBusinesses: number | null;
+                                    maxMembers: number | null;
+                                    storageMb: number | null;
+                                    aiEnabled: boolean;
+                                    aiDailyTokens: number;
+                                };
+                                /** @enum {string} */
+                                state: "free" | "trial" | "active" | "grace" | "expired" | "granted";
+                                subscription: {
+                                    planKey: string;
+                                    planName: string;
+                                    /** @enum {string} */
+                                    source: "FREE" | "TRIAL" | "PAID" | "GRANT";
+                                    /** @enum {string|null} */
+                                    billingCycle: "MONTHLY" | "YEARLY" | null;
+                                    endsAt: string | null;
+                                    note: string | null;
+                                } | null;
+                                graceEndsAt: string | null;
+                                usage: {
+                                    businesses: number;
+                                    members: number;
+                                    storageBytes: string;
+                                    aiTokensToday: number;
+                                };
+                                businesses: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    status: string;
+                                    type: string;
+                                    members: number;
+                                    locked: boolean;
+                                    createdAt: string;
+                                }[];
+                                payments: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    planKey: string;
+                                    planName: string;
+                                    planNameBn: string | null;
+                                    /** @enum {string} */
+                                    billingCycle: "MONTHLY" | "YEARLY";
+                                    amountMinor: string;
+                                    listAmountMinor: string;
+                                    discountMinor: string;
+                                    couponCode: string | null;
+                                    currency: string;
+                                    /** @enum {string} */
+                                    status: "PENDING" | "PAID" | "FAILED" | "CANCELLED";
+                                    gateway: string;
+                                    method: string | null;
+                                    gatewayRef: string | null;
+                                    receiptNumber: string | null;
+                                    periodStart: string | null;
+                                    periodEnd: string | null;
+                                    failureReason: string | null;
+                                    expiresAt: string;
+                                    paidAt: string | null;
+                                    createdAt: string;
+                                    billedTo: {
+                                        name: string;
+                                        email: string;
+                                    } | null;
+                                }[];
+                                history: {
+                                    id: string;
+                                    action: string;
+                                    at: string;
+                                    actor: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string;
+                                        email: string;
+                                    } | null;
+                                    workspaceId: string | null;
+                                    entityType: string | null;
+                                    entityId: string | null;
+                                    before?: unknown;
+                                    after?: unknown;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/workspaces/{workspaceId}/subscription": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Give a plan free (GRANT) until a date or for good, set a trial, or move to Free */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    workspaceId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        planKey: string;
+                        /** @enum {string} */
+                        source: "FREE" | "TRIAL" | "GRANT";
+                        /** Format: date-time */
+                        endsAt: string | null;
+                        note?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                                owner: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    email: string;
+                                    mfaEnabled: boolean;
+                                    lastLoginAt: string | null;
+                                    createdAt: string;
+                                } | null;
+                                createdAt: string;
+                                suspendedAt: string | null;
+                                suspendedReason: string | null;
+                                plan: {
+                                    key: string;
+                                    name: string;
+                                    nameBn: string | null;
+                                    description: string | null;
+                                    descriptionBn: string | null;
+                                    currency: string;
+                                    priceMonthlyMinor: string;
+                                    priceYearlyMinor: string;
+                                    maxBusinesses: number | null;
+                                    maxMembers: number | null;
+                                    storageMb: number | null;
+                                    aiEnabled: boolean;
+                                    aiDailyTokens: number;
+                                };
+                                /** @enum {string} */
+                                state: "free" | "trial" | "active" | "grace" | "expired" | "granted";
+                                subscription: {
+                                    planKey: string;
+                                    planName: string;
+                                    /** @enum {string} */
+                                    source: "FREE" | "TRIAL" | "PAID" | "GRANT";
+                                    /** @enum {string|null} */
+                                    billingCycle: "MONTHLY" | "YEARLY" | null;
+                                    endsAt: string | null;
+                                    note: string | null;
+                                } | null;
+                                graceEndsAt: string | null;
+                                usage: {
+                                    businesses: number;
+                                    members: number;
+                                    storageBytes: string;
+                                    aiTokensToday: number;
+                                };
+                                businesses: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    status: string;
+                                    type: string;
+                                    members: number;
+                                    locked: boolean;
+                                    createdAt: string;
+                                }[];
+                                payments: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    planKey: string;
+                                    planName: string;
+                                    planNameBn: string | null;
+                                    /** @enum {string} */
+                                    billingCycle: "MONTHLY" | "YEARLY";
+                                    amountMinor: string;
+                                    listAmountMinor: string;
+                                    discountMinor: string;
+                                    couponCode: string | null;
+                                    currency: string;
+                                    /** @enum {string} */
+                                    status: "PENDING" | "PAID" | "FAILED" | "CANCELLED";
+                                    gateway: string;
+                                    method: string | null;
+                                    gatewayRef: string | null;
+                                    receiptNumber: string | null;
+                                    periodStart: string | null;
+                                    periodEnd: string | null;
+                                    failureReason: string | null;
+                                    expiresAt: string;
+                                    paidAt: string | null;
+                                    createdAt: string;
+                                    billedTo: {
+                                        name: string;
+                                        email: string;
+                                    } | null;
+                                }[];
+                                history: {
+                                    id: string;
+                                    action: string;
+                                    at: string;
+                                    actor: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string;
+                                        email: string;
+                                    } | null;
+                                    workspaceId: string | null;
+                                    entityType: string | null;
+                                    entityId: string | null;
+                                    before?: unknown;
+                                    after?: unknown;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/workspaces/{workspaceId}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Suspend an account: nobody can open its businesses. Nothing is deleted */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    workspaceId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                                owner: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    email: string;
+                                    mfaEnabled: boolean;
+                                    lastLoginAt: string | null;
+                                    createdAt: string;
+                                } | null;
+                                createdAt: string;
+                                suspendedAt: string | null;
+                                suspendedReason: string | null;
+                                plan: {
+                                    key: string;
+                                    name: string;
+                                    nameBn: string | null;
+                                    description: string | null;
+                                    descriptionBn: string | null;
+                                    currency: string;
+                                    priceMonthlyMinor: string;
+                                    priceYearlyMinor: string;
+                                    maxBusinesses: number | null;
+                                    maxMembers: number | null;
+                                    storageMb: number | null;
+                                    aiEnabled: boolean;
+                                    aiDailyTokens: number;
+                                };
+                                /** @enum {string} */
+                                state: "free" | "trial" | "active" | "grace" | "expired" | "granted";
+                                subscription: {
+                                    planKey: string;
+                                    planName: string;
+                                    /** @enum {string} */
+                                    source: "FREE" | "TRIAL" | "PAID" | "GRANT";
+                                    /** @enum {string|null} */
+                                    billingCycle: "MONTHLY" | "YEARLY" | null;
+                                    endsAt: string | null;
+                                    note: string | null;
+                                } | null;
+                                graceEndsAt: string | null;
+                                usage: {
+                                    businesses: number;
+                                    members: number;
+                                    storageBytes: string;
+                                    aiTokensToday: number;
+                                };
+                                businesses: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    status: string;
+                                    type: string;
+                                    members: number;
+                                    locked: boolean;
+                                    createdAt: string;
+                                }[];
+                                payments: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    planKey: string;
+                                    planName: string;
+                                    planNameBn: string | null;
+                                    /** @enum {string} */
+                                    billingCycle: "MONTHLY" | "YEARLY";
+                                    amountMinor: string;
+                                    listAmountMinor: string;
+                                    discountMinor: string;
+                                    couponCode: string | null;
+                                    currency: string;
+                                    /** @enum {string} */
+                                    status: "PENDING" | "PAID" | "FAILED" | "CANCELLED";
+                                    gateway: string;
+                                    method: string | null;
+                                    gatewayRef: string | null;
+                                    receiptNumber: string | null;
+                                    periodStart: string | null;
+                                    periodEnd: string | null;
+                                    failureReason: string | null;
+                                    expiresAt: string;
+                                    paidAt: string | null;
+                                    createdAt: string;
+                                    billedTo: {
+                                        name: string;
+                                        email: string;
+                                    } | null;
+                                }[];
+                                history: {
+                                    id: string;
+                                    action: string;
+                                    at: string;
+                                    actor: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string;
+                                        email: string;
+                                    } | null;
+                                    workspaceId: string | null;
+                                    entityType: string | null;
+                                    entityId: string | null;
+                                    before?: unknown;
+                                    after?: unknown;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/workspaces/{workspaceId}/unsuspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Lift a suspension */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    workspaceId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                                owner: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    email: string;
+                                    mfaEnabled: boolean;
+                                    lastLoginAt: string | null;
+                                    createdAt: string;
+                                } | null;
+                                createdAt: string;
+                                suspendedAt: string | null;
+                                suspendedReason: string | null;
+                                plan: {
+                                    key: string;
+                                    name: string;
+                                    nameBn: string | null;
+                                    description: string | null;
+                                    descriptionBn: string | null;
+                                    currency: string;
+                                    priceMonthlyMinor: string;
+                                    priceYearlyMinor: string;
+                                    maxBusinesses: number | null;
+                                    maxMembers: number | null;
+                                    storageMb: number | null;
+                                    aiEnabled: boolean;
+                                    aiDailyTokens: number;
+                                };
+                                /** @enum {string} */
+                                state: "free" | "trial" | "active" | "grace" | "expired" | "granted";
+                                subscription: {
+                                    planKey: string;
+                                    planName: string;
+                                    /** @enum {string} */
+                                    source: "FREE" | "TRIAL" | "PAID" | "GRANT";
+                                    /** @enum {string|null} */
+                                    billingCycle: "MONTHLY" | "YEARLY" | null;
+                                    endsAt: string | null;
+                                    note: string | null;
+                                } | null;
+                                graceEndsAt: string | null;
+                                usage: {
+                                    businesses: number;
+                                    members: number;
+                                    storageBytes: string;
+                                    aiTokensToday: number;
+                                };
+                                businesses: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    status: string;
+                                    type: string;
+                                    members: number;
+                                    locked: boolean;
+                                    createdAt: string;
+                                }[];
+                                payments: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    planKey: string;
+                                    planName: string;
+                                    planNameBn: string | null;
+                                    /** @enum {string} */
+                                    billingCycle: "MONTHLY" | "YEARLY";
+                                    amountMinor: string;
+                                    listAmountMinor: string;
+                                    discountMinor: string;
+                                    couponCode: string | null;
+                                    currency: string;
+                                    /** @enum {string} */
+                                    status: "PENDING" | "PAID" | "FAILED" | "CANCELLED";
+                                    gateway: string;
+                                    method: string | null;
+                                    gatewayRef: string | null;
+                                    receiptNumber: string | null;
+                                    periodStart: string | null;
+                                    periodEnd: string | null;
+                                    failureReason: string | null;
+                                    expiresAt: string;
+                                    paidAt: string | null;
+                                    createdAt: string;
+                                    billedTo: {
+                                        name: string;
+                                        email: string;
+                                    } | null;
+                                }[];
+                                history: {
+                                    id: string;
+                                    action: string;
+                                    at: string;
+                                    actor: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string;
+                                        email: string;
+                                    } | null;
+                                    workspaceId: string | null;
+                                    entityType: string | null;
+                                    entityId: string | null;
+                                    before?: unknown;
+                                    after?: unknown;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Everyone with an account, newest first */
+        get: {
+            parameters: {
+                query?: {
+                    search?: string;
+                    page?: number;
+                    pageSize?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                items: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    email: string;
+                                    status: string;
+                                    mfaEnabled: boolean;
+                                    isPlatformAdmin: boolean;
+                                    lastLoginAt: string | null;
+                                    createdAt: string;
+                                    workspaceId: string | null;
+                                    businesses: number;
+                                }[];
+                                total: number;
+                                page: number;
+                                pageSize: number;
+                                pages: number;
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every plan, hidden ones too, with how many accounts use each */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                key: string;
+                                name: string;
+                                nameBn: string | null;
+                                description: string | null;
+                                descriptionBn: string | null;
+                                currency: string;
+                                priceMonthlyMinor: string;
+                                priceYearlyMinor: string;
+                                maxBusinesses: number | null;
+                                maxMembers: number | null;
+                                storageMb: number | null;
+                                aiEnabled: boolean;
+                                aiDailyTokens: number;
+                                isPublic: boolean;
+                                sortOrder: number;
+                                workspaces: number;
+                            }[];
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Add a plan */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        key: string;
+                        name: string;
+                        nameBn: string | null;
+                        description: string | null;
+                        descriptionBn: string | null;
+                        priceMonthlyMinor: string;
+                        priceYearlyMinor: string;
+                        maxBusinesses: number | null;
+                        maxMembers: number | null;
+                        storageMb: number | null;
+                        aiEnabled: boolean;
+                        aiDailyTokens: number;
+                        isPublic: boolean;
+                        sortOrder: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Success */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                key: string;
+                                name: string;
+                                nameBn: string | null;
+                                description: string | null;
+                                descriptionBn: string | null;
+                                currency: string;
+                                priceMonthlyMinor: string;
+                                priceYearlyMinor: string;
+                                maxBusinesses: number | null;
+                                maxMembers: number | null;
+                                storageMb: number | null;
+                                aiEnabled: boolean;
+                                aiDailyTokens: number;
+                                isPublic: boolean;
+                                sortOrder: number;
+                                workspaces: number;
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/plans/{planKey}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Change a plan's prices, limits or AI. Applies to every account on it */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    planKey: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        name?: string;
+                        nameBn?: string | null;
+                        description?: string | null;
+                        descriptionBn?: string | null;
+                        priceMonthlyMinor?: string;
+                        priceYearlyMinor?: string;
+                        maxBusinesses?: number | null;
+                        maxMembers?: number | null;
+                        storageMb?: number | null;
+                        aiEnabled?: boolean;
+                        aiDailyTokens?: number;
+                        isPublic?: boolean;
+                        sortOrder?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                key: string;
+                                name: string;
+                                nameBn: string | null;
+                                description: string | null;
+                                descriptionBn: string | null;
+                                currency: string;
+                                priceMonthlyMinor: string;
+                                priceYearlyMinor: string;
+                                maxBusinesses: number | null;
+                                maxMembers: number | null;
+                                storageMb: number | null;
+                                aiEnabled: boolean;
+                                aiDailyTokens: number;
+                                isPublic: boolean;
+                                sortOrder: number;
+                                workspaces: number;
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/admin/coupons": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Coupons, newest first */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                code: string;
+                                description: string | null;
+                                percentOff: number | null;
+                                amountOffMinor: string | null;
+                                planKeys: string[];
+                                maxRedemptions: number | null;
+                                redemptions: number;
+                                expiresAt: string | null;
+                                active: boolean;
+                                createdAt: string;
+                            }[];
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Make a coupon: a percentage or an amount off */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        code: string;
+                        description?: string | null;
+                        percentOff?: number | null;
+                        amountOffMinor?: string | null;
+                        /** @default [] */
+                        planKeys?: string[];
+                        maxRedemptions?: number | null;
+                        /** Format: date-time */
+                        expiresAt?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Success */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                code: string;
+                                description: string | null;
+                                percentOff: number | null;
+                                amountOffMinor: string | null;
+                                planKeys: string[];
+                                maxRedemptions: number | null;
+                                redemptions: number;
+                                expiresAt: string | null;
+                                active: boolean;
+                                createdAt: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/coupons/{couponId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Switch a coupon off or on, or change its limits */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    couponId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        description?: string | null;
+                        active?: boolean;
+                        maxRedemptions?: number | null;
+                        /** Format: date-time */
+                        expiresAt?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                code: string;
+                                description: string | null;
+                                percentOff: number | null;
+                                amountOffMinor: string | null;
+                                planKeys: string[];
+                                maxRedemptions: number | null;
+                                redemptions: number;
+                                expiresAt: string | null;
+                                active: boolean;
+                                createdAt: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/admin/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every payment, newest first */
+        get: {
+            parameters: {
+                query?: {
+                    status?: "PENDING" | "PAID" | "FAILED" | "CANCELLED";
+                    search?: string;
+                    page?: number;
+                    pageSize?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                items: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    planKey: string;
+                                    planName: string;
+                                    planNameBn: string | null;
+                                    /** @enum {string} */
+                                    billingCycle: "MONTHLY" | "YEARLY";
+                                    amountMinor: string;
+                                    listAmountMinor: string;
+                                    discountMinor: string;
+                                    couponCode: string | null;
+                                    currency: string;
+                                    /** @enum {string} */
+                                    status: "PENDING" | "PAID" | "FAILED" | "CANCELLED";
+                                    gateway: string;
+                                    method: string | null;
+                                    gatewayRef: string | null;
+                                    receiptNumber: string | null;
+                                    periodStart: string | null;
+                                    periodEnd: string | null;
+                                    failureReason: string | null;
+                                    expiresAt: string;
+                                    paidAt: string | null;
+                                    createdAt: string;
+                                    billedTo: {
+                                        name: string;
+                                        email: string;
+                                    } | null;
+                                    /** Format: uuid */
+                                    workspaceId: string;
+                                }[];
+                                total: number;
+                                page: number;
+                                pageSize: number;
+                                pages: number;
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Trial, grace days, AI switch, sign-ups and the announcement */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                trialDays: number;
+                                trialPlanKey: string;
+                                graceDays: number;
+                                aiEnabled: boolean;
+                                signupsEnabled: boolean;
+                                announcement: {
+                                    active: boolean;
+                                    /** @enum {string} */
+                                    tone: "info" | "warning";
+                                    en: string;
+                                    bn: string;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Change some of the platform settings */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        trialDays?: number;
+                        trialPlanKey?: string;
+                        graceDays?: number;
+                        aiEnabled?: boolean;
+                        signupsEnabled?: boolean;
+                        announcement?: {
+                            active: boolean;
+                            /** @enum {string} */
+                            tone: "info" | "warning";
+                            en: string;
+                            bn: string;
+                        };
+                    };
+                };
+            };
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                trialDays: number;
+                                trialPlanKey: string;
+                                graceDays: number;
+                                aiEnabled: boolean;
+                                signupsEnabled: boolean;
+                                announcement: {
+                                    active: boolean;
+                                    /** @enum {string} */
+                                    tone: "info" | "warning";
+                                    en: string;
+                                    bn: string;
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/admin/activity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** What platform admins changed, newest first */
+        get: {
+            parameters: {
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                items: {
+                                    id: string;
+                                    action: string;
+                                    at: string;
+                                    actor: {
+                                        /** Format: uuid */
+                                        id: string;
+                                        name: string;
+                                        email: string;
+                                    } | null;
+                                    workspaceId: string | null;
+                                    entityType: string | null;
+                                    entityId: string | null;
+                                    before?: unknown;
+                                    after?: unknown;
+                                }[];
+                                total: number;
+                                page: number;
+                                pageSize: number;
+                                pages: number;
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;

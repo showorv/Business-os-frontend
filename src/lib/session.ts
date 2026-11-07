@@ -13,6 +13,8 @@ export interface SessionUser {
   name: string;
   status: string;
   mfaEnabled: boolean;
+  // Opens the platform admin panel (which also needs two-step verification on).
+  isPlatformAdmin?: boolean;
   locale: string;
   digitStyle: string;
   lastLoginAt: string | null;

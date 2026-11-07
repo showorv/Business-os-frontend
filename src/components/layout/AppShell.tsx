@@ -13,6 +13,7 @@ import { BusinessSwitcher } from "./BusinessSwitcher";
 import { LanguageSwitch } from "./LanguageSwitch";
 import { ThemeSwitch } from "./ThemeSwitch";
 import { SidebarNav } from "./Sidebar";
+import { Announcement } from "./Announcement";
 import { UserMenu } from "./UserMenu";
 
 // The frame for every signed-in screen: the menu on the left (a drawer on phones) and the top bar.
@@ -52,6 +53,7 @@ export const AppShell = () => {
           </div>
         </header>
         <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:py-8">
+          <Announcement className="mb-4" />
           {business && business.status !== "ACTIVE" ? (
             <Alert tone="warning" className="mb-6">
               {t(`readOnly${business.status}`)}

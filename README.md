@@ -32,8 +32,8 @@ Payments go through a demo gateway for now; SSLCommerz and bKash plug in once th
 | --- | --- | --- |
 | 11.1 | Plans and limits: a 14-day Pro trial, limits checked by the server, the Plan page, upgrade prompts | **Done** |
 | 11.2 | Paying through a demo gateway (success, fail, cancel), receipts, reminder emails, grace period | **Done** |
-| 11.3 | Platform admin panel: accounts, changing plans, giving Pro free until a date, prices and limits, coupons, AI cap, suspending, revenue, announcements | Next |
-| 11.4 | Customers and suppliers | |
+| 11.3 | Platform admin panel: accounts, changing plans, giving Pro free until a date, prices and limits, coupons, AI cap, suspending, revenue, announcements | **Done** |
+| 11.4 | Customers and suppliers | Next |
 | 11.5 | Invoices, bills, baki and aging, PDF and email, posting to the books | |
 | 11.6 | VAT on lines and a monthly VAT summary (help with Mushak) | |
 | 11.7 | Products and stock | |
@@ -175,6 +175,66 @@ export const useCreateBusiness = () =>
 
 The helpers turn server errors into an `ApiError` with a code, which `errorMessage()` turns into words in
 the reader's language. The names of all cached lists live in `queryKeys`, in the same file.
+
+## Step 11.3: Platform admin panel
+
+### What you can do now
+
+If you are a platform admin (see "Becoming the admin" below), **Platform admin** appears in the menu
+under your initials. It opens `/admin`, with its own sidebar:
+
+- **Overview:** monthly income, money received this month, accounts, people, a 12-month chart of money
+  received, and accounts by plan state.
+- **Accounts:** search by owner, email or business; filter by plan state or only suspended ones. Open
+  an account to see its plan, usage meters, businesses, payments and what admins changed. There you can:
+  - **Give free:** a plan until a date, or with no end date, with a private note (for example "Launch partner").
+  - **Set a trial** until a date, or **Move to Free**.
+  - **Suspend** with a reason. The owner and their team can't open the businesses until you lift it.
+- **People:** everyone with an account, whether two-step sign-in is on, and their last sign-in.
+- **Plans:** change prices (in taka), limits (empty means no limit), the AI assistant and its daily
+  allowance, whether it shows on the pricing page, or add a plan. It warns how many accounts get the change.
+- **Coupons:** make a code for a percentage or an amount off, for some plans or all, with a use limit
+  and a last day. Turn one off or on.
+- **Payments:** every payment, with a status filter and search.
+- **Settings:** trial days and plan, grace days, sign-ups open or invitation-only, the AI assistant on
+  or paused for everyone, and an announcement (note or warning, English and Bangla).
+- **Admin history:** every change made from the panel.
+
+For customers:
+
+- **Have a coupon?** on Settings → Plan: type a code, press *Apply*, and the card shows the old price
+  struck through and the new one. A wrong code says why ("That coupon has expired", "isn't for this plan").
+- **The announcement** shows at the top of every page (and the sign-in pages) until closed. A new
+  message shows again.
+- **AI paused:** while the admin has paused the assistant, its page says so instead of the chat.
+
+### Becoming the admin
+
+Nobody is an admin by default. Turn on two-step sign-in in Settings → Security, then on the backend run
+`npm run admin:grant -- your-email`. Without two-step sign-in the panel only asks you to turn it on.
+
+### How it was checked
+
+- Type check, lint, unit tests (74) and the production build pass.
+- A new browser test (`e2e/admin.spec.ts`): a customer signs up; someone is made an admin, is asked to
+  turn on two-step sign-in and does; finds the customer, gives Pro free for a month with a note,
+  suspends the account (the customer sees "This account is suspended") and lifts it; makes a 25% coupon;
+  the customer tries a wrong code, then the real one (৳599 becomes ৳449.25); the admin posts an
+  announcement the customer sees, then turns it off; the history lists every change; and a non-admin
+  is sent away from `/admin`.
+- It runs as its own Playwright project, **platform-admin**, after the laptop and phone tests,
+  because the announcement is seen by every account at once and its extra sign-ups hit the test
+  backend's rate limit when run alongside the others.
+- Full run: 40 passed; one phone test was signed out mid-run by the rate limit and passed when run
+  again on its own, as did the admin test.
+- Screenshots of every admin page on laptop and phone, light and dark, were reviewed.
+
+### Fixes along the way
+
+- The search box said it searched when you stopped typing but only did on Enter or leaving the box;
+  it now waits 0.4 seconds after the last key.
+- The account page showed "Trial Trial" (the state and where it came from); the source now shows only
+  when the plan has ended. Admin pages say "Given free" rather than the customer's "Given to you".
 
 ## Step 11.2: Paying for a plan (demo gateway)
 

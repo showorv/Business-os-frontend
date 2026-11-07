@@ -35,5 +35,6 @@
   "audit": "Activity history",
   "activity": "Activity",
   "pro": "Pro",
-  "plan": "Plan"
+  "plan": "Plan",
+  "platformAdmin": "Platform admin"
 }

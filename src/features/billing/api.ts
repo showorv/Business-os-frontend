@@ -20,7 +20,11 @@ export const usePayment = (paymentId: string) =>
 
 // Starts paying: the server sets the price and says where the payment page is.
 export const useCheckout = () =>
-  useApiMutation((body: { planKey: string; billingCycle: BillingCycle }) => api.POST("/api/v1/billing/checkout", { body }));
+  useApiMutation((body: { planKey: string; billingCycle: BillingCycle; couponCode?: string }) => api.POST("/api/v1/billing/checkout", { body }));
+
+// What a plan costs with a coupon, before paying. COUPON_INVALID says why a code can't be used.
+export const useCheckPrice = () =>
+  useApiMutation((body: { planKey: string; billingCycle: BillingCycle; couponCode: string }) => api.POST("/api/v1/billing/price", { body }));
 
 // The demo payment page's answer. Paying changes the plan, which can unlock businesses.
 export const useDemoAnswer = (paymentId: string) =>
