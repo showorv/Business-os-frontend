@@ -1,4 +1,5 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient, type QueryKey, type UseQueryOptions } from "@tanstack/react-query";
+import { useCallback } from "react";
 import { unwrap, unwrapPage, type ApiCall, type PagedCall } from "./api";
 
 // The one place TanStack Query is wired up. Feature files describe *what* to load or send, and
@@ -26,6 +27,15 @@ export const queryKeys = {
   // The books underneath: chart of accounts, journals, months and reconciliations. Posting money reloads it.
   ledger: (businessId: string) => ["businesses", businessId, "ledger"],
   ledgerItem: (businessId: string, name: string, params = "") => ["businesses", businessId, "ledger", name, params],
+  // Tasks, reminders and the calendar.
+  tasks: (businessId: string) => ["businesses", businessId, "tasks"],
+  taskItem: (businessId: string, name: string, params = "") => ["businesses", businessId, "tasks", name, params],
+  // Repeating transactions and salaries.
+  schedules: (businessId: string) => ["businesses", businessId, "schedules"],
+  scheduleItem: (businessId: string, name: string, params = "") => ["businesses", businessId, "schedules", name, params],
+  // This person's notifications, across every business.
+  notifications: ["notifications"],
+  notificationItem: (name: string, params = "") => ["notifications", name, params],
   // Bank statements: imports, the review inbox, rules and saved file formats.
   statements: (businessId: string) => ["businesses", businessId, "statements"],
   statementItem: (businessId: string, name: string, params = "") => ["businesses", businessId, "statements", name, params],
@@ -77,3 +87,11 @@ export const useAction = <TInput = void, TResult = unknown>(run: (input: TInput)
 //   useApiMutation((body: NewBusiness) => api.POST("/api/v1/businesses", { body }), { invalidates: [queryKeys.businesses] })
 export const useApiMutation = <TInput = void, TResult = unknown>(request: (input: TInput) => ApiCall<TResult>, options?: ActionOptions<TInput, TResult>) =>
   useAction((input: TInput) => unwrap(request(input)), options);
+
+// Marks cached data as stale so screens showing it load it again, for changes that arrive from
+// outside a mutation (for example a live notification).
+//   const reload = useReload(); reload(queryKeys.notifications)
+export const useReload = () => {
+  const queryClient = useQueryClient();
+  return useCallback((queryKey: QueryKey) => queryClient.invalidateQueries({ queryKey }), [queryClient]);
+};

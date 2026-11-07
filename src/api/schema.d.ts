@@ -7609,6 +7609,10 @@ export interface paths {
                                     dueAt: string | null;
                                     completedAt: string | null;
                                     isOverdue: boolean;
+                                    /** Format: uuid */
+                                    createdBy: string;
+                                    createdAt: string;
+                                    updatedAt: string;
                                 }[];
                                 nextCursor: string | null;
                             };
@@ -7690,6 +7694,10 @@ export interface paths {
                                 dueAt: string | null;
                                 completedAt: string | null;
                                 isOverdue: boolean;
+                                /** Format: uuid */
+                                createdBy: string;
+                                createdAt: string;
+                                updatedAt: string;
                             };
                         };
                     };
@@ -7909,6 +7917,15 @@ export interface paths {
                                 dueAt: string | null;
                                 completedAt: string | null;
                                 isOverdue: boolean;
+                                /** Format: uuid */
+                                createdBy: string;
+                                createdAt: string;
+                                updatedAt: string;
+                                attachments: {
+                                    /** Format: uuid */
+                                    documentId: string;
+                                    createdAt: string;
+                                }[];
                             };
                         };
                     };
@@ -7992,6 +8009,10 @@ export interface paths {
                                 dueAt: string | null;
                                 completedAt: string | null;
                                 isOverdue: boolean;
+                                /** Format: uuid */
+                                createdBy: string;
+                                createdAt: string;
+                                updatedAt: string;
                             };
                         };
                     };
@@ -8331,6 +8352,10 @@ export interface paths {
                                     dueAt: string | null;
                                     completedAt: string | null;
                                     isOverdue: boolean;
+                                    /** Format: uuid */
+                                    createdBy: string;
+                                    createdAt: string;
+                                    updatedAt: string;
                                     businessName: string | null;
                                 }[];
                                 nextCursor: string | null;
@@ -8422,6 +8447,9 @@ export interface paths {
                                     sourceId: string | null;
                                     /** @enum {string} */
                                     status: "ACTIVE" | "PAUSED" | "COMPLETED" | "CANCELLED";
+                                    /** Format: uuid */
+                                    createdBy: string;
+                                    createdAt: string;
                                 }[];
                                 nextCursor: string | null;
                             };
@@ -8513,6 +8541,9 @@ export interface paths {
                                 sourceId: string | null;
                                 /** @enum {string} */
                                 status: "ACTIVE" | "PAUSED" | "COMPLETED" | "CANCELLED";
+                                /** Format: uuid */
+                                createdBy: string;
+                                createdAt: string;
                             };
                         };
                     };
@@ -8593,6 +8624,9 @@ export interface paths {
                                 sourceId: string | null;
                                 /** @enum {string} */
                                 status: "ACTIVE" | "PAUSED" | "COMPLETED" | "CANCELLED";
+                                /** Format: uuid */
+                                createdBy: string;
+                                createdAt: string;
                             };
                         };
                     };
@@ -8681,6 +8715,9 @@ export interface paths {
                                 sourceId: string | null;
                                 /** @enum {string} */
                                 status: "ACTIVE" | "PAUSED" | "COMPLETED" | "CANCELLED";
+                                /** Format: uuid */
+                                createdBy: string;
+                                createdAt: string;
                             };
                         };
                     };
@@ -8767,6 +8804,9 @@ export interface paths {
                                     remindDaysBefore: number | null;
                                     /** @enum {string} */
                                     status: "ACTIVE" | "PAUSED" | "ENDED";
+                                    /** Format: uuid */
+                                    createdBy: string;
+                                    createdAt: string;
                                 }[];
                                 nextCursor: string | null;
                             };
@@ -8870,6 +8910,9 @@ export interface paths {
                                 remindDaysBefore: number | null;
                                 /** @enum {string} */
                                 status: "ACTIVE" | "PAUSED" | "ENDED";
+                                /** Format: uuid */
+                                createdBy: string;
+                                createdAt: string;
                             };
                         };
                     };
@@ -8955,6 +8998,9 @@ export interface paths {
                                 remindDaysBefore: number | null;
                                 /** @enum {string} */
                                 status: "ACTIVE" | "PAUSED" | "ENDED";
+                                /** Format: uuid */
+                                createdBy: string;
+                                createdAt: string;
                                 runs: {
                                     /** Format: uuid */
                                     id: string;
@@ -8964,6 +9010,7 @@ export interface paths {
                                     /** Format: uuid */
                                     transactionId: string | null;
                                     errorCode: string | null;
+                                    createdAt: string;
                                 }[];
                             };
                         };
@@ -9062,6 +9109,9 @@ export interface paths {
                                 remindDaysBefore: number | null;
                                 /** @enum {string} */
                                 status: "ACTIVE" | "PAUSED" | "ENDED";
+                                /** Format: uuid */
+                                createdBy: string;
+                                createdAt: string;
                             };
                         };
                     };
@@ -9145,6 +9195,9 @@ export interface paths {
                                 remindDaysBefore: number | null;
                                 /** @enum {string} */
                                 status: "ACTIVE" | "PAUSED" | "ENDED";
+                                /** Format: uuid */
+                                createdBy: string;
+                                createdAt: string;
                                 runs: {
                                     /** Format: uuid */
                                     id: string;
@@ -9154,6 +9207,7 @@ export interface paths {
                                     /** Format: uuid */
                                     transactionId: string | null;
                                     errorCode: string | null;
+                                    createdAt: string;
                                 }[];
                             };
                         };

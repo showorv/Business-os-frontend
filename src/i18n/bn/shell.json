@@ -27,5 +27,9 @@
   "statusARCHIVED": "আর্কাইভ করা",
   "budgets": "বাজেট",
   "goals": "লক্ষ্য",
-  "allBusinesses": "সব ব্যবসা"
+  "allBusinesses": "সব ব্যবসা",
+  "recurring": "নিয়মিত লেনদেন",
+  "notifications": "নোটিফিকেশন",
+  "openNotifications": "নোটিফিকেশন, {{count}}টি না-পড়া",
+  "openNotifications_zero": "নোটিফিকেশন"
 }

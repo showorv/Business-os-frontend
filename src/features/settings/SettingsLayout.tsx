@@ -8,12 +8,15 @@ export const SettingsLayout = () => {
     cn("rounded-md px-3 py-2 text-sm font-medium", isActive ? "bg-brand-soft text-brand" : "text-muted-foreground hover:bg-muted");
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <nav className="flex gap-1 border-b pb-3">
+      <nav className="flex gap-1 overflow-x-auto border-b pb-3">
         <NavLink to="/settings/profile" className={tab}>
           {t("profile")}
         </NavLink>
         <NavLink to="/settings/security" className={tab}>
           {t("security")}
+        </NavLink>
+        <NavLink to="/settings/notifications" className={tab}>
+          {t("notifications")}
         </NavLink>
       </nav>
       <Outlet />

@@ -21,7 +21,8 @@ export const LanguageSwitch = () => {
   return (
     <Button variant="ghost" size="sm" onClick={change} aria-label={t("common:language")}>
       <Languages />
-      {next === "en" ? t("common:english") : t("common:bangla")}
+      {/* Just the icon on phones, where the top bar is short of room. */}
+      <span className="hidden sm:inline">{next === "en" ? t("common:english") : t("common:bangla")}</span>
     </Button>
   );
 };

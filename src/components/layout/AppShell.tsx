@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Spinner } from "@/components/ui/spinner";
 import { useCurrentBusiness } from "@/features/businesses/useCurrentBusiness";
+import { NotificationBell } from "@/features/notifications/NotificationBell";
 import { BusinessSwitcher } from "./BusinessSwitcher";
 import { LanguageSwitch } from "./LanguageSwitch";
 import { ThemeSwitch } from "./ThemeSwitch";
@@ -45,6 +46,7 @@ export const AppShell = () => {
           <div className="ml-auto flex items-center gap-1 sm:gap-2">
             <LanguageSwitch />
             <ThemeSwitch />
+            <NotificationBell />
             <UserMenu />
           </div>
         </header>

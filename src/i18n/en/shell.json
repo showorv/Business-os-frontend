@@ -27,5 +27,9 @@
   "statusARCHIVED": "Archived",
   "budgets": "Budgets",
   "goals": "Goals",
-  "allBusinesses": "All businesses"
+  "allBusinesses": "All businesses",
+  "recurring": "Recurring",
+  "notifications": "Notifications",
+  "openNotifications": "Notifications, {{count}} unread",
+  "openNotifications_zero": "Notifications"
 }

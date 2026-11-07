@@ -28,6 +28,10 @@ import { SecurityPage } from "@/features/settings/SecurityPage";
 import { SettingsLayout } from "@/features/settings/SettingsLayout";
 import { AcceptInvitationPage } from "@/features/team/AcceptInvitationPage";
 import { TeamPage } from "@/features/team/TeamPage";
+import { NotificationSettingsPage } from "@/features/notifications/NotificationSettingsPage";
+import { NotificationsPage } from "@/features/notifications/NotificationsPage";
+import { RecurringPage } from "@/features/recurring/RecurringPage";
+import { TasksPage } from "@/features/tasks/TasksPage";
 import { GuestOnly, HomeRedirect, RequireAuth } from "./guards";
 
 // Every address in the app. Business screens live under /b/:businessId, so a link opens the right one.
@@ -75,6 +79,9 @@ export const router = createBrowserRouter([
           { path: "/b/:businessId/ledger/reconcile/:reconciliationId", element: <ReconciliationPage /> },
           { path: "/b/:businessId/statements", element: <StatementsPage /> },
           { path: "/b/:businessId/statements/import", element: <ImportPage /> },
+          { path: "/b/:businessId/recurring", element: <RecurringPage /> },
+          { path: "/b/:businessId/tasks", element: <TasksPage /> },
+          { path: "/notifications", element: <NotificationsPage /> },
           { path: "/b/:businessId/accounts", element: <AccountsPage /> },
           { path: "/b/:businessId/transactions", element: <TransactionsPage /> },
           { path: "/b/:businessId/transactions/new", element: <NewTransactionPage /> },
@@ -89,6 +96,7 @@ export const router = createBrowserRouter([
               { index: true, element: <Navigate to="profile" replace /> },
               { path: "profile", element: <ProfilePage /> },
               { path: "security", element: <SecurityPage /> },
+              { path: "notifications", element: <NotificationSettingsPage /> },
             ],
           },
         ],

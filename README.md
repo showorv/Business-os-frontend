@@ -19,8 +19,8 @@ phone sizes, tried by you, then committed.
 | 9.4 | Dashboards, reports, budgets, goals, exports, all-businesses view | **Done** |
 | 9.5 | Ledger: chart of accounts, journals, closing months, reconciliation | **Done** |
 | 9.6 | Bank statements: import, inbox, rules | **Done** |
-| 9.7 | Tasks, reminders, recurring schedules, notifications, push | Next |
-| 9.8 | AI assistant, document search, audit history | |
+| 9.7 | Tasks, reminders, recurring schedules, notifications, push | **Done** |
+| 9.8 | AI assistant, document search, audit history | Next |
 
 ## Decisions made before starting
 
@@ -158,6 +158,125 @@ export const useCreateBusiness = () =>
 
 The helpers turn server errors into an `ApiError` with a code, which `errorMessage()` turns into words in
 the reader's language. The names of all cached lists live in `queryKeys`, in the same file.
+
+## Step 9.7: Tasks, reminders, recurring schedules, notifications, push
+
+### What you can do now
+
+**Tasks** (side menu → Tasks). Four tabs, and the open tab, the filter and the open task are kept in the
+address, so a link can point straight at one task.
+
+- **On top:** open tasks (to do, in progress, blocked), how many are finished, and two tiles that also
+  filter: **Assigned to me** and **Overdue** (red when there are any).
+- **Board:** four columns: To do, In progress, Blocked, Done.
+  - Drag a card to another column, or use its **⋯** menu. Only moves the backend allows are offered
+    (for example Blocked can't go straight to Done); while dragging, columns it can't go to fade out.
+  - Each card shows its priority, when it's due ("in 3 days", red with a red edge when overdue) and who
+    it's for. Overdue and urgent ones come first.
+  - On phones the columns scroll sideways.
+- **List:** every task in rows, filtered by status and priority, with **Load more**.
+- **Calendar:** a month, starting on Saturday. Tasks show filled black by their due date; reminders show
+  outlined. Phones show dots instead of titles. Click a day to see what's on it, and a task there to open it.
+- **Reminders:** one-off or repeating (every day, week, month or year), for you or someone else, sent
+  in the app, by email and/or push, at the time or up to a week before. Pause, resume or cancel your
+  own. Tasks with a due date and recurring transactions make reminders of their own; those are marked
+  and change with their task or schedule.
+- **New task:** title, details, priority, who it's for and when it's due. It opens on the side once added.
+- **A task's panel:** change any detail, move its status with one click, open its attachments, and talk
+  about it in **comments** (Ctrl/⌘ + Enter sends).
+
+**Recurring** (side menu → Recurring): rent, salaries, subscriptions.
+
+- Totals on top: how many are running, and what goes out and comes in each month.
+- **New schedule:** a transaction (expense, income or transfer) or a **salary** (always an expense to the
+  Salaries category). Pick the account, category, amount, how often and the first date; the box under
+  it says it in words ("On day 9 of every month, from 9 Nov 2026").
+  - **Post it straight to the books** is only offered to people who can post; otherwise each one is a
+    draft for someone to check.
+  - **Remind me** a few days before each one.
+- **A schedule's panel:** what it does, the next date, its history (each run links to its transaction,
+  and a failed run says why). Change the name, amount, how often or the reminder; pause, resume or end it.
+  When one is due, **Run now** records it without waiting for the timer.
+
+**Notifications**
+
+- **The bell** in the top bar shows how many are unread. It opens the latest ones; clicking one marks it
+  read and goes to the right page (a task, a transaction waiting for approval, a budget, the statement
+  inbox, and so on). Mark all as read, or open the settings, from there.
+- **Live:** while the app is open, a new notification appears at once as a pop-up with an **Open**
+  button, without reloading.
+- **All notifications** (`/notifications`): grouped by day, with an All / Unread switch.
+- **Settings → Notifications:** email on or off, push on or off, **quiet hours** (no email or push
+  between two times, in your time zone), and **push to this browser**: turn it on, and the browser asks
+  for permission. The list shows every device getting push, and any can be removed.
+
+### Who can do what
+
+| | Owner, Admin | Accountant | Manager | Viewer |
+| --- | --- | --- | --- | --- |
+| See tasks and reminders | Yes | Yes | Yes | Yes |
+| Add and change tasks, comment, set reminders | Yes | Yes | Yes | No |
+| See recurring schedules | Yes | Yes | Only if given "Can see finances" | Only if given "Can see finances" |
+| Make and change schedules | Yes | Yes | No | No |
+| Schedules that post themselves, Run now posting | Yes | Yes | No | No |
+
+Everyone has their own notifications and settings.
+
+### How live notifications and push work
+
+- The live list uses the backend's event stream. It needs the sign-in token, which the browser's
+  built-in stream reader can't send, so the app reads the stream itself. The stream ends when the
+  15-minute token does, and the app opens a new one with the fresh token. If it fails, it tries again
+  after 15 seconds.
+- Push uses a small service worker, `public/sw.js`. It shows the message while the app is closed and
+  opens the page it points to when clicked (only pages on this site).
+- Push needs the backend's VAPID keys. Without them, the settings page says push isn't set up yet.
+  On iPhone, push works only after adding the app to the Home Screen.
+
+### Backend changes for this step
+
+- **API description** (`src/app/docs/tasks.docs.ts`): tasks now list who made them and when, one task
+  lists its attachments, and reminders, schedules and runs list when they were made. No behaviour change.
+- **Links in emails and push** (`src/app/notifications/templates.ts`) went to pages the app doesn't have
+  (`/tasks/…`, `/reminders`, `/statement-lines`). They now go to the business's own pages, for example
+  `/b/{business}/tasks?task=…` and `/b/{business}/recurring?schedule=…`. Invitations and password resets
+  are unchanged. A new test checks the links. All 736 backend tests pass.
+
+### New shared pieces
+
+- `src/features/tasks/`: hooks, board, list, calendar, reminders, the task panel and new-task dialog.
+- `src/features/recurring/`: hooks, the page, the new-schedule dialog and the schedule panel.
+- `src/features/notifications/`: hooks, the bell, the inbox, settings, the live stream
+  (`useNotificationStream.ts`), push (`push.ts`) and `words.ts`, which turns each notification type and
+  its values into words and a link. The words are in `src/i18n/*/notifications.json`.
+- `src/lib/repeat.ts`: turns "every month" into a calendar rule and back.
+- `src/lib/query.ts`: keys for tasks, schedules and notifications, and `useReload()`, which reloads a
+  cached list when something arrives from outside (a live notification).
+
+### How it was checked
+
+- **Browser tests** (`e2e/tasks.spec.ts`), at laptop and phone size:
+  1. The owner invites Karim as a manager. Karim has the dashboard open.
+  2. The owner adds a task for Karim, due tomorrow. Karim sees the pop-up and "1" on the bell at once,
+     opens it from the bell, starts the task and comments.
+  3. The owner gets the comment live, finds it in the inbox and marks all read.
+  4. The task is in In progress on the board, in the list, and on tomorrow in the calendar.
+  5. The owner sets a yearly reminder and pauses it.
+  6. A second test makes a monthly rent schedule that posts itself, starting today. It runs, the rent is
+     in the books, the monthly total shows it, and it's paused, resumed and ended. Then email is turned
+     off and quiet hours on, and they're still there after a reload.
+- **All browser tests:** 34 pass. One older test (statements, phone) failed once in a full run under
+  load and passed twice when run again.
+- Lint, type-check, 64 small tests and the build pass.
+- Looked at by eye at laptop and phone size, light and dark, with a business full of tasks, reminders,
+  schedules and notifications.
+
+### Fixes along the way
+
+- Saving notification settings showed no "Saved" message on phones: saving redraws the form, which
+  dropped the message. It's now shown the same way as on the profile page.
+- On phones the bell left too little room for the business name in the top bar. The language button is
+  now just its icon there, and the task tiles sit two to a row.
 
 ## Step 9.6: Bank statements: import, inbox, rules
 
@@ -746,8 +865,9 @@ also passes `/api/...` on to the backend. Before the first deploy, replace `YOUR
 `vercel.json` with the backend's address. On the backend, set `CORS_ORIGINS` and `APP_URL` to the Vercel
 address, so the sign-in cookie and the links in emails work.
 
-Not checked yet: whether Vercel's pass-through keeps long-lived live updates open. These come in step 9.7,
-and will be tested then.
+Not checked yet: whether Vercel's pass-through keeps long-lived live updates open. Live notifications
+(step 9.7) work locally; check them on the first real deploy. If Vercel cuts the stream, the app just
+reconnects, so notifications still arrive, a little later.
 
 ### Known and open
 
