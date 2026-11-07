@@ -51,3 +51,44 @@ test("a new account is on a Pro trial; when it ends, Free allows one business an
   await page.goto("/settings/plan");
   await expect(page.getByText("Given to you free, with no end date.")).toBeVisible();
 });
+
+test("paying with the demo gateway: a failed try, then a paid year with a receipt", async ({ page }, info) => {
+  const email = freshEmail(info.project.name);
+  await register(page, email);
+  await createBusiness(page, "Rahim Traders");
+  // The trial has ended, so paying starts today.
+  setPlan(email, "ends_at = now() - interval '1 day'");
+
+  await page.goto("/settings/plan");
+  await page.getByTestId("plan-pro").getByRole("button", { name: "Upgrade to Pro" }).click();
+  await expect(page).toHaveURL(/\/pay\/demo\//);
+  await expect(page.getByText("Demo payment page.")).toBeVisible();
+  await expect(page.getByTestId("demo-amount")).toHaveText("৳5,990");
+
+  // First the gateway says no.
+  await page.getByRole("button", { name: "Make it fail" }).click();
+  await expect(page).toHaveURL(/\/settings\/plan\?payment=/);
+  await expect(page.getByTestId("payment-result")).toContainText("The payment didn't go through");
+  await expect(page.getByTestId("current-plan")).toContainText("Free");
+
+  // Then it goes through, paid with Nagad.
+  await page.getByTestId("plan-pro").getByRole("button", { name: "Upgrade to Pro" }).click();
+  await page.getByRole("radio", { name: "Nagad" }).click();
+  await page.getByRole("button", { name: "Pay ৳5,990" }).click();
+  await expect(page.getByTestId("payment-result")).toContainText("Payment received. Pro is paid until");
+  await expect(page.getByTestId("current-plan")).toContainText("Active");
+  await expect(page.getByTestId("plan-pro").getByRole("button", { name: "Pay for another year" })).toBeVisible();
+  const history = page.getByTestId("payment-history");
+  await expect(history).toContainText("Paid");
+  await expect(history).toContainText("Failed");
+
+  // The receipt, also linked from the in-app notification.
+  await page.getByTestId("payment-result").getByRole("link", { name: "View receipt" }).click();
+  const receipt = page.getByTestId("receipt");
+  await expect(receipt).toContainText(/BOS-\d{4}-\d{6}/);
+  await expect(receipt).toContainText("Nagad");
+  await expect(receipt).toContainText(email);
+  await expect(receipt).toContainText("Total paid");
+  await page.goto("/notifications");
+  await expect(page.getByText("Payment received: Pro")).toBeVisible();
+});

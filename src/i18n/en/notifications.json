@@ -90,5 +90,16 @@
   "devices": "Devices getting push",
   "thisOne": "this one",
   "addedWhen": "Added {{when}}",
-  "removeDevice": "Stop push to this device"
+  "removeDevice": "Stop push to this device",
+  "billing_payment_received_title": "Payment received: {{planName}}",
+  "billing_payment_received_body": "{{amount}}, paid until {{periodEnd}}. Receipt {{receiptNumber}}.",
+  "billing_plan_ending_trial_title": "Your trial is ending soon",
+  "billing_plan_ending_granted_title": "Your free {{planName}} is ending soon",
+  "billing_plan_ending_paid_title": "Your plan is ending soon",
+  "billing_plan_ending_body": "It ends on {{endsOn}}. Choose a plan to keep everything; nothing is ever deleted.",
+  "billing_plan_ended_grace_title": "Your {{planName}} plan has ended",
+  "billing_plan_ended_grace_body": "It keeps working until {{until}}. Renew before then to keep it.",
+  "billing_plan_ended_trial_title": "Your trial has ended",
+  "billing_plan_ended_other_title": "Your plan has ended",
+  "billing_plan_ended_body": "You're on Free now. Nothing was deleted, and you can upgrade any time."
 }

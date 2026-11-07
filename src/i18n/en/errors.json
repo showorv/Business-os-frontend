@@ -112,5 +112,11 @@
   "PLAN_LIMIT_storage_one": "This would go over your plan's {{count}} MB of document storage. Upgrade in Settings → Plan, or delete old files.",
   "PLAN_LIMIT_storage_other": "This would go over your plan's {{count}} MB of document storage. Upgrade in Settings → Plan, or delete old files.",
   "PLAN_FEATURE_REQUIRED": "This comes with Pro. See Settings → Plan.",
-  "PLAN_BUSINESS_LOCKED": "This business is read-only on your current plan. Upgrade in Settings → Plan, or archive another business."
+  "PLAN_BUSINESS_LOCKED": "This business is read-only on your current plan. Upgrade in Settings → Plan, or archive another business.",
+  "BILLING_OWNER_ONLY": "Only the person who owns this account can pay for or change its plan.",
+  "PLAN_NOT_FOR_SALE": "That plan can't be bought.",
+  "BILLING_NOT_NEEDED": "You already have this plan free with no end date, so there's nothing to pay.",
+  "PAYMENT_NOT_PENDING": "This payment is already finished.",
+  "PAYMENT_EXPIRED": "This payment page was open too long. Start again from Settings → Plan.",
+  "PAYMENT_GATEWAY_UNAVAILABLE": "Paying online isn't available right now. Please try again later."
 }

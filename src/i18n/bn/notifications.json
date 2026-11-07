@@ -90,5 +90,16 @@
   "devices": "যে ডিভাইসগুলো পুশ পাচ্ছে",
   "thisOne": "এটি",
   "addedWhen": "যোগ হয়েছে {{when}}",
-  "removeDevice": "এই ডিভাইসে পুশ বন্ধ করুন"
+  "removeDevice": "এই ডিভাইসে পুশ বন্ধ করুন",
+  "billing_payment_received_title": "পেমেন্ট পেয়েছি: {{planName}}",
+  "billing_payment_received_body": "{{amount}}, {{periodEnd}} পর্যন্ত পরিশোধিত। রসিদ {{receiptNumber}}।",
+  "billing_plan_ending_trial_title": "আপনার ট্রায়াল শীঘ্রই শেষ হচ্ছে",
+  "billing_plan_ending_granted_title": "আপনার বিনামূল্যের {{planName}} শীঘ্রই শেষ হচ্ছে",
+  "billing_plan_ending_paid_title": "আপনার প্ল্যান শীঘ্রই শেষ হচ্ছে",
+  "billing_plan_ending_body": "এটি {{endsOn}} তারিখে শেষ হবে। সব রাখতে একটি প্ল্যান বেছে নিন; কিছুই কখনো মোছা হয় না।",
+  "billing_plan_ended_grace_title": "আপনার {{planName}} প্ল্যান শেষ হয়েছে",
+  "billing_plan_ended_grace_body": "{{until}} পর্যন্ত চলবে। রাখতে চাইলে এর আগে নবায়ন করুন।",
+  "billing_plan_ended_trial_title": "আপনার ট্রায়াল শেষ",
+  "billing_plan_ended_other_title": "আপনার প্ল্যান শেষ",
+  "billing_plan_ended_body": "এখন আপনি ফ্রি প্ল্যানে। কিছুই মোছা হয়নি, যেকোনো সময় আপগ্রেড করতে পারেন।"
 }

@@ -31,8 +31,8 @@ Payments go through a demo gateway for now; SSLCommerz and bKash plug in once th
 | Step | What it brings | Status |
 | --- | --- | --- |
 | 11.1 | Plans and limits: a 14-day Pro trial, limits checked by the server, the Plan page, upgrade prompts | **Done** |
-| 11.2 | Paying through a demo gateway (success, fail, cancel), receipts, reminder emails, grace period | Next |
-| 11.3 | Platform admin panel: accounts, changing plans, giving Pro free until a date, prices and limits, coupons, AI cap, suspending, revenue, announcements | |
+| 11.2 | Paying through a demo gateway (success, fail, cancel), receipts, reminder emails, grace period | **Done** |
+| 11.3 | Platform admin panel: accounts, changing plans, giving Pro free until a date, prices and limits, coupons, AI cap, suspending, revenue, announcements | Next |
 | 11.4 | Customers and suppliers | |
 | 11.5 | Invoices, bills, baki and aging, PDF and email, posting to the books | |
 | 11.6 | VAT on lines and a monthly VAT summary (help with Mushak) | |
@@ -176,6 +176,49 @@ export const useCreateBusiness = () =>
 The helpers turn server errors into an `ApiError` with a code, which `errorMessage()` turns into words in
 the reader's language. The names of all cached lists live in `queryKeys`, in the same file.
 
+## Step 11.2: Paying for a plan (demo gateway)
+
+### What you can do now
+
+- **Upgrade from Settings → Plan.** Pick Monthly or Yearly and press *Upgrade to Pro*. You go to the
+  payment page, as you would with SSLCommerz or bKash.
+- **The demo payment page** (`/pay/demo/…`) says clearly that no money moves. Choose bKash, Nagad or
+  card, then *Pay*, *Make it fail* or *Cancel*, to see each outcome. It stands in for the real gateway
+  until the merchant accounts are ready.
+- **Back on the Plan page**, one line says what happened: "Payment received. Pro is paid until 21 Nov
+  2027", "The payment didn't go through, and nothing was charged", or "You cancelled the payment".
+- **Days are never lost.** Paying during the trial or before the plan ends adds the new period after
+  the time already covered, and the card says so: "Your paid time starts after 21 Nov 2026".
+- **Paid up:** the button becomes *Pay for another year* (or month). During the grace days it says
+  *Renew*.
+- **Payments** under the plans: every payment with its date, plan, amount and whether it was paid,
+  failed or cancelled.
+- **Receipts** (`/settings/plan/receipts/…`): receipt number, date, who was billed, how they paid, the
+  period, and the total. *Print or save as PDF* prints just the receipt.
+- **Notifications and emails** for a payment received (opens the receipt), a plan ending soon, and a
+  plan that has ended.
+- Everything in English and Bangla, light and dark, laptop and phone.
+
+### How it was checked
+
+- Typecheck, lint, unit tests and the build pass.
+- New browser test in `e2e/billing.spec.ts` at laptop and phone sizes:
+  - an ended trial, then a failed payment (still Free);
+  - a paid year with Nagad (Active, *Pay for another year*, Paid and Failed in the history);
+  - the receipt, with its number, method and email;
+  - the notification.
+- Full browser suite: 40 passed. The phone statements test is timing-sensitive under a full parallel
+  run and passes on its own, as before.
+- Screenshots reviewed: the payment page (light and dark, laptop and phone), the Plan page after
+  paying, and the receipt.
+
+### Known and open
+
+- Real gateways (SSLCommerz, bKash) come once you have merchant accounts. Only the backend adapter and
+  its callback route change; these screens stay the same.
+- The backend switches the demo page off in production unless it's told otherwise, because it would
+  give Pro away free.
+
 ## Step 11.1: Plans and limits
 
 ### What you can see now
@@ -217,7 +260,7 @@ the reader's language. The names of all cached lists live in `queryKeys`, in the
 
 ### Known and open
 
-- The upgrade button is disabled until 11.2 brings payments.
+- The upgrade button was disabled until 11.2 brought payments (now done).
 - Accounts that existed before plans were given Pro free with no end date by the backend migration.
 
 ## Step 9.8: AI assistant, document search, activity history

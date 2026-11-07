@@ -8,7 +8,7 @@ import { UserMenu } from "./UserMenu";
 // The frame around the sign-in, register and password screens, and the first business set-up.
 export const AuthLayout = ({ wide = false }: { wide?: boolean }) => (
   <div className="flex min-h-dvh flex-col">
-    <header className="flex items-center justify-between px-4 py-4 sm:px-8">
+    <header className="flex items-center justify-between px-4 py-4 sm:px-8 print:hidden">
       <span className="flex items-center gap-2 font-semibold">
         <img src={brand.logo} alt="" className={cn("size-8", brand.invertLogoInDark && "dark:invert")} />
         {brand.name}

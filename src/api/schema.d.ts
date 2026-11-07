@@ -1521,6 +1521,347 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/billing/checkout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Start paying for a plan. Owner only. Returns where to send the person to pay; the price comes from the plan */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        planKey: string;
+                        /** @enum {string} */
+                        billingCycle: "MONTHLY" | "YEARLY";
+                    };
+                };
+            };
+            responses: {
+                /** @description Success */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                paymentId: string;
+                                redirectUrl: string;
+                                amountMinor: string;
+                                currency: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/billing/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My workspace's payments, newest first (unfinished checkouts left out) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                planKey: string;
+                                planName: string;
+                                planNameBn: string | null;
+                                /** @enum {string} */
+                                billingCycle: "MONTHLY" | "YEARLY";
+                                amountMinor: string;
+                                currency: string;
+                                /** @enum {string} */
+                                status: "PENDING" | "PAID" | "FAILED" | "CANCELLED";
+                                gateway: string;
+                                method: string | null;
+                                gatewayRef: string | null;
+                                receiptNumber: string | null;
+                                periodStart: string | null;
+                                periodEnd: string | null;
+                                failureReason: string | null;
+                                expiresAt: string;
+                                paidAt: string | null;
+                                createdAt: string;
+                                billedTo: {
+                                    name: string;
+                                    email: string;
+                                } | null;
+                            }[];
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/billing/payments/{paymentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One payment, with what the receipt needs */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    paymentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                planKey: string;
+                                planName: string;
+                                planNameBn: string | null;
+                                /** @enum {string} */
+                                billingCycle: "MONTHLY" | "YEARLY";
+                                amountMinor: string;
+                                currency: string;
+                                /** @enum {string} */
+                                status: "PENDING" | "PAID" | "FAILED" | "CANCELLED";
+                                gateway: string;
+                                method: string | null;
+                                gatewayRef: string | null;
+                                receiptNumber: string | null;
+                                periodStart: string | null;
+                                periodEnd: string | null;
+                                failureReason: string | null;
+                                expiresAt: string;
+                                paidAt: string | null;
+                                createdAt: string;
+                                billedTo: {
+                                    name: string;
+                                    email: string;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/billing/payments/{paymentId}/demo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** The demo payment page's answer: paid, failed or cancelled. Only while the demo gateway is on; no money moves */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    paymentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        outcome: "PAID" | "FAILED" | "CANCELLED";
+                        /** @enum {string} */
+                        method?: "bkash" | "nagad" | "card";
+                    };
+                };
+            };
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                planKey: string;
+                                planName: string;
+                                planNameBn: string | null;
+                                /** @enum {string} */
+                                billingCycle: "MONTHLY" | "YEARLY";
+                                amountMinor: string;
+                                currency: string;
+                                /** @enum {string} */
+                                status: "PENDING" | "PAID" | "FAILED" | "CANCELLED";
+                                gateway: string;
+                                method: string | null;
+                                gatewayRef: string | null;
+                                receiptNumber: string | null;
+                                periodStart: string | null;
+                                periodEnd: string | null;
+                                failureReason: string | null;
+                                expiresAt: string;
+                                paidAt: string | null;
+                                createdAt: string;
+                                billedTo: {
+                                    name: string;
+                                    email: string;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/businesses": {
         parameters: {
             query?: never;

@@ -12,6 +12,9 @@ export const queryKeys = {
   // The plans on offer, and the signed-in person's own workspace plan.
   plans: ["plans"],
   myPlan: ["plans", "mine"],
+  // Payments for the plan: the history, and one payment (its receipt).
+  payments: ["plans", "payments"],
+  payment: (paymentId: string) => ["plans", "payments", paymentId],
   roles: ["roles"],
   businesses: ["businesses"],
   business: (businessId: string) => ["businesses", businessId],

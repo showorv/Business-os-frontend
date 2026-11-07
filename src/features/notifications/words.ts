@@ -1,4 +1,4 @@
-import { AlertTriangle, Bell, FileDown, FileSpreadsheet, KeyRound, ListChecks, MessageSquare, PiggyBank, Plug, Receipt, Repeat, ShieldAlert, Trophy, UserPlus, type LucideIcon } from "lucide-react";
+import { AlertTriangle, Bell, CreditCard, FileDown, FileSpreadsheet, KeyRound, ListChecks, MessageSquare, PiggyBank, Plug, Receipt, Repeat, ShieldAlert, Trophy, UserPlus, type LucideIcon } from "lucide-react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useCurrentBusiness } from "@/features/businesses/useCurrentBusiness";
@@ -34,9 +34,12 @@ const ICONS: Record<string, LucideIcon> = {
   "integration.needs_reauth": Plug,
   "integration.sync_failing": Plug,
   invitation: UserPlus,
+  "billing.payment_received": CreditCard,
+  "billing.plan_ending": CreditCard,
+  "billing.plan_ended": CreditCard,
 };
 
-const URGENT = new Set(["task.overdue", "export.failed", "recurring.failed", "ledger.check_failed", "audit.check_failed", "integration.needs_reauth", "integration.sync_failing", "auth.account_locked", "auth.session_reuse_detected"]);
+const URGENT = new Set(["task.overdue", "export.failed", "recurring.failed", "ledger.check_failed", "audit.check_failed", "integration.needs_reauth", "integration.sync_failing", "auth.account_locked", "auth.session_reuse_detected", "billing.plan_ended"]);
 
 // Where each kind of notification leads inside the app.
 const linkFor = (notification: Notification) => {
@@ -44,6 +47,8 @@ const linkFor = (notification: Notification) => {
   const base = notification.businessId ? `/b/${notification.businessId}` : null;
   if (notification.type === "invitation") return "/";
   if (notification.type.startsWith("auth.")) return "/settings/security";
+  if (notification.type === "billing.payment_received" && params.paymentId) return `/settings/plan/receipts/${params.paymentId}`;
+  if (notification.type.startsWith("billing.")) return "/settings/plan";
   if (!base) return null;
   switch (notification.type) {
     case "task.assigned":
@@ -98,9 +103,16 @@ export const useNotificationText = () => {
       if (typeof params.errorCode === "string") values.reason = t(`errors:${params.errorCode}`, { defaultValue: t("errors:UNKNOWN") });
       if (typeof params.format === "string") values.format = params.format.toUpperCase();
       if (typeof params.provider === "string") values.provider = params.provider;
+      // Plan messages: amounts and days in the reader's own style, and words that depend on the stage.
+      if (typeof params.amount === "string") values.amount = money(params.amount, currency);
+      for (const day of ["periodEnd", "endsOn", "until"]) if (typeof params[day] === "string") values[day] = formatDate(params[day], locale, digitStyle);
+      const stage = typeof params.stage === "string" ? params.stage : "";
+      const titleKey =
+        notification.type === "billing.plan_ending" ? `${key}_${stage}` : notification.type === "billing.plan_ended" ? `${key}_${stage === "grace" || stage === "trial" ? stage : "other"}` : key;
+      const bodyKey = notification.type === "billing.plan_ended" && stage === "grace" ? `${key}_grace` : key;
       return {
-        title: t(`notifications:${key}_title`, { ...values, defaultValue: t("notifications:other_title") }),
-        body: t(`notifications:${key}_body`, { ...values, defaultValue: "" }),
+        title: t(`notifications:${titleKey}_title`, { ...values, defaultValue: t("notifications:other_title") }),
+        body: t(`notifications:${bodyKey}_body`, { ...values, defaultValue: "" }),
         icon: ICONS[notification.type] ?? (notification.type.startsWith("auth.") ? KeyRound : AlertTriangle),
         href: linkFor(notification),
         urgent: URGENT.has(notification.type),

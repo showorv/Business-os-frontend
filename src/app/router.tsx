@@ -35,6 +35,8 @@ import { TasksPage } from "@/features/tasks/TasksPage";
 import { PlanPage } from "@/features/billing/PlanPage";
 import { DocumentsPage } from "@/features/documents/DocumentsPage";
 import { AssistantPage } from "@/features/assistant/AssistantPage";
+import { DemoPayPage } from "@/features/billing/DemoPayPage";
+import { ReceiptPage } from "@/features/billing/ReceiptPage";
 import { AuditPage, MyActivityPage } from "@/features/audit/AuditPage";
 import { GuestOnly, HomeRedirect, RequireAuth } from "./guards";
 
@@ -66,6 +68,9 @@ export const router = createBrowserRouter([
           { path: "/onboarding", element: <CreateBusinessPage /> },
           // Opened from an invitation email. Someone signed out signs in or registers first, then comes back.
           { path: "/invitations/accept", element: <AcceptInvitationPage /> },
+          // The stand-in payment page until a real gateway is connected, and a printable receipt.
+          { path: "/pay/demo/:paymentId", element: <DemoPayPage /> },
+          { path: "/settings/plan/receipts/:paymentId", element: <ReceiptPage /> },
         ],
       },
       {
