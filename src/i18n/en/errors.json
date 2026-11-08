@@ -140,5 +140,6 @@
   "CONTACT_KIND_MISMATCH": "An invoice needs a customer, and a bill a supplier.",
   "EMAIL_NOT_CONFIGURED": "Email isn't set up on the server yet, so invoices can't be sent. Download the PDF instead.",
   "INVOICE_NOT_SENDABLE": "Only an issued invoice can be emailed, and the customer needs an email address.",
-  "DOWNLOAD_FAILED": "The file couldn't be downloaded. Please try again."
+  "DOWNLOAD_FAILED": "The file couldn't be downloaded. Please try again.",
+  "VAT_NOT_REGISTERED": "Only a VAT-registered business can charge VAT. Turn it on in business settings, or set the lines to 0%."
 }

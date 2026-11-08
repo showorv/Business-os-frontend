@@ -105,7 +105,7 @@ test("an expense above the approval limit waits; the person who recorded it can'
 
   await page.goto(`/b/${businessId}/settings`);
   await page.getByLabel("Expenses above").fill("1,000");
-  await page.getByRole("button", { name: "Save" }).last().click();
+  await page.getByTestId("approval-limit").getByRole("button", { name: "Save" }).click();
   await expect(page.getByText("Saved", { exact: true })).toBeVisible();
   await page.goto(`/b/${businessId}/accounts`);
   await addAccount(page, "Shop cash", "CASH", "10000");

@@ -20,7 +20,7 @@ const fillLine = async (page: Page, index: number, line: { description: string; 
   await card.getByLabel("Description").fill(line.description);
   await card.getByLabel("Qty").fill(line.quantity);
   await card.getByLabel("Unit price").fill(line.price);
-  await card.getByRole("combobox").selectOption({ index: 1 });
+  await card.getByRole("combobox").first().selectOption({ index: 1 });
 };
 
 test("invoices: issue one, take part and full payment, PDF, email, and see the dues", async ({ page, request }, info) => {

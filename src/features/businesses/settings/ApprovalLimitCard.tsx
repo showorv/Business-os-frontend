@@ -33,7 +33,7 @@ export const ApprovalLimitCard = ({ business, editable }: { business: Business; 
   };
 
   return (
-    <Card>
+    <Card data-testid="approval-limit">
       <CardHeader>
         <CardTitle>{t("finance:approvalLimit")}</CardTitle>
         <CardDescription>{t("finance:approvalLimitHint")}</CardDescription>

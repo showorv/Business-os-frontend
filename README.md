@@ -35,8 +35,8 @@ Payments go through a demo gateway for now; SSLCommerz and bKash plug in once th
 | 11.3 | Platform admin panel: accounts, changing plans, giving Pro free until a date, prices and limits, coupons, AI cap, suspending, revenue, announcements | **Done** |
 | 11.4 | Customers and suppliers | **Done** |
 | 11.5 | Invoices, bills, baki and aging, PDF and email, posting to the books | **Done** |
-| 11.6 | VAT on lines and a monthly VAT summary (help with Mushak) | Next |
-| 11.7 | Products and stock | |
+| 11.6 | VAT on lines and a monthly VAT summary (help with Mushak) | **Done** |
+| 11.7 | Products and stock | Next |
 | 11.8 | Public home and pricing pages, terms and privacy, data export, full-width assistant | |
 
 ## Decisions made before starting
@@ -175,6 +175,45 @@ export const useCreateBusiness = () =>
 
 The helpers turn server errors into an `ApiError` with a code, which `errorMessage()` turns into words in
 the reader's language. The names of all cached lists live in `queryKeys`, in the same file.
+
+## Step 11.6: VAT on invoices and bills, and the month's VAT
+
+### What you can do now
+
+- **Business settings → VAT:** tick *VAT-registered (has a BIN)* and choose the rate new invoice
+  lines start with (15% unless you change it).
+- **On an invoice** of a registered business, each line has a **VAT** box (15%, 10%, 7.5%, 5% or
+  0%). The line shows "+ VAT ৳300", and the total area shows Subtotal, VAT and Total. A business
+  that isn't registered doesn't see the box, since it can't charge VAT.
+- **On a bill** the VAT box is always there, because suppliers charge VAT either way. If the
+  business is registered the VAT can be claimed back; if not, a note says it is added to the cost.
+- **An invoice's page** shows each line's VAT, then Subtotal and VAT above the total. The PDF is
+  titled *Tax invoice* when it has VAT.
+- **VAT** in the sidebar: pick a month (arrows or the month box), and see VAT on sales, VAT on
+  purchases you can claim, and the VAT to pay (or to carry forward); a table of each by rate with
+  the value and the VAT; and every invoice and bill of the month with its number, the customer or
+  supplier, their BIN, subtotal and VAT. *Print* gives a paper copy. A note says it is a help for
+  the Mushak 9.1 return, not a filing, and leaves out money recorded only as transactions. A
+  business that isn't registered sees a link to turn it on.
+- English and Bangla, light and dark, laptop and phone.
+
+### How it was checked
+
+- Type check, lint, unit tests (78) and the build pass.
+- A new browser test (`e2e/vat.spec.ts`, laptop and phone): the VAT page first says the business
+  isn't registered; registering it in settings; an invoice of 2 × ৳1,000 starts at 15% and shows
+  ৳2,000 + ৳300 = ৳2,300, and is issued with ৳2,300 due; a bill of ৳1,000 at 7.5% comes to ৳1,075;
+  the VAT page shows ৳300 on sales, ৳75 on purchases, ৳225 to pay, the 15% row and both documents;
+  the month before is empty.
+- Full run: everything passes; the known flaky statements test failed once and passed on its own.
+- Screenshots of the form, an invoice's page and the VAT page were reviewed on laptop and phone.
+
+### Fixes along the way
+
+- The month's name was shown twice on a phone, the second time wrapping onto two lines. It now
+  shows only on wider screens.
+- Two older browser tests pressed "the last Save button" or "the only box" on a page that now has
+  more of them (the VAT settings card, the VAT box on bills). They now point at the right one.
 
 ## Step 11.5: Invoices, bills and dues (baki)
 

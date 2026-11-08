@@ -40,5 +40,6 @@
   "contacts": "Customers & suppliers",
   "invoices": "Invoices",
   "bills": "Bills",
-  "dues": "Dues (baki)"
+  "dues": "Dues (baki)",
+  "vat": "VAT"
 }

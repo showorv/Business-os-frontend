@@ -26,6 +26,7 @@ import { DuesPage } from "@/features/invoices/DuesPage";
 import { InvoiceDetailPage } from "@/features/invoices/InvoiceDetailPage";
 import { EditInvoicePage, NewInvoicePage } from "@/features/invoices/InvoiceFormPage";
 import { InvoicesPage } from "@/features/invoices/InvoicesPage";
+import { VatPage } from "@/features/vat/VatPage";
 import { TransactionDetailPage } from "@/features/finance/transactions/TransactionDetailPage";
 import { EditTransactionPage, NewTransactionPage } from "@/features/finance/transactions/TransactionFormPages";
 import { TransactionsPage } from "@/features/finance/transactions/TransactionsPage";
@@ -140,6 +141,7 @@ export const router = createBrowserRouter([
             ];
           }),
           { path: "/b/:businessId/dues", element: <DuesPage /> },
+          { path: "/b/:businessId/vat", element: <VatPage /> },
           { path: "/b/:businessId/transactions", element: <TransactionsPage /> },
           { path: "/b/:businessId/transactions/new", element: <NewTransactionPage /> },
           { path: "/b/:businessId/transactions/:transactionId", element: <TransactionDetailPage /> },

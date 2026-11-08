@@ -2061,6 +2061,8 @@ export interface paths {
                             transactionPrefix?: string;
                             approvalThresholdMinor?: string | null;
                             enabledModules?: ("finance" | "tasks" | "documents" | "integrations" | "ai")[];
+                            vatRegistered?: boolean;
+                            defaultVatRateBp?: number;
                         };
                     };
                 };
@@ -2241,6 +2243,8 @@ export interface paths {
                             transactionPrefix?: string;
                             approvalThresholdMinor?: string | null;
                             enabledModules?: ("finance" | "tasks" | "documents" | "integrations" | "ai")[];
+                            vatRegistered?: boolean;
+                            defaultVatRateBp?: number;
                         };
                     };
                 };
@@ -5019,7 +5023,10 @@ export interface paths {
                                 issueDate: string;
                                 dueDate: string;
                                 currency: string;
+                                subtotalMinor: string;
+                                vatMinor: string;
                                 totalMinor: string;
+                                vatRecoverable: boolean;
                                 paidMinor: string;
                                 dueMinor: string;
                                 isOverdue: boolean;
@@ -5090,6 +5097,8 @@ export interface paths {
                             unitPriceMinor: string;
                             /** Format: uuid */
                             categoryId: string;
+                            /** @default 0 */
+                            vatRateBp?: number;
                         }[];
                         /** @default false */
                         issue?: boolean;
@@ -5119,7 +5128,10 @@ export interface paths {
                                 issueDate: string;
                                 dueDate: string;
                                 currency: string;
+                                subtotalMinor: string;
+                                vatMinor: string;
                                 totalMinor: string;
+                                vatRecoverable: boolean;
                                 paidMinor: string;
                                 dueMinor: string;
                                 isOverdue: boolean;
@@ -5152,6 +5164,8 @@ export interface paths {
                                     quantity: string;
                                     unitPriceMinor: string;
                                     amountMinor: string;
+                                    vatRateBp: number;
+                                    vatMinor: string;
                                     /** Format: uuid */
                                     categoryId: string;
                                     category: {
@@ -5345,7 +5359,10 @@ export interface paths {
                                 issueDate: string;
                                 dueDate: string;
                                 currency: string;
+                                subtotalMinor: string;
+                                vatMinor: string;
                                 totalMinor: string;
+                                vatRecoverable: boolean;
                                 paidMinor: string;
                                 dueMinor: string;
                                 isOverdue: boolean;
@@ -5378,6 +5395,8 @@ export interface paths {
                                     quantity: string;
                                     unitPriceMinor: string;
                                     amountMinor: string;
+                                    vatRateBp: number;
+                                    vatMinor: string;
                                     /** Format: uuid */
                                     categoryId: string;
                                     category: {
@@ -5509,6 +5528,8 @@ export interface paths {
                             unitPriceMinor: string;
                             /** Format: uuid */
                             categoryId: string;
+                            /** @default 0 */
+                            vatRateBp?: number;
                         }[];
                     };
                 };
@@ -5536,7 +5557,10 @@ export interface paths {
                                 issueDate: string;
                                 dueDate: string;
                                 currency: string;
+                                subtotalMinor: string;
+                                vatMinor: string;
                                 totalMinor: string;
+                                vatRecoverable: boolean;
                                 paidMinor: string;
                                 dueMinor: string;
                                 isOverdue: boolean;
@@ -5569,6 +5593,8 @@ export interface paths {
                                     quantity: string;
                                     unitPriceMinor: string;
                                     amountMinor: string;
+                                    vatRateBp: number;
+                                    vatMinor: string;
                                     /** Format: uuid */
                                     categoryId: string;
                                     category: {
@@ -5669,7 +5695,10 @@ export interface paths {
                                 issueDate: string;
                                 dueDate: string;
                                 currency: string;
+                                subtotalMinor: string;
+                                vatMinor: string;
                                 totalMinor: string;
+                                vatRecoverable: boolean;
                                 paidMinor: string;
                                 dueMinor: string;
                                 isOverdue: boolean;
@@ -5702,6 +5731,8 @@ export interface paths {
                                     quantity: string;
                                     unitPriceMinor: string;
                                     amountMinor: string;
+                                    vatRateBp: number;
+                                    vatMinor: string;
                                     /** Format: uuid */
                                     categoryId: string;
                                     category: {
@@ -5812,7 +5843,10 @@ export interface paths {
                                 issueDate: string;
                                 dueDate: string;
                                 currency: string;
+                                subtotalMinor: string;
+                                vatMinor: string;
                                 totalMinor: string;
+                                vatRecoverable: boolean;
                                 paidMinor: string;
                                 dueMinor: string;
                                 isOverdue: boolean;
@@ -5845,6 +5879,8 @@ export interface paths {
                                     quantity: string;
                                     unitPriceMinor: string;
                                     amountMinor: string;
+                                    vatRateBp: number;
+                                    vatMinor: string;
                                     /** Format: uuid */
                                     categoryId: string;
                                     category: {
@@ -5959,7 +5995,10 @@ export interface paths {
                                 issueDate: string;
                                 dueDate: string;
                                 currency: string;
+                                subtotalMinor: string;
+                                vatMinor: string;
                                 totalMinor: string;
+                                vatRecoverable: boolean;
                                 paidMinor: string;
                                 dueMinor: string;
                                 isOverdue: boolean;
@@ -5992,6 +6031,8 @@ export interface paths {
                                     quantity: string;
                                     unitPriceMinor: string;
                                     amountMinor: string;
+                                    vatRateBp: number;
+                                    vatMinor: string;
                                     /** Format: uuid */
                                     categoryId: string;
                                     category: {
@@ -6097,7 +6138,10 @@ export interface paths {
                                 issueDate: string;
                                 dueDate: string;
                                 currency: string;
+                                subtotalMinor: string;
+                                vatMinor: string;
                                 totalMinor: string;
+                                vatRecoverable: boolean;
                                 paidMinor: string;
                                 dueMinor: string;
                                 isOverdue: boolean;
@@ -6130,6 +6174,8 @@ export interface paths {
                                     quantity: string;
                                     unitPriceMinor: string;
                                     amountMinor: string;
+                                    vatRateBp: number;
+                                    vatMinor: string;
                                     /** Format: uuid */
                                     categoryId: string;
                                     category: {
@@ -6306,7 +6352,10 @@ export interface paths {
                                 issueDate: string;
                                 dueDate: string;
                                 currency: string;
+                                subtotalMinor: string;
+                                vatMinor: string;
                                 totalMinor: string;
+                                vatRecoverable: boolean;
                                 paidMinor: string;
                                 dueMinor: string;
                                 isOverdue: boolean;
@@ -6339,6 +6388,8 @@ export interface paths {
                                     quantity: string;
                                     unitPriceMinor: string;
                                     amountMinor: string;
+                                    vatRateBp: number;
+                                    vatMinor: string;
                                     /** Format: uuid */
                                     categoryId: string;
                                     category: {
@@ -6393,6 +6444,110 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{businessId}/vat/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** VAT on sales (output) and claimable VAT on bills (input) for a period, by rate, with the invoices and bills behind it. Help for the monthly return, not the return itself. Needs finance.read */
+        get: {
+            parameters: {
+                query: {
+                    from: string;
+                    to: string;
+                };
+                header?: never;
+                path: {
+                    businessId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                from: string;
+                                to: string;
+                                currency: string;
+                                registered: boolean;
+                                output: {
+                                    rows: {
+                                        rateBp: number;
+                                        taxableMinor: string;
+                                        vatMinor: string;
+                                    }[];
+                                    taxableMinor: string;
+                                    vatMinor: string;
+                                    documents: number;
+                                };
+                                input: {
+                                    rows: {
+                                        rateBp: number;
+                                        taxableMinor: string;
+                                        vatMinor: string;
+                                    }[];
+                                    taxableMinor: string;
+                                    vatMinor: string;
+                                    documents: number;
+                                };
+                                netMinor: string;
+                                documents: {
+                                    /** Format: uuid */
+                                    invoiceId: string;
+                                    /** @enum {string} */
+                                    kind: "SALE" | "BILL";
+                                    number: string;
+                                    issueDate: string;
+                                    contactName: string;
+                                    contactTaxId: string | null;
+                                    referenceNo: string | null;
+                                    subtotalMinor: string;
+                                    vatMinor: string;
+                                    vatRecoverable: boolean;
+                                }[];
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;

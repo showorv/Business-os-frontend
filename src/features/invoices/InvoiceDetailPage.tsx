@@ -36,6 +36,7 @@ import {
   type InvoiceKind,
 } from "./api";
 import { KIND_PATH, StatusBadge } from "./parts";
+import { rateLabel } from "./vat";
 
 type Dialog = "pay" | "email" | "void" | "delete" | { undo: string } | null;
 
@@ -66,6 +67,7 @@ export const InvoiceDetailPage = ({ kind }: { kind: InvoiceKind }) => {
   const day = (date: string) => formatDate(date, locale, digitStyle);
   const error = issue.error ?? remove.error ?? voidPayment.error ?? download.error;
   const listPath = `/b/${businessId}/${KIND_PATH[kind]}`;
+  const hasVat = data.vatMinor !== "0";
   const pdf = (pdfLocale: "en" | "bn-BD") => download.mutate({ locale: pdfLocale, fileName: `${data.number ?? t("draftNumber")}.pdf` });
 
   return (
@@ -170,6 +172,7 @@ export const InvoiceDetailPage = ({ kind }: { kind: InvoiceKind }) => {
                 <th className="px-4 py-2.5 font-medium">{t("description")}</th>
                 <th className="px-4 py-2.5 text-right font-medium">{t("quantity")}</th>
                 <th className="px-4 py-2.5 text-right font-medium">{t("unitPrice")}</th>
+                {hasVat ? <th className="px-4 py-2.5 text-right font-medium">{t("vat")}</th> : null}
                 <th className="px-4 py-2.5 text-right font-medium">{t("amount")}</th>
               </tr>
             </thead>
@@ -182,6 +185,12 @@ export const InvoiceDetailPage = ({ kind }: { kind: InvoiceKind }) => {
                   </td>
                   <td className="px-4 py-2.5 text-right tabular-nums">{line.quantity.replace(/\.?0+$/, "")}</td>
                   <td className="px-4 py-2.5 text-right tabular-nums">{money(line.unitPriceMinor, currency)}</td>
+                  {hasVat ? (
+                    <td className="px-4 py-2.5 text-right tabular-nums">
+                      {line.vatRateBp > 0 ? money(line.vatMinor, currency) : "—"}
+                      <span className="block text-xs text-muted-foreground">{rateLabel(line.vatRateBp)}</span>
+                    </td>
+                  ) : null}
                   <td className="px-4 py-2.5 text-right font-medium tabular-nums">{money(line.amountMinor, currency)}</td>
                 </tr>
               ))}
@@ -189,6 +198,18 @@ export const InvoiceDetailPage = ({ kind }: { kind: InvoiceKind }) => {
           </table>
         </div>
         <dl className="ml-auto max-w-xs space-y-1.5 border-t p-4 text-sm">
+          {hasVat ? (
+            <>
+              <div className="flex justify-between text-muted-foreground">
+                <dt>{t("subtotal")}</dt>
+                <dd className="tabular-nums">{money(data.subtotalMinor, currency)}</dd>
+              </div>
+              <div className="flex justify-between text-muted-foreground">
+                <dt>{t("vat")}</dt>
+                <dd className="tabular-nums" data-testid="invoice-vat">{money(data.vatMinor, currency)}</dd>
+              </div>
+            </>
+          ) : null}
           <div className="flex justify-between font-medium">
             <dt>{t("total")}</dt>
             <dd className="tabular-nums">{money(data.totalMinor, currency)}</dd>
@@ -204,6 +225,7 @@ export const InvoiceDetailPage = ({ kind }: { kind: InvoiceKind }) => {
         </dl>
       </Card>
 
+      {kind === "BILL" && hasVat && data.status !== "DRAFT" && !data.vatRecoverable ? <p className="text-sm text-muted-foreground">{t("vatNotClaimed")}</p> : null}
       {data.notes ? (
         <section className="space-y-1">
           <h2 className="text-sm font-medium text-muted-foreground">{t("notes")}</h2>

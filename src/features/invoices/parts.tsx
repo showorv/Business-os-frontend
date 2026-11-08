@@ -44,6 +44,9 @@ export const lineAmount = (quantity: string, unitPriceMinor: string | null) => {
   return (milli * BigInt(unitPriceMinor) + 500n) / 1000n;
 };
 
+// VAT on a line, rounded half up, the same sum the server does. Rate in basis points.
+export const lineVat = (amountMinor: bigint | null, rateBp: number) => (amountMinor === null ? null : (amountMinor * BigInt(rateBp) + 5000n) / 10000n);
+
 // Older debts get darker shades, so the part that needs chasing stands out. The amounts are
 // written out beside it, so nothing depends on telling greys apart.
 const SHADE: Record<AgingBucket, string> = {

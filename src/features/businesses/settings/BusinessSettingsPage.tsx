@@ -9,6 +9,7 @@ import { ApprovalLimitCard } from "./ApprovalLimitCard";
 import { DetailsCard } from "./DetailsCard";
 import { PreferencesCard } from "./PreferencesCard";
 import { StatusCard } from "./StatusCard";
+import { VatCard } from "./VatCard";
 
 // Everyone in the business can see its settings. Owners and admins can change them.
 export const BusinessSettingsPage = () => {
@@ -34,6 +35,7 @@ export const BusinessSettingsPage = () => {
       <DetailsCard key={`details-${version}`} business={business} editable={editable} />
       <PreferencesCard key={`prefs-${version}`} business={business} editable={editable} />
       <ApprovalLimitCard key={`limit-${version}`} business={business} editable={editable} />
+      <VatCard key={`vat-${version}`} business={business} editable={editable} />
       {canManage ? <StatusCard business={business} /> : null}
     </div>
   );

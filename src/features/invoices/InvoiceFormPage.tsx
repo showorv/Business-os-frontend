@@ -10,6 +10,7 @@ import { Field } from "@/components/ui/field";
 import { Input, Select } from "@/components/ui/input";
 import { MoneyInput } from "@/components/ui/money-input";
 import { Spinner } from "@/components/ui/spinner";
+import type { BusinessSettings } from "@/features/businesses/api";
 import { useCurrentBusiness } from "@/features/businesses/useCurrentBusiness";
 import { useMoney } from "@/features/businesses/useMoney";
 import { useAllContacts, type Contact } from "@/features/contacts/api";
@@ -21,7 +22,8 @@ import { todayIn } from "@/lib/dates";
 import { errorMessage } from "@/lib/errors";
 import { minorToInput, parseMoney } from "@/lib/money";
 import { useCreateInvoice, useInvoice, useIssueInvoice, useUpdateInvoice, type Invoice, type InvoiceKind } from "./api";
-import { KIND_PATH, lineAmount } from "./parts";
+import { KIND_PATH, lineAmount, lineVat } from "./parts";
+import { rateLabel, VAT_RATES } from "./vat";
 
 interface LineDraft {
   key: string;
@@ -29,6 +31,8 @@ interface LineDraft {
   quantity: string;
   price: string;
   categoryId: string;
+  // Basis points as text, for the select: "1500" is 15%.
+  vatRate: string;
 }
 
 const addDays = (date: string, days: number) => {
@@ -39,7 +43,7 @@ const addDays = (date: string, days: number) => {
 
 const TERMS = [0, 7, 15, 30] as const;
 
-const blankLine = (categoryId = ""): LineDraft => ({ key: crypto.randomUUID(), description: "", quantity: "1", price: "", categoryId });
+const blankLine = (categoryId = "", vatRate = "0"): LineDraft => ({ key: crypto.randomUUID(), description: "", quantity: "1", price: "", categoryId, vatRate });
 
 // The page for a new invoice or bill, and for changing a draft.
 export const NewInvoicePage = ({ kind }: { kind: InvoiceKind }) => {
@@ -69,6 +73,12 @@ const InvoiceForm = ({ kind, businessId, invoice, contactId }: { kind: InvoiceKi
   const currency = business?.baseCurrency ?? "BDT";
   const today = todayIn(business?.timezone ?? "Asia/Dhaka");
   const k = kind === "SALE" ? "sale" : "bill";
+  const settings = business?.settings as Partial<BusinessSettings> | undefined;
+  const registered = settings?.vatRegistered === true;
+  // An invoice charges VAT only when the business is registered. A bill can always show the
+  // supplier's VAT; for an unregistered business it becomes part of the cost.
+  const showVat = kind === "BILL" || registered;
+  const startRate = kind === "SALE" && registered ? String(settings?.defaultVatRateBp ?? 1500) : "0";
 
   const [contact, setContact] = useState(contactId);
   const [issueDate, setIssueDate] = useState(invoice?.issueDate ?? today);
@@ -83,8 +93,9 @@ const InvoiceForm = ({ kind, businessId, invoice, contactId }: { kind: InvoiceKi
           quantity: line.quantity.replace(/\.?0+$/, ""),
           price: minorToInput(line.unitPriceMinor, currency),
           categoryId: line.categoryId,
+          vatRate: String(line.vatRateBp),
         }))
-      : [blankLine()],
+      : [blankLine("", startRate)],
   );
   const [adding, setAdding] = useState(false);
   // A contact added from here shows at once, before the list reloads.
@@ -101,7 +112,10 @@ const InvoiceForm = ({ kind, businessId, invoice, contactId }: { kind: InvoiceKi
 
   const priced = lines.map((line) => ({ ...line, priceMinor: parseMoney(line.price, currency) }));
   const amounts = priced.map((line) => lineAmount(line.quantity, line.priceMinor));
-  const total = amounts.reduce<bigint>((sum, amount) => sum + (amount ?? 0n), 0n);
+  const vats = priced.map((line, index) => lineVat(amounts[index] ?? null, showVat ? Number(line.vatRate) : 0));
+  const subtotal = amounts.reduce<bigint>((sum, amount) => sum + (amount ?? 0n), 0n);
+  const vatTotal = vats.reduce<bigint>((sum, vat) => sum + (vat ?? 0n), 0n);
+  const total = subtotal + vatTotal;
   const lineProblems = priced.map((line) => ({
     description: !line.description.trim(),
     quantity: (lineAmount(line.quantity, "1000") ?? 0n) <= 0n,
@@ -126,7 +140,7 @@ const InvoiceForm = ({ kind, businessId, invoice, contactId }: { kind: InvoiceKi
       dueDate,
       referenceNo: referenceNo.trim() || null,
       notes: notes.trim() || null,
-      lines: priced.map((line) => ({ description: line.description.trim(), quantity: line.quantity.trim(), unitPriceMinor: line.priceMinor!, categoryId: line.categoryId })),
+      lines: priced.map((line) => ({ description: line.description.trim(), quantity: line.quantity.trim(), unitPriceMinor: line.priceMinor!, categoryId: line.categoryId, vatRateBp: showVat ? Number(line.vatRate) : 0 })),
     };
     const done = (id: string) => {
       toast.success(andIssue ? t(`${k}_issued`) : t("draftSaved"));
@@ -205,7 +219,7 @@ const InvoiceForm = ({ kind, businessId, invoice, contactId }: { kind: InvoiceKi
               <li key={line.key}>
                 <Card>
                   <CardContent className="grid gap-3 sm:grid-cols-12 sm:items-start">
-                    <div className="sm:col-span-5">
+                    <div className={showVat ? "sm:col-span-3" : "sm:col-span-5"}>
                       <Field label={t("description")} error={show(problem.description) ? t("needDescription") : undefined}>
                         <Input maxLength={300} value={line.description} onChange={(event) => setLine(line.key, "description", event.target.value)} />
                       </Field>
@@ -232,9 +246,23 @@ const InvoiceForm = ({ kind, businessId, invoice, contactId }: { kind: InvoiceKi
                         </Select>
                       </Field>
                     </div>
+                    {showVat ? (
+                      <div className="sm:col-span-2">
+                        <Field label={t("vatRate")}>
+                          <Select value={line.vatRate} onChange={(event) => setLine(line.key, "vatRate", event.target.value)}>
+                            {VAT_RATES.map((rate) => (
+                              <option key={rate} value={String(rate)}>
+                                {rateLabel(rate)}
+                              </option>
+                            ))}
+                          </Select>
+                        </Field>
+                      </div>
+                    ) : null}
                     <div className="flex items-center justify-between gap-3 sm:col-span-12">
                       <p className="text-sm text-muted-foreground">
                         {t("lineAmount")} <span className="font-medium text-foreground tabular-nums" data-testid="line-amount">{amount === null || amount === undefined ? "—" : money(amount, currency)}</span>
+                        {vats[index] ? <span className="tabular-nums"> {t("plusVat", { amount: money(vats[index]!, currency) })}</span> : null}
                       </p>
                       {lines.length > 1 ? (
                         <Button type="button" variant="ghost" size="sm" onClick={() => setLines((current) => current.filter((item) => item.key !== line.key))}>
@@ -249,7 +277,7 @@ const InvoiceForm = ({ kind, businessId, invoice, contactId }: { kind: InvoiceKi
             );
           })}
         </ol>
-        <Button type="button" variant="outline" onClick={() => setLines((current) => [...current, blankLine(current.at(-1)?.categoryId || defaultCategory)])} disabled={lines.length >= 100}>
+        <Button type="button" variant="outline" onClick={() => setLines((current) => [...current, blankLine(current.at(-1)?.categoryId || defaultCategory, current.at(-1)?.vatRate ?? startRate)])} disabled={lines.length >= 100}>
           <Plus />
           {t("addLine")}
         </Button>
@@ -257,6 +285,19 @@ const InvoiceForm = ({ kind, businessId, invoice, contactId }: { kind: InvoiceKi
 
       <Card>
         <CardContent className="space-y-4">
+          {vatTotal > 0n ? (
+            <dl className="space-y-1 text-sm text-muted-foreground">
+              <div className="flex justify-between">
+                <dt>{t("subtotal")}</dt>
+                <dd className="tabular-nums" data-testid="invoice-subtotal">{money(subtotal, currency)}</dd>
+              </div>
+              <div className="flex justify-between">
+                <dt>{t("vat")}</dt>
+                <dd className="tabular-nums" data-testid="invoice-vat">{money(vatTotal, currency)}</dd>
+              </div>
+            </dl>
+          ) : null}
+          {kind === "BILL" && !registered && vatTotal > 0n ? <p className="text-xs text-muted-foreground">{t("vatIntoCost")}</p> : null}
           <div className="flex items-baseline justify-between">
             <span className="font-medium">{t("total")}</span>
             <span className="text-2xl font-semibold tabular-nums" data-testid="invoice-total">

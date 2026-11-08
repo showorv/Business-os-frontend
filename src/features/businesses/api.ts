@@ -19,6 +19,10 @@ export interface BusinessSettings {
   transactionPrefix: string;
   // Expenses above this (in paisa) need an owner or admin to approve them. null: no limit.
   approvalThresholdMinor: string | null;
+  // VAT (11.6): only a registered business charges VAT on invoices and claims it back on bills.
+  vatRegistered?: boolean;
+  // The rate new invoice lines start with, in basis points: 1500 is 15%.
+  defaultVatRateBp?: number;
 }
 
 export const BUSINESS_TYPES = ["RETAIL", "SERVICES", "AGENCY", "ECOMMERCE", "MANUFACTURING", "CUSTOM"] as const;
