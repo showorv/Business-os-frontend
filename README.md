@@ -36,8 +36,8 @@ Payments go through a demo gateway for now; SSLCommerz and bKash plug in once th
 | 11.4 | Customers and suppliers | **Done** |
 | 11.5 | Invoices, bills, baki and aging, PDF and email, posting to the books | **Done** |
 | 11.6 | VAT on lines and a monthly VAT summary (help with Mushak) | **Done** |
-| 11.7 | Products and stock | Next |
-| 11.8 | Public home and pricing pages, terms and privacy, data export, full-width assistant | |
+| 11.7 | Saved items for invoice and bill lines (no stock counting) | **Done** |
+| 11.8 | Public home and pricing pages, terms and privacy, data export, full-width assistant | Next |
 
 ## Decisions made before starting
 
@@ -175,6 +175,50 @@ export const useCreateBusiness = () =>
 
 The helpers turn server errors into an `ApiError` with a code, which `errorMessage()` turns into words in
 the reader's language. The names of all cached lists live in `queryKeys`, in the same file.
+
+## Step 11.7: Saved items
+
+Planned as "products and stock", but counting stock would turn the app into an ERP. Instead it
+saves the typing: what the business sells or buys is saved once and picked on lines. Stock on hand
+isn't tracked.
+
+### What you can do now
+
+- **Items** in the sidebar (for people who can see money). *Add an item*: a name, unit (pcs, kg,
+  gaj… with suggestions), code, selling price, buying price (leave one empty if you only sell or
+  only buy it), VAT rate, income and expense categories, and a note. The same name twice is refused.
+- **The list:** each item with its prices per unit, VAT, and how much was **sold** and **bought**
+  on issued invoices and bills ("10 pcs · ৳8,500"). A table on a laptop, a stacked list on a phone.
+  Search by name or code; tap a name to change it or *Archive* it (and *Restore* from *Show
+  archived*).
+- **On a new invoice or bill:** once there are items, each line starts with *Saved item*. Picking
+  one fills in the description, the price (selling price on an invoice, buying price on a bill),
+  the category and the VAT rate, and the quantity box shows the unit ("Qty (pcs)"). Everything can
+  still be changed. *Saved items* next to *Add a line* opens the list.
+- An invoice's page and its PDF show the unit after the quantity ("10 pcs").
+- English and Bangla, light and dark, laptop and phone.
+
+### How it was checked
+
+- Type check, lint, unit tests (80) and the build pass.
+- A new browser test (`e2e/items.spec.ts`, laptop and phone): an item saved with unit, both prices
+  and a category; the same name in other letters refused; picked on an invoice it fills in the
+  line with ৳850.00 and "Qty (pcs)"; 10 of them make ৳8,500 and the invoice shows "10 pcs"; on a
+  bill it fills in the buying price; the list shows 10 pcs sold and 20 bought; archived, it leaves
+  the list and the picker.
+- Full run: everything passes; the known flaky statements test failed once and passed on its own.
+- Screenshots of the item form, the list (laptop and phone) and an invoice filled from an item
+  were reviewed.
+
+### Fixes along the way
+
+- **A quantity of 10 showed as "1"** on an invoice's page, and loaded as 1 when editing a draft:
+  trimming the zeros after a decimal point also trimmed the zero of a whole number. Fixed (from
+  11.5).
+- On a phone the list first was a table whose sold and bought columns were off-screen; it is now
+  a stacked list there.
+- The invoice and VAT browser tests now choose the category by its label rather than "the first
+  box", since lines can now start with the item box.
 
 ## Step 11.6: VAT on invoices and bills, and the month's VAT
 

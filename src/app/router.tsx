@@ -22,6 +22,7 @@ import { BusinessSettingsPage } from "@/features/businesses/settings/BusinessSet
 import { AccountsPage } from "@/features/finance/accounts/AccountsPage";
 import { ContactDetailPage } from "@/features/contacts/ContactDetailPage";
 import { ContactsPage } from "@/features/contacts/ContactsPage";
+import { ItemsPage } from "@/features/items/ItemsPage";
 import { DuesPage } from "@/features/invoices/DuesPage";
 import { InvoiceDetailPage } from "@/features/invoices/InvoiceDetailPage";
 import { EditInvoicePage, NewInvoicePage } from "@/features/invoices/InvoiceFormPage";
@@ -130,6 +131,7 @@ export const router = createBrowserRouter([
           { path: "/b/:businessId/accounts", element: <AccountsPage /> },
           { path: "/b/:businessId/contacts", element: <ContactsPage /> },
           { path: "/b/:businessId/contacts/:contactId", element: <ContactDetailPage /> },
+          { path: "/b/:businessId/items", element: <ItemsPage /> },
           // Invoices and bills share their pages; `key` makes React start fresh when switching between them.
           ...(["SALE", "BILL"] as const).flatMap((kind) => {
             const base = `/b/:businessId/${kind === "SALE" ? "invoices" : "bills"}`;

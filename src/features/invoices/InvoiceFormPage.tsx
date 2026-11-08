@@ -14,6 +14,7 @@ import type { BusinessSettings } from "@/features/businesses/api";
 import { useCurrentBusiness } from "@/features/businesses/useCurrentBusiness";
 import { useMoney } from "@/features/businesses/useMoney";
 import { useAllContacts, type Contact } from "@/features/contacts/api";
+import { useItemsFor, type Item } from "@/features/items/api";
 import { ContactDialog } from "@/features/contacts/ContactDialog";
 import { useCategories } from "@/features/finance/api";
 import { categoryName } from "@/features/finance/names";
@@ -22,7 +23,7 @@ import { todayIn } from "@/lib/dates";
 import { errorMessage } from "@/lib/errors";
 import { minorToInput, parseMoney } from "@/lib/money";
 import { useCreateInvoice, useInvoice, useIssueInvoice, useUpdateInvoice, type Invoice, type InvoiceKind } from "./api";
-import { KIND_PATH, lineAmount, lineVat } from "./parts";
+import { KIND_PATH, lineAmount, lineVat, showQuantity } from "./parts";
 import { rateLabel, VAT_RATES } from "./vat";
 
 interface LineDraft {
@@ -33,6 +34,9 @@ interface LineDraft {
   categoryId: string;
   // Basis points as text, for the select: "1500" is 15%.
   vatRate: string;
+  // The saved item it was filled from, and its unit; empty when typed in.
+  itemId: string;
+  unit: string;
 }
 
 const addDays = (date: string, days: number) => {
@@ -43,7 +47,7 @@ const addDays = (date: string, days: number) => {
 
 const TERMS = [0, 7, 15, 30] as const;
 
-const blankLine = (categoryId = "", vatRate = "0"): LineDraft => ({ key: crypto.randomUUID(), description: "", quantity: "1", price: "", categoryId, vatRate });
+const blankLine = (categoryId = "", vatRate = "0"): LineDraft => ({ key: crypto.randomUUID(), description: "", quantity: "1", price: "", categoryId, vatRate, itemId: "", unit: "" });
 
 // The page for a new invoice or bill, and for changing a draft.
 export const NewInvoicePage = ({ kind }: { kind: InvoiceKind }) => {
@@ -67,6 +71,7 @@ const InvoiceForm = ({ kind, businessId, invoice, contactId }: { kind: InvoiceKi
   const money = useMoney();
   const contacts = useAllContacts(businessId);
   const categories = useCategories(businessId);
+  const savedItems = useItemsFor(businessId, kind);
   const create = useCreateInvoice(businessId);
   const update = useUpdateInvoice(businessId, invoice?.id ?? "");
   const issue = useIssueInvoice(businessId, invoice?.id ?? "");
@@ -90,10 +95,12 @@ const InvoiceForm = ({ kind, businessId, invoice, contactId }: { kind: InvoiceKi
       ? invoice.lines.map((line) => ({
           key: line.id,
           description: line.description,
-          quantity: line.quantity.replace(/\.?0+$/, ""),
+          quantity: showQuantity(line.quantity),
           price: minorToInput(line.unitPriceMinor, currency),
           categoryId: line.categoryId,
           vatRate: String(line.vatRateBp),
+          itemId: line.itemId ?? "",
+          unit: line.unit ?? "",
         }))
       : [blankLine("", startRate)],
   );
@@ -130,6 +137,31 @@ const InvoiceForm = ({ kind, businessId, invoice, contactId }: { kind: InvoiceKi
   const setLine = (key: string, field: keyof LineDraft, value: string) =>
     setLines((current) => current.map((line) => (line.key === key ? { ...line, [field]: value } : line)));
 
+  // Picking a saved item fills the line in; every box can still be changed after.
+  const itemList = savedItems.data ?? [];
+  const pickItem = (key: string, itemId: string) => {
+    const item: Item | undefined = itemList.find((entry) => entry.id === itemId);
+    setLines((current) =>
+      current.map((line) => {
+        if (line.key !== key) return line;
+        if (!item) return { ...line, itemId: "", unit: "" };
+        const price = kind === "SALE" ? item.salePriceMinor : item.purchasePriceMinor;
+        const category = kind === "SALE" ? item.incomeCategoryId : item.expenseCategoryId;
+        return {
+          ...line,
+          itemId: item.id,
+          unit: item.unit ?? "",
+          description: item.name,
+          price: price ? minorToInput(price, currency) : line.price,
+          categoryId: category && usableCategories.some((entry) => entry.id === category) ? category : line.categoryId,
+          vatRate: showVat ? String(item.vatRateBp) : line.vatRate,
+        };
+      }),
+    );
+  };
+  // Only an item still on the list is sent; one archived since the draft was saved is let go.
+  const linkedItem = (line: LineDraft) => (line.itemId && itemList.some((item) => item.id === line.itemId) ? line.itemId : null);
+
   const save = (andIssue: boolean) => (event?: FormEvent) => {
     event?.preventDefault();
     setTried(true);
@@ -140,7 +172,7 @@ const InvoiceForm = ({ kind, businessId, invoice, contactId }: { kind: InvoiceKi
       dueDate,
       referenceNo: referenceNo.trim() || null,
       notes: notes.trim() || null,
-      lines: priced.map((line) => ({ description: line.description.trim(), quantity: line.quantity.trim(), unitPriceMinor: line.priceMinor!, categoryId: line.categoryId, vatRateBp: showVat ? Number(line.vatRate) : 0 })),
+      lines: priced.map((line) => ({ description: line.description.trim(), quantity: line.quantity.trim(), unitPriceMinor: line.priceMinor!, categoryId: line.categoryId, vatRateBp: showVat ? Number(line.vatRate) : 0, itemId: linkedItem(line), unit: line.unit.trim() || null })),
     };
     const done = (id: string) => {
       toast.success(andIssue ? t(`${k}_issued`) : t("draftSaved"));
@@ -219,13 +251,27 @@ const InvoiceForm = ({ kind, businessId, invoice, contactId }: { kind: InvoiceKi
               <li key={line.key}>
                 <Card>
                   <CardContent className="grid gap-3 sm:grid-cols-12 sm:items-start">
+                    {itemList.length > 0 ? (
+                      <div className="sm:col-span-12">
+                        <Field label={t("savedItem")}>
+                          <Select value={linkedItem(line) ?? ""} onChange={(event) => pickItem(line.key, event.target.value)}>
+                            <option value="">{t("typeItIn")}</option>
+                            {itemList.map((item) => (
+                              <option key={item.id} value={item.id}>
+                                {item.code ? `${item.name} (${item.code})` : item.name}
+                              </option>
+                            ))}
+                          </Select>
+                        </Field>
+                      </div>
+                    ) : null}
                     <div className={showVat ? "sm:col-span-3" : "sm:col-span-5"}>
                       <Field label={t("description")} error={show(problem.description) ? t("needDescription") : undefined}>
                         <Input maxLength={300} value={line.description} onChange={(event) => setLine(line.key, "description", event.target.value)} />
                       </Field>
                     </div>
                     <div className="sm:col-span-2">
-                      <Field label={t("quantity")} error={show(problem.quantity) ? t("needQuantity") : undefined}>
+                      <Field label={line.unit ? `${t("quantity")} (${line.unit})` : t("quantity")} error={show(problem.quantity) ? t("needQuantity") : undefined}>
                         <Input inputMode="decimal" className="tabular-nums" value={line.quantity} onChange={(event) => setLine(line.key, "quantity", event.target.value)} />
                       </Field>
                     </div>
@@ -281,6 +327,9 @@ const InvoiceForm = ({ kind, businessId, invoice, contactId }: { kind: InvoiceKi
           <Plus />
           {t("addLine")}
         </Button>
+        <Link to={`/b/${businessId}/items`} className="ml-3 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+          {t("manageItems")}
+        </Link>
       </section>
 
       <Card>

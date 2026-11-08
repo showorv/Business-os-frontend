@@ -30,6 +30,9 @@ export const queryKeys = {
   contacts: (businessId: string) => ["businesses", businessId, "contacts"],
   contactList: (businessId: string, filters: string) => ["businesses", businessId, "contacts", "list", filters],
   contact: (businessId: string, contactId: string) => ["businesses", businessId, "contacts", contactId],
+  // Saved items for invoice and bill lines.
+  items: (businessId: string) => ["businesses", businessId, "items"],
+  itemList: (businessId: string, filters: string) => ["businesses", businessId, "items", "list", filters],
   // Invoices, bills and the dues (baki) worked out from them.
   invoices: (businessId: string) => ["businesses", businessId, "invoices"],
   invoiceItem: (businessId: string, name: string, params = "") => ["businesses", businessId, "invoices", name, params],

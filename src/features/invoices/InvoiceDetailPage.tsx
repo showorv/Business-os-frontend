@@ -35,7 +35,7 @@ import {
   type Invoice,
   type InvoiceKind,
 } from "./api";
-import { KIND_PATH, StatusBadge } from "./parts";
+import { KIND_PATH, showQuantity, StatusBadge } from "./parts";
 import { rateLabel } from "./vat";
 
 type Dialog = "pay" | "email" | "void" | "delete" | { undo: string } | null;
@@ -183,7 +183,9 @@ export const InvoiceDetailPage = ({ kind }: { kind: InvoiceKind }) => {
                     {line.description}
                     <span className="block text-xs text-muted-foreground">{categoryName(line.category, currentLocale())}</span>
                   </td>
-                  <td className="px-4 py-2.5 text-right tabular-nums">{line.quantity.replace(/\.?0+$/, "")}</td>
+                  <td className="px-4 py-2.5 text-right tabular-nums">{showQuantity(line.quantity)}
+                    {line.unit ? <span className="text-muted-foreground"> {line.unit}</span> : null}
+                  </td>
                   <td className="px-4 py-2.5 text-right tabular-nums">{money(line.unitPriceMinor, currency)}</td>
                   {hasVat ? (
                     <td className="px-4 py-2.5 text-right tabular-nums">

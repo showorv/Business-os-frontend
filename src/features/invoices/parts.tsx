@@ -44,6 +44,9 @@ export const lineAmount = (quantity: string, unitPriceMinor: string | null) => {
   return (milli * BigInt(unitPriceMinor) + 500n) / 1000n;
 };
 
+// "2.500" → "2.5" and "10.000" → "10", but "10" stays "10".
+export const showQuantity = (quantity: string) => (quantity.includes(".") ? quantity.replace(/\.?0+$/, "") : quantity);
+
 // VAT on a line, rounded half up, the same sum the server does. Rate in basis points.
 export const lineVat = (amountMinor: bigint | null, rateBp: number) => (amountMinor === null ? null : (amountMinor * BigInt(rateBp) + 5000n) / 10000n);
 

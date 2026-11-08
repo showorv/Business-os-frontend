@@ -5099,6 +5099,9 @@ export interface paths {
                             categoryId: string;
                             /** @default 0 */
                             vatRateBp?: number;
+                            /** Format: uuid */
+                            itemId?: string | null;
+                            unit?: string | null;
                         }[];
                         /** @default false */
                         issue?: boolean;
@@ -5168,6 +5171,9 @@ export interface paths {
                                     vatMinor: string;
                                     /** Format: uuid */
                                     categoryId: string;
+                                    /** Format: uuid */
+                                    itemId: string | null;
+                                    unit: string | null;
                                     category: {
                                         /** Format: uuid */
                                         id: string;
@@ -5399,6 +5405,9 @@ export interface paths {
                                     vatMinor: string;
                                     /** Format: uuid */
                                     categoryId: string;
+                                    /** Format: uuid */
+                                    itemId: string | null;
+                                    unit: string | null;
                                     category: {
                                         /** Format: uuid */
                                         id: string;
@@ -5530,6 +5539,9 @@ export interface paths {
                             categoryId: string;
                             /** @default 0 */
                             vatRateBp?: number;
+                            /** Format: uuid */
+                            itemId?: string | null;
+                            unit?: string | null;
                         }[];
                     };
                 };
@@ -5597,6 +5609,9 @@ export interface paths {
                                     vatMinor: string;
                                     /** Format: uuid */
                                     categoryId: string;
+                                    /** Format: uuid */
+                                    itemId: string | null;
+                                    unit: string | null;
                                     category: {
                                         /** Format: uuid */
                                         id: string;
@@ -5735,6 +5750,9 @@ export interface paths {
                                     vatMinor: string;
                                     /** Format: uuid */
                                     categoryId: string;
+                                    /** Format: uuid */
+                                    itemId: string | null;
+                                    unit: string | null;
                                     category: {
                                         /** Format: uuid */
                                         id: string;
@@ -5883,6 +5901,9 @@ export interface paths {
                                     vatMinor: string;
                                     /** Format: uuid */
                                     categoryId: string;
+                                    /** Format: uuid */
+                                    itemId: string | null;
+                                    unit: string | null;
                                     category: {
                                         /** Format: uuid */
                                         id: string;
@@ -6035,6 +6056,9 @@ export interface paths {
                                     vatMinor: string;
                                     /** Format: uuid */
                                     categoryId: string;
+                                    /** Format: uuid */
+                                    itemId: string | null;
+                                    unit: string | null;
                                     category: {
                                         /** Format: uuid */
                                         id: string;
@@ -6178,6 +6202,9 @@ export interface paths {
                                     vatMinor: string;
                                     /** Format: uuid */
                                     categoryId: string;
+                                    /** Format: uuid */
+                                    itemId: string | null;
+                                    unit: string | null;
                                     category: {
                                         /** Format: uuid */
                                         id: string;
@@ -6392,6 +6419,9 @@ export interface paths {
                                     vatMinor: string;
                                     /** Format: uuid */
                                     categoryId: string;
+                                    /** Format: uuid */
+                                    itemId: string | null;
+                                    unit: string | null;
                                     category: {
                                         /** Format: uuid */
                                         id: string;
@@ -6552,6 +6582,420 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{businessId}/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Items by name, with how much was sold and bought on issued invoices and bills. use=SALE lists those with a selling price, BILL those with a buying price. Needs finance.read */
+        get: {
+            parameters: {
+                query?: {
+                    limit?: number;
+                    cursor?: string;
+                    search?: string;
+                    use?: "SALE" | "BILL";
+                    includeArchived?: string;
+                };
+                header?: never;
+                path: {
+                    businessId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                                code: string | null;
+                                unit: string | null;
+                                description: string | null;
+                                salePriceMinor: string | null;
+                                purchasePriceMinor: string | null;
+                                vatRateBp: number;
+                                /** Format: uuid */
+                                incomeCategoryId: string | null;
+                                /** Format: uuid */
+                                expenseCategoryId: string | null;
+                                incomeCategory: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    nameBn: string | null;
+                                } | null;
+                                expenseCategory: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    nameBn: string | null;
+                                } | null;
+                                isActive: boolean;
+                                createdAt: string;
+                                totals: {
+                                    sold: {
+                                        quantity: string;
+                                        amountMinor: string;
+                                        lines: number;
+                                    };
+                                    bought: {
+                                        quantity: string;
+                                        amountMinor: string;
+                                        lines: number;
+                                    };
+                                };
+                            }[];
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Save something the business sells or buys, with its usual prices, VAT rate and categories. Names are unique per business. No stock is counted. Needs finance.write */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    businessId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        code?: string | null;
+                        unit?: string | null;
+                        description?: string | null;
+                        salePriceMinor?: string | null;
+                        purchasePriceMinor?: string | null;
+                        /** @default 0 */
+                        vatRateBp?: number;
+                        /** Format: uuid */
+                        incomeCategoryId?: string | null;
+                        /** Format: uuid */
+                        expenseCategoryId?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Success */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                                code: string | null;
+                                unit: string | null;
+                                description: string | null;
+                                salePriceMinor: string | null;
+                                purchasePriceMinor: string | null;
+                                vatRateBp: number;
+                                /** Format: uuid */
+                                incomeCategoryId: string | null;
+                                /** Format: uuid */
+                                expenseCategoryId: string | null;
+                                incomeCategory: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    nameBn: string | null;
+                                } | null;
+                                expenseCategory: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    nameBn: string | null;
+                                } | null;
+                                isActive: boolean;
+                                createdAt: string;
+                                totals: {
+                                    sold: {
+                                        quantity: string;
+                                        amountMinor: string;
+                                        lines: number;
+                                    };
+                                    bought: {
+                                        quantity: string;
+                                        amountMinor: string;
+                                        lines: number;
+                                    };
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{businessId}/items/{itemId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One item, with how much was sold and bought. Needs finance.read */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    businessId: string;
+                    itemId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                                code: string | null;
+                                unit: string | null;
+                                description: string | null;
+                                salePriceMinor: string | null;
+                                purchasePriceMinor: string | null;
+                                vatRateBp: number;
+                                /** Format: uuid */
+                                incomeCategoryId: string | null;
+                                /** Format: uuid */
+                                expenseCategoryId: string | null;
+                                incomeCategory: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    nameBn: string | null;
+                                } | null;
+                                expenseCategory: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    nameBn: string | null;
+                                } | null;
+                                isActive: boolean;
+                                createdAt: string;
+                                totals: {
+                                    sold: {
+                                        quantity: string;
+                                        amountMinor: string;
+                                        lines: number;
+                                    };
+                                    bought: {
+                                        quantity: string;
+                                        amountMinor: string;
+                                        lines: number;
+                                    };
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Change an item, or archive it with isActive: false. Lines already made keep their own prices. Needs finance.write */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    businessId: string;
+                    itemId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        name?: string;
+                        code?: string | null;
+                        unit?: string | null;
+                        description?: string | null;
+                        salePriceMinor?: string | null;
+                        purchasePriceMinor?: string | null;
+                        vatRateBp?: number;
+                        /** Format: uuid */
+                        incomeCategoryId?: string | null;
+                        /** Format: uuid */
+                        expenseCategoryId?: string | null;
+                        isActive?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                                code: string | null;
+                                unit: string | null;
+                                description: string | null;
+                                salePriceMinor: string | null;
+                                purchasePriceMinor: string | null;
+                                vatRateBp: number;
+                                /** Format: uuid */
+                                incomeCategoryId: string | null;
+                                /** Format: uuid */
+                                expenseCategoryId: string | null;
+                                incomeCategory: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    nameBn: string | null;
+                                } | null;
+                                expenseCategory: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    name: string;
+                                    nameBn: string | null;
+                                } | null;
+                                isActive: boolean;
+                                createdAt: string;
+                                totals: {
+                                    sold: {
+                                        quantity: string;
+                                        amountMinor: string;
+                                        lines: number;
+                                    };
+                                    bought: {
+                                        quantity: string;
+                                        amountMinor: string;
+                                        lines: number;
+                                    };
+                                };
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
         trace?: never;
     };
     "/api/v1/businesses/{businessId}/documents/uploads": {
