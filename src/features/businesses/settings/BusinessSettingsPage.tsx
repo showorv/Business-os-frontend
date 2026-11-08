@@ -6,6 +6,7 @@ import { Permission } from "@/lib/permissions";
 import { useAccess } from "../api";
 import { useCurrentBusiness } from "../useCurrentBusiness";
 import { ApprovalLimitCard } from "./ApprovalLimitCard";
+import { DataExportCard } from "./DataExportCard";
 import { DetailsCard } from "./DetailsCard";
 import { PreferencesCard } from "./PreferencesCard";
 import { StatusCard } from "./StatusCard";
@@ -36,6 +37,7 @@ export const BusinessSettingsPage = () => {
       <PreferencesCard key={`prefs-${version}`} business={business} editable={editable} />
       <ApprovalLimitCard key={`limit-${version}`} business={business} editable={editable} />
       <VatCard key={`vat-${version}`} business={business} editable={editable} />
+      {canManage ? <DataExportCard businessId={business.id} /> : null}
       {canManage ? <StatusCard business={business} /> : null}
     </div>
   );

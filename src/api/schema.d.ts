@@ -10026,7 +10026,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List exports. Needs finance.read */
+        /** List exports. ALL_DATA ones show only to people with business.manage. Needs finance.read */
         get: {
             parameters: {
                 query?: {
@@ -10060,6 +10060,8 @@ export interface paths {
                                 status: "QUEUED" | "RUNNING" | "READY" | "FAILED";
                                 fileName: string | null;
                                 errorCode: string | null;
+                                finishedAt: string | null;
+                                createdAt: string;
                             }[];
                         };
                     };
@@ -10134,6 +10136,82 @@ export interface paths {
                                 status: "QUEUED" | "RUNNING" | "READY" | "FAILED";
                                 fileName: string | null;
                                 errorCode: string | null;
+                                finishedAt: string | null;
+                                createdAt: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/businesses/{businessId}/report-exports/data": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Queue an Excel workbook of everything the business holds (accounts, categories, contacts, items, transactions, invoices, journal, budgets, goals, tasks), to take it elsewhere. Report ALL_DATA. Works even when the plan has lapsed. Needs business.manage and recent MFA */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    businessId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                report: string;
+                                format: string;
+                                locale: string;
+                                digitStyle: string;
+                                /** @enum {string} */
+                                status: "QUEUED" | "RUNNING" | "READY" | "FAILED";
+                                fileName: string | null;
+                                errorCode: string | null;
+                                finishedAt: string | null;
+                                createdAt: string;
                             };
                         };
                     };
@@ -10205,6 +10283,8 @@ export interface paths {
                                 status: "QUEUED" | "RUNNING" | "READY" | "FAILED";
                                 fileName: string | null;
                                 errorCode: string | null;
+                                finishedAt: string | null;
+                                createdAt: string;
                             };
                         };
                     };
@@ -16393,6 +16473,69 @@ export interface paths {
                                 en: string;
                                 bn: string;
                             } | null;
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/signup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The free trial a new sign-up gets (days and plan; 0 days means they start on Free) and whether sign-ups are open. No sign-in needed */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                trialDays: number;
+                                trialPlanKey: string;
+                                signupsEnabled: boolean;
+                            };
                         };
                     };
                 };

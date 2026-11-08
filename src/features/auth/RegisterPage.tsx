@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -52,6 +52,15 @@ export const RegisterPage = () => {
         <Button type="submit" className="w-full" disabled={register.isPending}>
           {register.isPending ? t("auth:registering") : t("auth:register")}
         </Button>
+        <p className="text-center text-xs text-muted-foreground">
+          <Trans
+            i18nKey="public:agree"
+            components={{
+              terms: <Link to="/terms" target="_blank" className="underline underline-offset-2 hover:text-foreground" />,
+              privacy: <Link to="/privacy" target="_blank" className="underline underline-offset-2 hover:text-foreground" />,
+            }}
+          />
+        </p>
       </form>
     </AuthCard>
   );

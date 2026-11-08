@@ -101,5 +101,9 @@
   "billing_plan_ended_grace_body": "It keeps working until {{until}}. Renew before then to keep it.",
   "billing_plan_ended_trial_title": "Your trial has ended",
   "billing_plan_ended_other_title": "Your plan has ended",
-  "billing_plan_ended_body": "You're on Free now. Nothing was deleted, and you can upgrade any time."
+  "billing_plan_ended_body": "You're on Free now. Nothing was deleted, and you can upgrade any time.",
+  "export_ready_data_title": "Your business data is ready",
+  "export_ready_data_body": "Download it from Business settings. The link lasts a few days.",
+  "export_failed_data_title": "Your business data couldn't be put together",
+  "export_failed_data_body": "Please try again from Business settings."
 }

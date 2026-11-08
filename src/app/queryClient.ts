@@ -11,3 +11,10 @@ export const queryClient = new QueryClient({
     },
   },
 });
+
+// What anyone may see, signed in or not: the plans, the free trial and the announcement.
+const PUBLIC = new Set(["plans", "signup-info", "announcement"]);
+
+// On signing out, forgets everything that belonged to the person, and keeps what is public. Clearing it
+// all would also drop a public page's request still on its way, and leave that page loading for ever.
+export const forgetPrivateData = () => queryClient.removeQueries({ predicate: (query) => !PUBLIC.has(String(query.queryKey[0])) });

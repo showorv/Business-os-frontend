@@ -7,7 +7,7 @@ import { useStepUpRetry } from "@/features/auth/useStepUpRetry";
 import { errorMessage } from "@/lib/errors";
 
 const ICONS = { PDF: FileText, XLSX: FileSpreadsheet, CSV: FileType } as const;
-const REPORT_KEY: Record<string, string> = { PROFIT_AND_LOSS: "pnl", BALANCE_SHEET: "balance", CASH_FLOW: "cash", TRIAL_BALANCE: "trial" };
+const REPORT_KEY: Record<string, string> = { PROFIT_AND_LOSS: "pnl", BALANCE_SHEET: "balance", CASH_FLOW: "cash", TRIAL_BALANCE: "trial", ALL_DATA: "allData" };
 
 // Files you asked for. The worker makes each one in the background; the list checks back until done.
 export const ExportsCard = ({ businessId }: { businessId: string }) => {

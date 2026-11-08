@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { queryClient } from "@/app/queryClient";
+import { forgetPrivateData } from "@/app/queryClient";
 import { signedOut, userUpdated, useAppDispatch, type AppDispatch } from "@/app/store";
 import { setLanguage } from "@/i18n";
 import { api, unwrap } from "@/lib/api";
@@ -21,7 +21,7 @@ const begin = (data: unknown) => {
 const finish = (dispatch: AppDispatch, reason: "passwordChanged" | null) => {
   dispatch(signedOut(reason));
   endSession();
-  queryClient.clear();
+  forgetPrivateData();
 };
 
 // ---- Signing in and out ----

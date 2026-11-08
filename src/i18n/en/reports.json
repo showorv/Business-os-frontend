@@ -41,5 +41,6 @@
   "making": "Making…",
   "failed": "Failed",
   "download": "Download",
-  "downloadFile": "Download {{name}}"
+  "downloadFile": "Download {{name}}",
+  "name_allData": "All business data"
 }

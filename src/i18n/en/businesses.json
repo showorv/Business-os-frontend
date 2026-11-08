@@ -64,5 +64,13 @@
   "next95": "Step 9.5: ledger, chart of accounts and closing months",
   "limitTitle": "Your plan is full",
   "limitBody_one": "The {{plan}} plan has room for {{count}} business. Upgrade to Pro to run several side by side, or archive one you no longer use.",
-  "limitBody_other": "The {{plan}} plan has room for {{count}} businesses. Upgrade for more, or archive one you no longer use."
+  "limitBody_other": "The {{plan}} plan has room for {{count}} businesses. Upgrade for more, or archive one you no longer use.",
+  "dataTitle": "Your data",
+  "dataHint": "Download everything this business holds as one Excel file: accounts, transactions, customers and suppliers, items, invoices and bills, the journal, budgets, goals and tasks. Uploaded files stay in Documents.",
+  "dataRequest": "Prepare a download",
+  "dataAgain": "Prepare a new one",
+  "dataMaking": "Putting it together…",
+  "dataFailed": "Couldn't be made. Try again.",
+  "dataDownload": "Download",
+  "dataAsked": "Asked for {{when}}"
 }

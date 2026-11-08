@@ -37,7 +37,9 @@ Payments go through a demo gateway for now; SSLCommerz and bKash plug in once th
 | 11.5 | Invoices, bills, baki and aging, PDF and email, posting to the books | **Done** |
 | 11.6 | VAT on lines and a monthly VAT summary (help with Mushak) | **Done** |
 | 11.7 | Saved items for invoice and bill lines (no stock counting) | **Done** |
-| 11.8 | Public home and pricing pages, terms and privacy, data export, full-width assistant | Next |
+| 11.8 | Public home and pricing pages, terms and privacy, data export, full-width assistant | **Done** |
+
+Phase 11 is complete.
 
 ## Decisions made before starting
 
@@ -175,6 +177,57 @@ export const useCreateBusiness = () =>
 
 The helpers turn server errors into an `ApiError` with a code, which `errorMessage()` turns into words in
 the reader's language. The names of all cached lists live in `queryKeys`, in the same file.
+
+## Step 11.8: Home page, pricing, terms and privacy, your data, a wider assistant
+
+### What you can do now
+
+- **A home page at `/`** for anyone not signed in: what the app does, an example month (marked
+  "An example, not real figures."), eight feature cards (the AI assistant marked *Pro*), why it fits
+  Bangladesh, how your data is kept safe, three steps to start, and *Start free*. The free-trial line
+  ("Pro free for 14 days") comes from the platform settings, so it changes when the admin changes the
+  trial. Someone already signed in who opens `/` goes straight into the app.
+- **Pricing at `/pricing`:** Free and Pro side by side with their limits, a Monthly / Yearly switch
+  (yearly shows how much it saves), the trial note, and five common questions. The prices and limits
+  come from the plans the admin sets. Signed in, the buttons read *Open the app* and *See your plan*.
+- **Terms at `/terms` and privacy at `/privacy`**, in English and Bangla. The sign-up form links to
+  both. They are a plain starting text: **have them read by a lawyer before going live.**
+- The public pages share a header (Pricing, language, light/dark, Sign in, Start free) and a footer
+  (Pricing, Terms, Privacy). The logo on the sign-in pages now leads to the home page.
+- **Business settings → Your data** (owners and admins only): *Prepare a download* puts everything the
+  business holds into one Excel file: accounts, categories, customers and suppliers, items,
+  transactions, invoices and bills with their lines and payments, the chart of accounts, the journal,
+  budgets, goals and tasks. It asks for the two-step code if it hasn't been entered lately. When it is
+  ready, a notification arrives and *Download* appears. Uploaded files stay in Documents.
+- **The AI assistant uses the full width** next to the menu on a laptop. Other pages keep their
+  readable width.
+- English and Bangla, light and dark, laptop and phone.
+
+### Before going live
+
+- Set `contactEmail` in `src/config/brand.ts` to the address people should write to.
+- Have the terms and privacy text (`src/features/public/legal.ts`) reviewed, and change its date.
+
+### How it was checked
+
+- Type check, lint, unit tests (82) and the build pass.
+- A new browser test (`e2e/public.spec.ts`, laptop and phone): a visitor reads the home page, goes to
+  pricing, switches Monthly and Yearly, opens a question, reads the terms, switches to Bangla, reads the
+  privacy policy, opens `/pricing` straight from the address bar, and finds the terms and privacy links
+  on the sign-up form. Someone signed in is taken from `/` to their business, sees *Open the app* on
+  pricing, and downloads `rahim-traders-data-<date>.xlsx`. On a laptop the assistant fills the width
+  beside the menu while settings stays narrower.
+- Full run: everything passes. The known flaky two-step test, and the customers test once, failed
+  during the full run and passed on their own.
+- Screenshots of the home page (light and dark, laptop and phone), pricing, the Bangla terms, the
+  data card and the assistant were reviewed.
+
+### Fixes along the way
+
+- **Pricing stuck on "Loading" when opened straight from the address bar.** On loading, the app finds
+  out nobody is signed in and clears its memory of that person's data, which also threw away the
+  plans being fetched. Signing out now forgets only what belonged to the person, and keeps the public
+  plans, trial and announcement.
 
 ## Step 11.7: Saved items
 

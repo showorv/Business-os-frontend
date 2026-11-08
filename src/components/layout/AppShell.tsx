@@ -1,8 +1,9 @@
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Navigate, Outlet } from "react-router";
+import { Navigate, Outlet, useMatch } from "react-router";
 import { Alert } from "@/components/ui/alert";
+import { cn } from "@/lib/cn";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Spinner } from "@/components/ui/spinner";
@@ -21,6 +22,8 @@ export const AppShell = () => {
   const { t } = useTranslation("shell");
   const [menuOpen, setMenuOpen] = useState(false);
   const { business, businesses, isLoading, notFound } = useCurrentBusiness();
+  // The assistant uses the whole width beside the menu; its messages keep a readable width inside.
+  const wide = useMatch("/b/:businessId/assistant") !== null;
 
   if (isLoading) return <Spinner className="mt-32" />;
   // Someone with no business yet sets one up first.
@@ -52,7 +55,7 @@ export const AppShell = () => {
             <UserMenu />
           </div>
         </header>
-        <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:py-8">
+        <main className={cn("mx-auto w-full px-4 py-6 sm:px-6 lg:py-8", !wide && "max-w-6xl")}>
           <Announcement className="mb-4" />
           {business && business.status !== "ACTIVE" ? (
             <Alert tone="warning" className="mb-6">

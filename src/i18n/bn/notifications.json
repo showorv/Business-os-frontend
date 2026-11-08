@@ -101,5 +101,9 @@
   "billing_plan_ended_grace_body": "{{until}} পর্যন্ত চলবে। রাখতে চাইলে এর আগে নবায়ন করুন।",
   "billing_plan_ended_trial_title": "আপনার ট্রায়াল শেষ",
   "billing_plan_ended_other_title": "আপনার প্ল্যান শেষ",
-  "billing_plan_ended_body": "এখন আপনি ফ্রি প্ল্যানে। কিছুই মোছা হয়নি, যেকোনো সময় আপগ্রেড করতে পারেন।"
+  "billing_plan_ended_body": "এখন আপনি ফ্রি প্ল্যানে। কিছুই মোছা হয়নি, যেকোনো সময় আপগ্রেড করতে পারেন।",
+  "export_ready_data_title": "আপনার ব্যবসার তথ্য তৈরি",
+  "export_ready_data_body": "ব্যবসার সেটিংস থেকে ডাউনলোড করুন। লিংকটি কয়েক দিন থাকবে।",
+  "export_failed_data_title": "আপনার ব্যবসার তথ্য একসাথে করা যায়নি",
+  "export_failed_data_body": "ব্যবসার সেটিংস থেকে আবার চেষ্টা করুন।"
 }

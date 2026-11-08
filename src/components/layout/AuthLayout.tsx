@@ -1,4 +1,4 @@
-import { Outlet } from "react-router";
+import { Link, Outlet } from "react-router";
 import { brand } from "@/config/brand";
 import { cn } from "@/lib/cn";
 import { Announcement } from "./Announcement";
@@ -10,10 +10,10 @@ import { UserMenu } from "./UserMenu";
 export const AuthLayout = ({ wide = false }: { wide?: boolean }) => (
   <div className="flex min-h-dvh flex-col">
     <header className="flex items-center justify-between px-4 py-4 sm:px-8 print:hidden">
-      <span className="flex items-center gap-2 font-semibold">
+      <Link to="/" className="flex items-center gap-2 font-semibold">
         <img src={brand.logo} alt="" className={cn("size-8", brand.invertLogoInDark && "dark:invert")} />
         {brand.name}
-      </span>
+      </Link>
       <div className="flex items-center gap-2">
         <LanguageSwitch />
         <ThemeSwitch />

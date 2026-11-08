@@ -56,10 +56,25 @@ import { SettingsPage as AdminSettingsPage } from "@/features/admin/SettingsPage
 import { UsersPage } from "@/features/admin/UsersPage";
 import { WorkspaceDetailPage } from "@/features/admin/WorkspaceDetailPage";
 import { WorkspacesPage } from "@/features/admin/WorkspacesPage";
-import { GuestOnly, HomeRedirect, RequireAuth } from "./guards";
+import { HomePage } from "@/features/public/HomePage";
+import { LegalPage } from "@/features/public/LegalPage";
+import { PricingPage } from "@/features/public/PricingPage";
+import { PublicLayout } from "@/features/public/PublicLayout";
+import { FrontDoor, GuestOnly, HomeRedirect, RequireAuth } from "./guards";
 
 // Every address in the app. Business screens live under /b/:businessId, so a link opens the right one.
 export const router = createBrowserRouter([
+  // The home page for visitors; someone signed in goes straight to their business.
+  { path: "/", element: <FrontDoor />, children: [{ index: true, element: <HomePage /> }] },
+  // Pages anyone can read, signed in or not.
+  {
+    element: <PublicLayout />,
+    children: [
+      { path: "/pricing", element: <PricingPage /> },
+      { path: "/terms", element: <LegalPage key="terms" page="terms" /> },
+      { path: "/privacy", element: <LegalPage key="privacy" page="privacy" /> },
+    ],
+  },
   {
     element: <AuthLayout />,
     children: [
@@ -79,7 +94,7 @@ export const router = createBrowserRouter([
   {
     element: <RequireAuth />,
     children: [
-      { path: "/", element: <HomeRedirect /> },
+      { path: "/app", element: <HomeRedirect /> },
       {
         element: <AuthLayout wide />,
         children: [

@@ -1,5 +1,6 @@
 import { Navigate, Outlet, useLocation } from "react-router";
 import { Spinner } from "@/components/ui/spinner";
+import { PublicLayout } from "@/features/public/PublicLayout";
 import { useBusinesses } from "@/features/businesses/api";
 import { lastBusiness } from "@/lib/preferences";
 import { useAppSelector } from "./store";
@@ -32,7 +33,15 @@ export const GuestOnly = () => {
   return <Outlet />;
 };
 
-// "/" opens the business used last, or the first one, or the set-up for a first business.
+// "/": the public home page for visitors, and the app for anyone signed in.
+export const FrontDoor = () => {
+  const status = useAppSelector((state) => state.auth.status);
+  if (status === "loading") return <FullPageSpinner />;
+  if (status === "signedIn") return <HomeRedirect />;
+  return <PublicLayout />;
+};
+
+// "/app" (and "/" when signed in) opens the business used last, or the first one, or the set-up for a first business.
 export const HomeRedirect = () => {
   const userId = useAppSelector((state) => state.auth.user?.id);
   const businesses = useBusinesses();

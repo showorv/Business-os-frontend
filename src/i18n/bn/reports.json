@@ -41,5 +41,6 @@
   "making": "তৈরি হচ্ছে…",
   "failed": "হয়নি",
   "download": "ডাউনলোড",
-  "downloadFile": "{{name}} ডাউনলোড করুন"
+  "downloadFile": "{{name}} ডাউনলোড করুন",
+  "name_allData": "ব্যবসার সব তথ্য"
 }

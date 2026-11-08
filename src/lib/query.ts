@@ -19,6 +19,8 @@ export const queryKeys = {
   admin: ["admin"],
   adminItem: (name: string, params = "") => ["admin", name, params],
   announcement: ["announcement"],
+  // The free trial and whether sign-ups are open, for the public pages.
+  signupInfo: ["signup-info"],
   roles: ["roles"],
   businesses: ["businesses"],
   business: (businessId: string) => ["businesses", businessId],

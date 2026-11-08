@@ -80,6 +80,12 @@ export const useCreateExport = (businessId: string) =>
     invalidates: [queryKeys.exports(businessId)],
   });
 
+// Everything the business holds, as one Excel workbook. Owners and admins only.
+export const useRequestDataExport = (businessId: string) =>
+  useApiMutation(() => api.POST("/api/v1/businesses/{businessId}/report-exports/data", { params: path(businessId) }), {
+    invalidates: [queryKeys.exports(businessId)],
+  });
+
 // The link lasts five minutes, so it's asked for at the moment of the click.
 export const useDownloadExport = (businessId: string) =>
   useAction(async (exportId: string) => {

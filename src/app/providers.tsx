@@ -5,7 +5,7 @@ import { Toaster } from "sonner";
 import { setLanguage } from "@/i18n";
 import { onSessionChange, refreshSession } from "@/lib/session";
 import { useTheme } from "@/lib/theme";
-import { queryClient } from "./queryClient";
+import { forgetPrivateData, queryClient } from "./queryClient";
 import { signedIn, signedOut, store } from "./store";
 
 // Keeps Redux in step with the session module, which other tabs and expired tokens can also change.
@@ -17,7 +17,7 @@ const SessionBridge = () => {
         void setLanguage(user.locale);
       } else {
         store.dispatch(signedOut());
-        queryClient.clear();
+        forgetPrivateData();
       }
     });
     // After a page reload the access token is gone, but the refresh cookie may still be good.

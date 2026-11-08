@@ -65,7 +65,8 @@ const linkFor = (notification: Notification) => {
       return `${base}/goals`;
     case "export.ready":
     case "export.failed":
-      return `${base}/reports`;
+      // The whole business's data is asked for, and downloaded, from its settings.
+      return params.report === "ALL_DATA" ? `${base}/settings` : `${base}/reports`;
     case "recurring.failed":
       return params.scheduleId ? `${base}/recurring?schedule=${params.scheduleId}` : `${base}/recurring`;
     case "ledger.check_failed":
@@ -107,9 +108,11 @@ export const useNotificationText = () => {
       if (typeof params.amount === "string") values.amount = money(params.amount, currency);
       for (const day of ["periodEnd", "endsOn", "until"]) if (typeof params[day] === "string") values[day] = formatDate(params[day], locale, digitStyle);
       const stage = typeof params.stage === "string" ? params.stage : "";
-      const titleKey =
-        notification.type === "billing.plan_ending" ? `${key}_${stage}` : notification.type === "billing.plan_ended" ? `${key}_${stage === "grace" || stage === "trial" ? stage : "other"}` : key;
-      const bodyKey = notification.type === "billing.plan_ended" && stage === "grace" ? `${key}_grace` : key;
+      const allData = notification.type.startsWith("export.") && params.report === "ALL_DATA";
+      const titleKey = allData
+        ? `${key}_data`
+        : notification.type === "billing.plan_ending" ? `${key}_${stage}` : notification.type === "billing.plan_ended" ? `${key}_${stage === "grace" || stage === "trial" ? stage : "other"}` : key;
+      const bodyKey = allData ? `${key}_data` : notification.type === "billing.plan_ended" && stage === "grace" ? `${key}_grace` : key;
       return {
         title: t(`notifications:${titleKey}_title`, { ...values, defaultValue: t("notifications:other_title") }),
         body: t(`notifications:${bodyKey}_body`, { ...values, defaultValue: "" }),
