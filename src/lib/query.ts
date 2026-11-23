@@ -15,6 +15,7 @@ export const queryKeys = {
   // Payments for the plan: the history, and one payment (its receipt).
   payments: ["plans", "payments"],
   payment: (paymentId: string) => ["plans", "payments", paymentId],
+  payInfo: ["plans", "pay-info"],
   // The platform admin panel. Any change there reloads all of it, and the plans everyone sees.
   admin: ["admin"],
   adminItem: (name: string, params = "") => ["admin", name, params],

@@ -11,12 +11,31 @@ export type PlanState = MyPlan["state"];
 export type Payment = Get<"/api/v1/billing/payments/{paymentId}">;
 export type BillingCycle = Payment["billingCycle"];
 export type PayMethod = "bkash" | "nagad" | "card";
+export type PayInfo = Get<"/api/v1/billing/pay-info">;
+export type ManualInfo = NonNullable<PayInfo["manual"]>;
+export type ManualMethod = ManualInfo["methods"][number]["method"];
+export const MANUAL_METHODS: ManualMethod[] = ["bkash", "nagad", "rocket", "bank"];
 
 export const usePlans = () => useApiQuery(queryKeys.plans, () => api.GET("/api/v1/billing/plans"), { staleTime: 5 * 60_000 });
 export const useMyPlan = () => useApiQuery(queryKeys.myPlan, () => api.GET("/api/v1/billing/me"), { staleTime: 60_000 });
 export const usePayments = () => useApiQuery(queryKeys.payments, () => api.GET("/api/v1/billing/payments"));
 export const usePayment = (paymentId: string) =>
   useApiQuery(queryKeys.payment(paymentId), () => api.GET("/api/v1/billing/payments/{paymentId}", { params: { path: { paymentId } } }));
+
+// How to pay: online, by hand (bKash, Nagad, Rocket, bank), or both.
+export const usePayInfo = () => useApiQuery(queryKeys.payInfo, () => api.GET("/api/v1/billing/pay-info"), { staleTime: 60_000 });
+
+// "I've sent the money". The admin checks it; the plan starts once they approve.
+export const useClaimPayment = () =>
+  useApiMutation(
+    (body: { planKey: string; billingCycle: BillingCycle; couponCode?: string; method: ManualMethod; reference: string }) => api.POST("/api/v1/billing/claims", { body }),
+    { invalidates: [queryKeys.plans] },
+  );
+
+// Take back a payment told by hand that hasn't been checked yet.
+// onDone runs before the plan reloads, while the pending card is still there to run it.
+export const useCancelClaim = (onDone?: () => void) =>
+  useApiMutation((paymentId: string) => api.POST("/api/v1/billing/payments/{paymentId}/cancel", { params: { path: { paymentId } } }), { invalidates: [queryKeys.plans], onSuccess: onDone });
 
 // Starts paying: the server sets the price and says where the payment page is.
 export const useCheckout = () =>

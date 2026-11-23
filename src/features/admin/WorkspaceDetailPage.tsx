@@ -16,6 +16,7 @@ import { bytesText, storageText, UsageMeter } from "@/features/billing/parts";
 import { errorMessage } from "@/lib/errors";
 import { useFormatting } from "@/lib/preferences";
 import { useAdminPlans, useSetSubscription, useSuspend, useWorkspace, type WorkspaceDetail } from "./api";
+import { RecordPayment } from "./PaymentReview";
 import { ActivityList } from "./ActivityPage";
 import { Cell, StateBadge, Table, useAdminFormat } from "./parts";
 
@@ -193,7 +194,10 @@ export const WorkspaceDetailPage = () => {
             <UsageMeter label={t("billing:aiToday")} used={data.usage.aiTokensToday} limit={plan.aiEnabled ? plan.aiDailyTokens : 0} usedText={count(data.usage.aiTokensToday)} limitText={plan.aiEnabled ? count(plan.aiDailyTokens) : "—"} />
           </div>
         </Card>
-        <ChangePlan workspace={data} />
+        <div className="space-y-4">
+          <ChangePlan workspace={data} />
+          <RecordPayment workspace={data} />
+        </div>
       </div>
 
       <section className="space-y-3">

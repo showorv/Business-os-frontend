@@ -8,3 +8,5 @@ playwright-report/
 test-results/
 *.log
 .DS_Store
+# Rendered marketing videos stay on this computer.
+marketing/out/

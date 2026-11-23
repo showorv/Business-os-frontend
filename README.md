@@ -178,6 +178,69 @@ export const useCreateBusiness = () =>
 The helpers turn server errors into an `ApiError` with a code, which `errorMessage()` turns into words in
 the reader's language. The names of all cached lists live in `queryKeys`, in the same file.
 
+## Step 11.9: Paying by hand (bKash, Nagad, Rocket, bank)
+
+There is no merchant account yet, so this is how people pay for Pro for now. They sign up free with
+the 14-day Pro trial. When they want to keep Pro, they send the money the usual way and tell us the
+transaction ID in the app. An admin checks it arrived and approves it. After that everything works as
+with online payment: the plan period, the receipt, the income figures and the renewal reminders.
+
+### What the customer sees
+
+- **Settings → Plan → Upgrade to Pro** opens *Upgrade to Pro* with two steps:
+  1. **Send ৳5,990**: each way to pay the admin set up (bKash number, bank account...), each with a
+     *Copy* button, and the customer's own reference (`BOS-XXXXXXXX`) to write in the payment note.
+  2. **Tell us you've paid**: *Paid with* and *Transaction ID*, then *I've sent ৳5,990*.
+
+  Underneath are the admin's note and WhatsApp, phone and email buttons. Coupons work as before: the
+  dialog asks for the price after the coupon. When online payment also works, *Pay online instead* is
+  at the bottom.
+- **"We're checking your payment"** then sits at the top of the Plan page, with the amount, method,
+  transaction ID and time, a *Take it back* button and the contact buttons. Upgrade is greyed out
+  meanwhile, so nobody pays twice.
+- **Approved:** the plan shows *Active*, the receipt is in the payment list, and a "Payment received"
+  notification and email arrive.
+- **Rejected:** a notification and email say why, the payment list shows "Not confirmed: <reason>",
+  and they can send it again.
+
+### What the admin sees
+
+- **Overview:** "1 payment made by hand is waiting for your check." with a link.
+- **Payments:** *Payments to check* at the top. Each card shows the amount, method, plan, account,
+  transaction ID and the customer's reference, and a reminder to approve only after seeing the money
+  arrive. *Approve* asks once more first. *Reject* offers quick reasons ("No payment with this
+  transaction ID", "The amount was different", "The money hasn't arrived yet") or your own. The table
+  now has a *Paid with* column (method and transaction ID) and shows why a payment failed. Search also
+  finds a transaction ID.
+- **An account's page → Record a payment:** for money received another way, cash for example. Pick the
+  plan, monthly or yearly, the amount (filled with the list price), how it was paid and an optional
+  note. The plan starts and the receipt is sent.
+- **Settings → Paying by hand:** the ways to pay (up to 8: bKash, Nagad, Rocket or bank, each with the
+  number or account details), WhatsApp, phone and email, a note for customers in English and Bangla,
+  and *Also offer it next to online payment*. With no payment gateway on the server, paying by hand is
+  used on its own anyway.
+
+### A bug found on the way
+
+A success message passed to a single click (`mutate(..., { onSuccess })`) is skipped when the thing
+clicked disappears first. After *Approve* or *Reject* the card leaves the list, so the "Approved"
+message only showed sometimes. Those messages, and *Take it back*'s, now run from the hook itself,
+before the list reloads.
+
+### How it was checked
+
+- A new browser test in `e2e/admin.spec.ts`: the admin turns paying by hand on with a bKash number and
+  WhatsApp; the customer sees the number, the reference and the WhatsApp link, sends a transaction ID
+  and sees the waiting card; the admin sees the overview alert, rejects it with a reason; the customer
+  sees the reason and sends another; the admin approves; the customer's plan is *Active*, the receipt
+  says bKash and the notification arrived. The setting is switched off again at the end. It passed 3
+  runs in a row, and the whole suite passes (58 passed, 2 skipped as before).
+- Typecheck, lint, the 82 unit tests (English and Bangla have the same keys) and the build pass.
+- Screenshots were checked on laptop and phone.
+
+**Before using it live:** redeploy the backend and the frontend. There is no database change. Then
+open Admin → Settings → Paying by hand and enter your real bKash/Nagad number and WhatsApp.
+
 ## Step 11.8: Home page, pricing, terms and privacy, your data, a wider assistant
 
 ### What you can do now

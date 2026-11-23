@@ -105,5 +105,9 @@
   "export_ready_data_title": "Your business data is ready",
   "export_ready_data_body": "Download it from Business settings. The link lasts a few days.",
   "export_failed_data_title": "Your business data couldn't be put together",
-  "export_failed_data_body": "Please try again from Business settings."
+  "export_failed_data_body": "Please try again from Business settings.",
+  "billing_payment_claim_submitted_title": "Payment to check: {{amount}} by {{methodName}}",
+  "billing_payment_claim_submitted_body": "{{customer}} sent it for {{planName}}. Transaction ID {{reference}}.",
+  "billing_payment_rejected_title": "We couldn't confirm your payment",
+  "billing_payment_rejected_body": "{{amount}}, transaction ID {{reference}}: {{reason}}. Check the details and tell us again, or contact us."
 }

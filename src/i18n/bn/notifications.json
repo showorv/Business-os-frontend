@@ -105,5 +105,9 @@
   "export_ready_data_title": "আপনার ব্যবসার তথ্য তৈরি",
   "export_ready_data_body": "ব্যবসার সেটিংস থেকে ডাউনলোড করুন। লিংকটি কয়েক দিন থাকবে।",
   "export_failed_data_title": "আপনার ব্যবসার তথ্য একসাথে করা যায়নি",
-  "export_failed_data_body": "ব্যবসার সেটিংস থেকে আবার চেষ্টা করুন।"
+  "export_failed_data_body": "ব্যবসার সেটিংস থেকে আবার চেষ্টা করুন।",
+  "billing_payment_claim_submitted_title": "যাচাই করার পেমেন্ট: {{methodName}}-এ {{amount}}",
+  "billing_payment_claim_submitted_body": "{{customer}} {{planName}}-এর জন্য পাঠিয়েছেন। ট্রানজেকশন আইডি {{reference}}।",
+  "billing_payment_rejected_title": "আপনার পেমেন্ট নিশ্চিত করা যায়নি",
+  "billing_payment_rejected_body": "{{amount}}, ট্রানজেকশন আইডি {{reference}}: {{reason}}। তথ্য দেখে আবার জানান, অথবা আমাদের সাথে যোগাযোগ করুন।"
 }

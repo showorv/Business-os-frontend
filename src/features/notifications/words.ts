@@ -35,11 +35,13 @@ const ICONS: Record<string, LucideIcon> = {
   "integration.sync_failing": Plug,
   invitation: UserPlus,
   "billing.payment_received": CreditCard,
+  "billing.payment_claim_submitted": CreditCard,
+  "billing.payment_rejected": CreditCard,
   "billing.plan_ending": CreditCard,
   "billing.plan_ended": CreditCard,
 };
 
-const URGENT = new Set(["task.overdue", "export.failed", "recurring.failed", "ledger.check_failed", "audit.check_failed", "integration.needs_reauth", "integration.sync_failing", "auth.account_locked", "auth.session_reuse_detected", "billing.plan_ended"]);
+const URGENT = new Set(["task.overdue", "export.failed", "recurring.failed", "ledger.check_failed", "audit.check_failed", "integration.needs_reauth", "integration.sync_failing", "auth.account_locked", "auth.session_reuse_detected", "billing.plan_ended", "billing.payment_rejected"]);
 
 // Where each kind of notification leads inside the app.
 const linkFor = (notification: Notification) => {
@@ -48,6 +50,8 @@ const linkFor = (notification: Notification) => {
   if (notification.type === "invitation") return "/";
   if (notification.type.startsWith("auth.")) return "/settings/security";
   if (notification.type === "billing.payment_received" && params.paymentId) return `/settings/plan/receipts/${params.paymentId}`;
+  // For platform admins: a payment made by hand is waiting for their check.
+  if (notification.type === "billing.payment_claim_submitted") return "/admin/payments";
   if (notification.type.startsWith("billing.")) return "/settings/plan";
   if (!base) return null;
   switch (notification.type) {

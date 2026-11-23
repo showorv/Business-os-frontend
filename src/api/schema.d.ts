@@ -1488,6 +1488,36 @@ export interface paths {
                                 endsAt: string | null;
                                 graceEndsAt: string | null;
                                 isOwner: boolean;
+                                pendingPayment: {
+                                    /** Format: uuid */
+                                    id: string;
+                                    planKey: string;
+                                    planName: string;
+                                    planNameBn: string | null;
+                                    /** @enum {string} */
+                                    billingCycle: "MONTHLY" | "YEARLY";
+                                    amountMinor: string;
+                                    listAmountMinor: string;
+                                    discountMinor: string;
+                                    couponCode: string | null;
+                                    currency: string;
+                                    /** @enum {string} */
+                                    status: "PENDING" | "PAID" | "FAILED" | "CANCELLED";
+                                    gateway: string;
+                                    method: string | null;
+                                    gatewayRef: string | null;
+                                    receiptNumber: string | null;
+                                    periodStart: string | null;
+                                    periodEnd: string | null;
+                                    failureReason: string | null;
+                                    expiresAt: string;
+                                    paidAt: string | null;
+                                    createdAt: string;
+                                    billedTo: {
+                                        name: string;
+                                        email: string;
+                                    } | null;
+                                } | null;
                                 usage: {
                                     businesses: number;
                                     members: number;
@@ -1885,6 +1915,271 @@ export interface paths {
                     };
                 };
             };
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                planKey: string;
+                                planName: string;
+                                planNameBn: string | null;
+                                /** @enum {string} */
+                                billingCycle: "MONTHLY" | "YEARLY";
+                                amountMinor: string;
+                                listAmountMinor: string;
+                                discountMinor: string;
+                                couponCode: string | null;
+                                currency: string;
+                                /** @enum {string} */
+                                status: "PENDING" | "PAID" | "FAILED" | "CANCELLED";
+                                gateway: string;
+                                method: string | null;
+                                gatewayRef: string | null;
+                                receiptNumber: string | null;
+                                periodStart: string | null;
+                                periodEnd: string | null;
+                                failureReason: string | null;
+                                expiresAt: string;
+                                paidAt: string | null;
+                                createdAt: string;
+                                billedTo: {
+                                    name: string;
+                                    email: string;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/billing/pay-info": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** How to pay: online, and/or by hand (bKash, Nagad, Rocket, bank) with the numbers to send to and a reference code. manual is null when paying by hand is off */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                online: boolean;
+                                manual: {
+                                    methods: {
+                                        /** @enum {string} */
+                                        method: "bkash" | "nagad" | "rocket" | "bank";
+                                        details: string;
+                                    }[];
+                                    whatsapp: string;
+                                    phone: string;
+                                    email: string;
+                                    noteEn: string;
+                                    noteBn: string;
+                                    reference: string;
+                                    reviewDays: number;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/billing/claims": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** "I've sent the money": the method and transaction ID. Owner only, one waiting at a time (PAYMENT_CLAIM_OPEN). The admins are told; the plan starts once one approves. The price comes from the plan and any coupon */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        planKey: string;
+                        /** @enum {string} */
+                        billingCycle: "MONTHLY" | "YEARLY";
+                        couponCode?: string;
+                        /** @enum {string} */
+                        method: "bkash" | "nagad" | "rocket" | "bank";
+                        reference: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Success */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                planKey: string;
+                                planName: string;
+                                planNameBn: string | null;
+                                /** @enum {string} */
+                                billingCycle: "MONTHLY" | "YEARLY";
+                                amountMinor: string;
+                                listAmountMinor: string;
+                                discountMinor: string;
+                                couponCode: string | null;
+                                currency: string;
+                                /** @enum {string} */
+                                status: "PENDING" | "PAID" | "FAILED" | "CANCELLED";
+                                gateway: string;
+                                method: string | null;
+                                gatewayRef: string | null;
+                                receiptNumber: string | null;
+                                periodStart: string | null;
+                                periodEnd: string | null;
+                                failureReason: string | null;
+                                expiresAt: string;
+                                paidAt: string | null;
+                                createdAt: string;
+                                billedTo: {
+                                    name: string;
+                                    email: string;
+                                } | null;
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/billing/payments/{paymentId}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Take back a payment told by hand that the admin hasn't checked yet */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    paymentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
             responses: {
                 /** @description Success */
                 200: {
@@ -16622,6 +16917,7 @@ export interface paths {
                                         payments: number;
                                     }[];
                                 };
+                                paymentsToReview: number;
                             };
                         };
                     };
@@ -17995,11 +18291,12 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Every payment, newest first */
+        /** Every payment, newest first. review=true: only those told by hand and waiting for a check */
         get: {
             parameters: {
                 query?: {
                     status?: "PENDING" | "PAID" | "FAILED" | "CANCELLED";
+                    review?: "true";
                     search?: string;
                     page?: number;
                     pageSize?: number;
@@ -18051,6 +18348,7 @@ export interface paths {
                                     } | null;
                                     /** Format: uuid */
                                     workspaceId: string;
+                                    payReference: string;
                                 }[];
                                 total: number;
                                 page: number;
@@ -18083,6 +18381,303 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/payments/{paymentId}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** The money told by hand arrived: the payment settles like an online one (receipt, plan period, revenue) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    paymentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                planKey: string;
+                                planName: string;
+                                planNameBn: string | null;
+                                /** @enum {string} */
+                                billingCycle: "MONTHLY" | "YEARLY";
+                                amountMinor: string;
+                                listAmountMinor: string;
+                                discountMinor: string;
+                                couponCode: string | null;
+                                currency: string;
+                                /** @enum {string} */
+                                status: "PENDING" | "PAID" | "FAILED" | "CANCELLED";
+                                gateway: string;
+                                method: string | null;
+                                gatewayRef: string | null;
+                                receiptNumber: string | null;
+                                periodStart: string | null;
+                                periodEnd: string | null;
+                                failureReason: string | null;
+                                expiresAt: string;
+                                paidAt: string | null;
+                                createdAt: string;
+                                billedTo: {
+                                    name: string;
+                                    email: string;
+                                } | null;
+                                /** Format: uuid */
+                                workspaceId: string;
+                                payReference: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/payments/{paymentId}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** The money told by hand didn't arrive: the customer is told the reason */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    paymentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                planKey: string;
+                                planName: string;
+                                planNameBn: string | null;
+                                /** @enum {string} */
+                                billingCycle: "MONTHLY" | "YEARLY";
+                                amountMinor: string;
+                                listAmountMinor: string;
+                                discountMinor: string;
+                                couponCode: string | null;
+                                currency: string;
+                                /** @enum {string} */
+                                status: "PENDING" | "PAID" | "FAILED" | "CANCELLED";
+                                gateway: string;
+                                method: string | null;
+                                gatewayRef: string | null;
+                                receiptNumber: string | null;
+                                periodStart: string | null;
+                                periodEnd: string | null;
+                                failureReason: string | null;
+                                expiresAt: string;
+                                paidAt: string | null;
+                                createdAt: string;
+                                billedTo: {
+                                    name: string;
+                                    email: string;
+                                } | null;
+                                /** Format: uuid */
+                                workspaceId: string;
+                                payReference: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/workspaces/{workspaceId}/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record money received outside the app (cash, or a transfer nobody reported). It settles and counts like any payment */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    workspaceId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        planKey: string;
+                        /** @enum {string} */
+                        billingCycle: "MONTHLY" | "YEARLY";
+                        amountMinor: string;
+                        /** @enum {string} */
+                        method: "bkash" | "nagad" | "rocket" | "bank" | "cash" | "other";
+                        reference?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Success */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: true;
+                            data: {
+                                /** Format: uuid */
+                                id: string;
+                                planKey: string;
+                                planName: string;
+                                planNameBn: string | null;
+                                /** @enum {string} */
+                                billingCycle: "MONTHLY" | "YEARLY";
+                                amountMinor: string;
+                                listAmountMinor: string;
+                                discountMinor: string;
+                                couponCode: string | null;
+                                currency: string;
+                                /** @enum {string} */
+                                status: "PENDING" | "PAID" | "FAILED" | "CANCELLED";
+                                gateway: string;
+                                method: string | null;
+                                gatewayRef: string | null;
+                                receiptNumber: string | null;
+                                periodStart: string | null;
+                                periodEnd: string | null;
+                                failureReason: string | null;
+                                expiresAt: string;
+                                paidAt: string | null;
+                                createdAt: string;
+                                billedTo: {
+                                    name: string;
+                                    email: string;
+                                } | null;
+                                /** Format: uuid */
+                                workspaceId: string;
+                                payReference: string;
+                            };
+                        };
+                    };
+                };
+                /** @description Error */
+                default: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {boolean} */
+                            success: false;
+                            error: {
+                                code: string;
+                                params?: {
+                                    [key: string]: unknown;
+                                };
+                                requestId: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -18127,6 +18722,19 @@ export interface paths {
                                     tone: "info" | "warning";
                                     en: string;
                                     bn: string;
+                                };
+                                manualPayments: {
+                                    enabled: boolean;
+                                    methods: {
+                                        /** @enum {string} */
+                                        method: "bkash" | "nagad" | "rocket" | "bank";
+                                        details: string;
+                                    }[];
+                                    whatsapp: string;
+                                    phone: string;
+                                    email: string;
+                                    noteEn: string;
+                                    noteBn: string;
                                 };
                             };
                         };
@@ -18181,6 +18789,19 @@ export interface paths {
                             en: string;
                             bn: string;
                         };
+                        manualPayments?: {
+                            enabled: boolean;
+                            methods: {
+                                /** @enum {string} */
+                                method: "bkash" | "nagad" | "rocket" | "bank";
+                                details: string;
+                            }[];
+                            whatsapp: string;
+                            phone: string;
+                            email: "" | string;
+                            noteEn: string;
+                            noteBn: string;
+                        };
                     };
                 };
             };
@@ -18206,6 +18827,19 @@ export interface paths {
                                     tone: "info" | "warning";
                                     en: string;
                                     bn: string;
+                                };
+                                manualPayments: {
+                                    enabled: boolean;
+                                    methods: {
+                                        /** @enum {string} */
+                                        method: "bkash" | "nagad" | "rocket" | "bank";
+                                        details: string;
+                                    }[];
+                                    whatsapp: string;
+                                    phone: string;
+                                    email: string;
+                                    noteEn: string;
+                                    noteBn: string;
                                 };
                             };
                         };

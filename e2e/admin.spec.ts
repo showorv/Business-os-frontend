@@ -109,3 +109,101 @@ test("platform admin: give Pro, suspend, make a coupon the customer uses, and po
   await page.goto("/admin");
   await expect(page).not.toHaveURL(/\/admin/);
 });
+
+// Paying by hand: the customer sends money by bKash and types the transaction ID; the admin checks and approves.
+test("paying by hand: the customer tells us the transaction ID, the admin rejects one and approves the next", async ({ page, browser }, info) => {
+  const used = new Set<string>();
+  const stamp = Date.now().toString().slice(-8);
+  const customer = freshEmail(info.project.name, "payer");
+  await register(page, customer, "Rahima Begum");
+  await createBusiness(page, "Rahima Crafts");
+
+  const admin = await secondPerson(browser, info);
+  const adminEmail = freshEmail(info.project.name, "cashier");
+  await register(admin, adminEmail, "Cash Desk");
+  await createBusiness(admin, "Cash Desk Co");
+  makePlatformAdmin(adminEmail);
+  await admin.goto("/settings/security");
+  await admin.getByRole("button", { name: "Turn on" }).click();
+  await admin.getByRole("dialog").getByLabel("Password", { exact: true }).fill(password);
+  await admin.getByRole("button", { name: "Continue" }).click();
+  const secret = (await admin.locator("code").textContent())!.trim();
+  await admin.getByLabel("Code", { exact: true }).fill(await freshCode(secret, used));
+  await admin.getByRole("button", { name: "Turn on two-step verification" }).click();
+  await expect(admin.getByText("Two-step verification is on.")).toBeVisible();
+
+  // The admin turns it on with a bKash number and WhatsApp.
+  await admin.goto("/admin/settings");
+  const settings = admin.getByTestId("manual-payments-settings");
+  await settings.getByLabel("Also offer it next to online payment").check();
+  await settings.getByRole("button", { name: "Add a way to pay" }).click();
+  await settings.getByTestId("method-row").last().getByLabel("Number or account details").fill("01700-000000 (personal)");
+  await settings.getByLabel("WhatsApp").fill("+880 1700-000000");
+  await admin.getByRole("button", { name: "Save settings" }).click();
+  await expect(admin.getByText("Settings saved")).toBeVisible();
+
+  try {
+    // The customer upgrades, sees where to send it, and tells us the transaction ID.
+    const payOnce = async (reference: string) => {
+      await page.goto("/settings/plan");
+      await page.getByTestId("plan-pro").getByRole("button", { name: "Upgrade to Pro" }).click();
+      const dialog = page.getByTestId("manual-pay");
+      await expect(dialog.getByTestId("pay-method").first()).toContainText("01700-000000");
+      await expect(dialog.getByTestId("pay-reference")).toHaveText(/^BOS-[0-9A-F]{8}$/);
+      await expect(dialog.getByTestId("pay-contact").getByRole("link", { name: /WhatsApp/ })).toHaveAttribute("href", "https://wa.me/8801700000000");
+      await dialog.getByLabel("Transaction ID").fill(reference);
+      await dialog.getByRole("button", { name: /I've sent/ }).click();
+      await expect(page.getByText("Thank you! We'll check your payment and let you know.")).toBeVisible();
+      await expect(page.getByTestId("pending-payment")).toContainText(reference);
+      await expect(page.getByTestId("plan-pro").getByRole("button", { name: "Upgrade to Pro" })).toBeDisabled();
+    };
+
+    // The first one didn't arrive.
+    const first = `8AB${stamp}`;
+    await payOnce(first);
+    await admin.goto("/admin");
+    await expect(admin.getByTestId("to-review-alert")).toBeVisible();
+    await admin.getByTestId("to-review-alert").getByRole("link").click();
+    await expect(admin).toHaveURL(/\/admin\/payments/);
+    let card = admin.getByTestId("review-card").filter({ hasText: first });
+    await expect(card).toContainText("Rahima Begum");
+    await card.getByRole("button", { name: "Reject" }).click();
+    await admin.getByLabel("Reason, for the customer").fill("No money arrived with this ID");
+    await admin.getByRole("dialog").getByRole("button", { name: "Reject" }).click();
+    await expect(admin.getByText("Rejected. The customer has been told.")).toBeVisible();
+
+    await page.goto("/settings/plan");
+    await expect(page.getByTestId("pending-payment")).toHaveCount(0);
+    await expect(page.getByTestId("rejected-reason")).toContainText("No money arrived with this ID");
+    await expect(page.getByTestId("current-plan")).not.toContainText("Active");
+
+    // The second one did.
+    const second = `9CD${stamp}`;
+    await payOnce(second);
+    await admin.reload();
+    card = admin.getByTestId("review-card").filter({ hasText: second });
+    await expect(card.getByTestId("review-reference")).toHaveText(second);
+    await card.getByRole("button", { name: "Approve" }).click();
+    await admin.getByRole("dialog").getByRole("button", { name: "Approve" }).click();
+    await expect(admin.getByText("Approved. The plan is on and the receipt is sent.")).toBeVisible();
+    await expect(admin.getByTestId("review-card").filter({ hasText: second })).toHaveCount(0);
+
+    await page.goto("/settings/plan");
+    await expect(page.getByTestId("current-plan")).toContainText("Active");
+    await expect(page.getByTestId("pending-payment")).toHaveCount(0);
+    await page.getByTestId("payment-history").getByRole("link", { name: "Receipt" }).first().click();
+    await expect(page.getByTestId("receipt")).toContainText(/BOS-\d{4}-\d{6}/);
+    await expect(page.getByTestId("receipt")).toContainText("bKash");
+    await page.goto("/notifications");
+    await expect(page.getByText("Payment received: Pro")).toBeVisible();
+  } finally {
+    // Settings are shared by every account: switch it off again.
+    await admin.goto("/admin/settings");
+    const box = admin.getByTestId("manual-payments-settings");
+    await box.getByLabel("Also offer it next to online payment").uncheck();
+    while ((await box.getByTestId("method-row").count()) > 0) await box.getByTestId("method-row").first().getByRole("button", { name: "Remove" }).click();
+    await box.getByLabel("WhatsApp").fill("");
+    await admin.getByRole("button", { name: "Save settings" }).click();
+    await expect(admin.getByText("Settings saved")).toBeVisible();
+  }
+});

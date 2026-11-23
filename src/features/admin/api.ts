@@ -20,6 +20,8 @@ export type SubscriptionBody = Body<"/api/v1/admin/workspaces/{workspaceId}/subs
 export type PlanBody = Body<"/api/v1/admin/plans", "post">;
 export type CouponBody = Body<"/api/v1/admin/coupons", "post">;
 export type SettingsBody = Body<"/api/v1/admin/settings", "patch">;
+export type RecordPaymentBody = Body<"/api/v1/admin/workspaces/{workspaceId}/payments", "post">;
+export type ManualSettings = Settings["manualPayments"];
 
 const key = queryKeys.adminItem;
 // Every admin change can move counts, states and prices, so each one reloads the panel and the plans.
@@ -59,8 +61,21 @@ export const useUpdateCoupon = () =>
     after,
   );
 
-export const useAdminPayments = (query: { status?: AdminPayment["status"]; search?: string; page: number }) =>
+export const useAdminPayments = (query: { status?: AdminPayment["status"]; search?: string; review?: "true"; page: number }) =>
   useApiQuery(key("payments", JSON.stringify(query)), () => api.GET("/api/v1/admin/payments", { params: { query: { ...query, pageSize: 25 } } }));
+
+// Payments made by hand: the admin checks the money arrived, then approves or rejects; or records one directly.
+// onDone runs before the list reloads: the card that was clicked leaves the list, and a callback
+// passed to mutate() is skipped once its component is gone.
+export const useApprovePayment = (onDone?: () => void) =>
+  useApiMutation((paymentId: string) => api.POST("/api/v1/admin/payments/{paymentId}/approve", { params: { path: { paymentId } } }), { ...after, onSuccess: onDone });
+export const useRejectPayment = (onDone?: () => void) =>
+  useApiMutation(({ paymentId, reason }: { paymentId: string; reason: string }) => api.POST("/api/v1/admin/payments/{paymentId}/reject", { params: { path: { paymentId } }, body: { reason } }), {
+    ...after,
+    onSuccess: onDone,
+  });
+export const useRecordPayment = (workspaceId: string) =>
+  useApiMutation((body: RecordPaymentBody) => api.POST("/api/v1/admin/workspaces/{workspaceId}/payments", { params: { path: { workspaceId } }, body }), after);
 
 export const useSettings = () => useApiQuery(key("settings"), () => api.GET("/api/v1/admin/settings"));
 export const useUpdateSettings = () => useApiMutation((body: SettingsBody) => api.PATCH("/api/v1/admin/settings", { body }), after);

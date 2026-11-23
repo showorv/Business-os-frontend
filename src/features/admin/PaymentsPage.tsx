@@ -7,6 +7,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { errorMessage } from "@/lib/errors";
 import { useAdminPayments, type AdminPayment } from "./api";
 import { Cell, PageTitle, Pager, Table, useAdminFormat } from "./parts";
+import { ReviewQueue } from "./PaymentReview";
 import { SearchBox } from "@/components/ui/search-box";
 
 const STATUSES = ["PAID", "PENDING", "FAILED", "CANCELLED"] as const;
@@ -21,6 +22,7 @@ export const PaymentsPage = () => {
   return (
     <div>
       <PageTitle title={t("nav_payments")} hint={t("paymentsHint")} />
+      <ReviewQueue />
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <SearchBox value={search} onChange={(value) => (setSearch(value), setPage(1))} placeholder={t("searchPayments")} />
         <Select value={status} onChange={(event) => (setStatus(event.target.value as AdminPayment["status"] | ""), setPage(1))} aria-label={t("status")} className="w-auto">
@@ -36,7 +38,7 @@ export const PaymentsPage = () => {
       {payments.isLoading ? <Spinner className="mt-12" /> : null}
       {payments.data ? (
         <>
-          <Table head={[t("date"), t("account"), t("plan"), t("amount"), t("status"), t("receiptCol")]} testId="payments-table">
+          <Table head={[t("date"), t("account"), t("plan"), t("amount"), t("paidWithCol"), t("status"), t("receiptCol")]} testId="payments-table">
             {payments.data.items.map((payment) => (
               <tr key={payment.id}>
                 <Cell className="tabular-nums">{day(payment.paidAt ?? payment.createdAt)}</Cell>
@@ -51,7 +53,14 @@ export const PaymentsPage = () => {
                   {payment.couponCode ? <span className="block text-xs text-muted-foreground">{payment.couponCode}</span> : null}
                 </Cell>
                 <Cell className="tabular-nums">{money(payment.amountMinor, payment.currency)}</Cell>
-                <Cell>{t(`billing:status_${payment.status}`)}</Cell>
+                <Cell>
+                  {payment.method ? t(`billing:method_${payment.method}`, { defaultValue: payment.method }) : "—"}
+                  {payment.gatewayRef ? <span className="block font-mono text-xs text-muted-foreground">{payment.gatewayRef}</span> : null}
+                </Cell>
+                <Cell>
+                  {t(`billing:status_${payment.status}`)}
+                  {payment.status === "FAILED" && payment.failureReason ? <span className="block text-xs text-muted-foreground">{payment.failureReason}</span> : null}
+                </Cell>
                 <Cell className="tabular-nums text-muted-foreground">{payment.receiptNumber ?? "—"}</Cell>
               </tr>
             ))}

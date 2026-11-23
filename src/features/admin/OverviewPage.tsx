@@ -31,6 +31,14 @@ export const OverviewPage = () => {
   return (
     <div className="space-y-6">
       <PageTitle title={t("overviewTitle")} hint={t("overviewHint")} />
+      {data.paymentsToReview > 0 ? (
+        <Alert tone="warning" className="flex flex-wrap items-center justify-between gap-3" data-testid="to-review-alert">
+          <span>{t("toReviewAlert", { count: data.paymentsToReview })}</span>
+          <Link to="/admin/payments" className="font-medium whitespace-nowrap underline underline-offset-4">
+            {t("checkThem")}
+          </Link>
+        </Alert>
+      ) : null}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatTile label={t("mrr")} value={money(data.revenue.mrrMinor)} note={t("mrrNote", { count: data.revenue.payingWorkspaces })} testId="stat-mrr" />
         <StatTile label={t("thisMonth")} value={money(data.revenue.thisMonthMinor)} note={t("thisMonthNote")} testId="stat-month" />

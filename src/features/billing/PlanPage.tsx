@@ -13,7 +13,8 @@ import { cn } from "@/lib/cn";
 import { formatDate } from "@/lib/dates";
 import { errorMessage } from "@/lib/errors";
 import { useFormatting } from "@/lib/preferences";
-import { daysUntil, dhakaDay, paymentPlanName, planDescription, planName, useCheckPrice, useCheckout, useMyPlan, usePayment, usePayments, usePlans, type MyPlan, type Plan } from "./api";
+import { daysUntil, dhakaDay, paymentPlanName, planDescription, planName, useCheckPrice, useCheckout, useMyPlan, usePayInfo, usePayment, usePayments, usePlans, type MyPlan, type PayInfo, type Plan } from "./api";
+import { ManualPayDialog, PendingPayment } from "./ManualPay";
 import { bytesText, priceText, storageText, UsageMeter } from "./parts";
 
 type Cycle = "MONTHLY" | "YEARLY";
@@ -23,6 +24,7 @@ export const PlanPage = () => {
   const { t } = useTranslation("billing");
   const mine = useMyPlan();
   const plans = usePlans();
+  const payInfo = usePayInfo();
   const [cycle, setCycle] = useState<Cycle>("YEARLY");
 
   if (mine.isLoading || plans.isLoading) return <Spinner className="mt-12" />;
@@ -33,6 +35,7 @@ export const PlanPage = () => {
   return (
     <div className="space-y-8">
       <PaymentResult />
+      {current.pendingPayment ? <PendingPayment payment={current.pendingPayment} info={payInfo.data?.manual ?? null} /> : null}
       <CurrentPlan mine={current} />
 
       <section className="space-y-4">
@@ -53,7 +56,7 @@ export const PlanPage = () => {
         </div>
         <div className="grid gap-4 md:grid-cols-2">
           {plans.data!.map((plan) => (
-            <PlanCard key={plan.key} plan={plan} cycle={cycle} mine={current} />
+            <PlanCard key={plan.key} plan={plan} cycle={cycle} mine={current} payInfo={payInfo.data} />
           ))}
         </div>
         {!current.isOwner ? <p className="text-sm text-muted-foreground">{t("ownerOnly")}</p> : null}
@@ -133,7 +136,7 @@ const Feature = ({ on, children }: { on: boolean; children: string }) => (
   </li>
 );
 
-const PlanCard = ({ plan, cycle, mine }: { plan: Plan; cycle: Cycle; mine: MyPlan }) => {
+const PlanCard = ({ plan, cycle, mine, payInfo }: { plan: Plan; cycle: Cycle; mine: MyPlan; payInfo: PayInfo | undefined }) => {
   const { t, i18n } = useTranslation("billing");
   const { locale, digitStyle } = useFormatting();
   const checkout = useCheckout();
@@ -164,7 +167,12 @@ const PlanCard = ({ plan, cycle, mine }: { plan: Plan; cycle: Cycle; mine: MyPla
     if (code.trim()) priceCheck.mutate({ planKey: plan.key, billingCycle: cycle, couponCode: code.trim() });
   };
 
-  const pay = () =>
+  // Paying by hand opens the steps; online goes straight to the payment page.
+  const manual = payInfo?.manual ?? null;
+  const [manualOpen, setManualOpen] = useState(false);
+  const waiting = mine.pendingPayment !== null;
+  const pay = () => (manual ? setManualOpen(true) : payOnline());
+  const payOnline = () =>
     checkout.mutate(
       { planKey: plan.key, billingCycle: cycle, couponCode: applied?.couponCode ?? undefined },
       // The payment page is the gateway's, outside this app.
@@ -211,14 +219,30 @@ const PlanCard = ({ plan, cycle, mine }: { plan: Plan; cycle: Cycle; mine: MyPla
           </Button>
         ) : (
           <>
-            <Button className="w-full" variant={paidUp ? "outline" : "primary"} disabled={!mine.isOwner || checkout.isPending} onClick={pay}>
+            <Button className="w-full" variant={paidUp ? "outline" : "primary"} disabled={!mine.isOwner || checkout.isPending || waiting} onClick={pay}>
               {paidUp
                 ? t(cycle === "YEARLY" ? "payAnotherYear" : "payAnotherMonth")
                 : mine.state === "grace" && samePlan
                   ? t("renew")
                   : t("upgradeTo", { plan: planName(plan, i18n.language) })}
             </Button>
-            <p className="text-center text-xs text-muted-foreground">{startsAfter ? t("startsAfter", { date: startsAfter }) : t("payMethods")}</p>
+            <p className="text-center text-xs text-muted-foreground">
+              {waiting ? t("waitingNote") : startsAfter ? t("startsAfter", { date: startsAfter }) : t(manual ? "payMethodsManual" : "payMethods")}
+            </p>
+            {manual ? (
+              <ManualPayDialog
+                open={manualOpen}
+                onOpenChange={setManualOpen}
+                info={manual}
+                planKey={plan.key}
+                planLabel={planName(plan, i18n.language)}
+                cycle={cycle}
+                amountMinor={applied?.amountMinor ?? price}
+                currency={plan.currency}
+                couponCode={applied?.couponCode ?? undefined}
+                onPayOnline={payInfo?.online ? () => (setManualOpen(false), payOnline()) : undefined}
+              />
+            ) : null}
             {mine.isOwner ? (
               couponOpen ? (
                 <form onSubmit={applyCoupon} className="space-y-2 pt-1" data-testid="coupon-box">
@@ -313,6 +337,11 @@ const PaymentHistory = () => {
             </span>
             <span className="tabular-nums">{priceText(payment.amountMinor, payment.currency, digitStyle)}</span>
             <Badge className={cn("border bg-transparent", payment.status === "FAILED" && "border-danger/40 text-danger")}>{t(`status_${payment.status}`)}</Badge>
+            {payment.gateway === "manual" && payment.status === "FAILED" && payment.failureReason ? (
+              <span className="basis-full text-xs text-danger" data-testid="rejected-reason">
+                {t("rejectedBecause", { reason: payment.failureReason })}
+              </span>
+            ) : null}
             <span className="w-20 text-right">
               {payment.status === "PAID" ? (
                 <Link to={`/settings/plan/receipts/${payment.id}`} className="font-medium underline-offset-4 hover:underline">

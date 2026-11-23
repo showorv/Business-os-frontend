@@ -11,6 +11,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { errorMessage } from "@/lib/errors";
 import { useAdminPlans, useSettings, useUpdateSettings, type Settings } from "./api";
 import { PageTitle } from "./parts";
+import { ManualPaymentsSettings } from "./PaymentReview";
 
 const Switch = ({ checked, onChange, label, hint, testId }: { checked: boolean; onChange: (value: boolean) => void; label: string; hint: string; testId?: string }) => (
   <label className="flex items-start gap-3">
@@ -40,6 +41,16 @@ const SettingsForm = ({ settings }: { settings: Settings }) => {
         aiEnabled: draft.aiEnabled,
         signupsEnabled: draft.signupsEnabled,
         announcement: { ...draft.announcement, en: draft.announcement.en.trim(), bn: draft.announcement.bn.trim() },
+        manualPayments: {
+          ...draft.manualPayments,
+          // A row left empty is dropped rather than refused.
+          methods: draft.manualPayments.methods.map((row) => ({ ...row, details: row.details.trim() })).filter((row) => row.details.length > 0),
+          whatsapp: draft.manualPayments.whatsapp.trim(),
+          phone: draft.manualPayments.phone.trim(),
+          email: draft.manualPayments.email.trim(),
+          noteEn: draft.manualPayments.noteEn.trim(),
+          noteBn: draft.manualPayments.noteBn.trim(),
+        },
       },
       { onSuccess: () => toast.success(t("settingsSaved")) },
     );
@@ -93,6 +104,8 @@ const SettingsForm = ({ settings }: { settings: Settings }) => {
           <Input value={draft.announcement.bn} maxLength={300} onChange={(event) => setNote({ bn: event.target.value })} />
         </Field>
       </Card>
+
+      <ManualPaymentsSettings value={draft.manualPayments} onChange={(manualPayments) => set("manualPayments", manualPayments)} />
 
       {save.isError ? <Alert tone="danger">{errorMessage(save.error)}</Alert> : null}
       <Button type="submit" disabled={save.isPending}>

@@ -143,5 +143,8 @@
   "DOWNLOAD_FAILED": "The file couldn't be downloaded. Please try again.",
   "VAT_NOT_REGISTERED": "Only a VAT-registered business can charge VAT. Turn it on in business settings, or set the lines to 0%.",
   "ITEM_NAME_TAKEN": "There is already an item with this name. If it is archived, restore it instead.",
-  "ITEM_NOT_USABLE": "An item on line {{line}} has been archived. Pick another or type the line in."
+  "ITEM_NOT_USABLE": "An item on line {{line}} has been archived. Pick another or type the line in.",
+  "PAYMENT_CLAIM_OPEN": "You've already told us about a payment we're checking. Wait for it, or take it back first.",
+  "MANUAL_PAYMENTS_OFF": "Paying by bKash, Nagad or bank isn't available right now. Please pay online.",
+  "PAYMENT_NOT_MANUAL": "Only payments made by hand are checked here; online payments settle themselves."
 }
