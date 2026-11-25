@@ -513,8 +513,10 @@ For customers:
 
 ### Becoming the admin
 
-Nobody is an admin by default. Sign up in the app, then on the backend run
-`npm run admin:grant -- your-email`. (Two-step sign-in used to be required; step 11.10 removed that.)
+Nobody is an admin by default. Put `PLATFORM_ADMIN_EMAIL` and `PLATFORM_ADMIN_PASSWORD` in the
+backend's `.env` and restart it: the account is made (or made an admin) when it starts, then sign in
+with them. `npm run admin:grant -- your-email` on the backend still works too. (Two-step sign-in used
+to be required; step 11.10 removed that.)
 
 ### How it was checked
 
