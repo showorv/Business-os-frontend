@@ -17,9 +17,8 @@ test("platform admin: give Pro, suspend, make a coupon the customer uses, and po
   await register(admin, adminEmail, "Platform Admin");
   await createBusiness(admin, "Admin Desk");
   makePlatformAdmin(adminEmail);
-  await admin.goto("/admin");
-  await expect(admin.getByText("Turn on two-step sign-in first")).toBeVisible();
-  await admin.getByRole("link", { name: "Go to security" }).click();
+  // Two-step sign-in isn't required for the panel, but an admin can still turn it on.
+  await admin.goto("/settings/security");
   await admin.getByRole("button", { name: "Turn on" }).click();
   await admin.getByRole("dialog").getByLabel("Password", { exact: true }).fill(password);
   await admin.getByRole("button", { name: "Continue" }).click();
@@ -112,7 +111,6 @@ test("platform admin: give Pro, suspend, make a coupon the customer uses, and po
 
 // Paying by hand: the customer sends money by bKash and types the transaction ID; the admin checks and approves.
 test("paying by hand: the customer tells us the transaction ID, the admin rejects one and approves the next", async ({ page, browser }, info) => {
-  const used = new Set<string>();
   const stamp = Date.now().toString().slice(-8);
   const customer = freshEmail(info.project.name, "payer");
   await register(page, customer, "Rahima Begum");
@@ -123,16 +121,8 @@ test("paying by hand: the customer tells us the transaction ID, the admin reject
   await register(admin, adminEmail, "Cash Desk");
   await createBusiness(admin, "Cash Desk Co");
   makePlatformAdmin(adminEmail);
-  await admin.goto("/settings/security");
-  await admin.getByRole("button", { name: "Turn on" }).click();
-  await admin.getByRole("dialog").getByLabel("Password", { exact: true }).fill(password);
-  await admin.getByRole("button", { name: "Continue" }).click();
-  const secret = (await admin.locator("code").textContent())!.trim();
-  await admin.getByLabel("Code", { exact: true }).fill(await freshCode(secret, used));
-  await admin.getByRole("button", { name: "Turn on two-step verification" }).click();
-  await expect(admin.getByText("Two-step verification is on.")).toBeVisible();
 
-  // The admin turns it on with a bKash number and WhatsApp.
+  // No two-step sign-in needed. The admin turns it on with a bKash number and WhatsApp.
   await admin.goto("/admin/settings");
   const settings = admin.getByTestId("manual-payments-settings");
   await settings.getByLabel("Also offer it next to online payment").check();

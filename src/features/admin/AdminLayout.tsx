@@ -1,4 +1,4 @@
-import { ArrowLeft, BadgePercent, CreditCard, History, LayoutDashboard, Layers, Menu, Settings2, ShieldAlert, Users, Building2 } from "lucide-react";
+import { ArrowLeft, BadgePercent, CreditCard, History, LayoutDashboard, Layers, Menu, Settings2, Users, Building2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, Navigate, NavLink, Outlet } from "react-router";
@@ -7,7 +7,6 @@ import { LanguageSwitch } from "@/components/layout/LanguageSwitch";
 import { ThemeSwitch } from "@/components/layout/ThemeSwitch";
 import { UserMenu } from "@/components/layout/UserMenu";
 import { Button } from "@/components/ui/button";
-import { EmptyState } from "@/components/ui/empty-state";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { brand } from "@/config/brand";
 import { cn } from "@/lib/cn";
@@ -91,20 +90,7 @@ export const AdminLayout = () => {
           </div>
         </header>
         <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:py-8">
-          {user.mfaEnabled ? (
-            <Outlet />
-          ) : (
-            <EmptyState
-              icon={ShieldAlert}
-              title={t("mfaTitle")}
-              body={t("mfaBody")}
-              action={
-                <Button asChild>
-                  <Link to="/settings/security">{t("mfaAction")}</Link>
-                </Button>
-              }
-            />
-          )}
+          <Outlet />
         </main>
       </div>
     </div>

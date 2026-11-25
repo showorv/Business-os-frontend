@@ -178,6 +178,17 @@ export const useCreateBusiness = () =>
 The helpers turn server errors into an `ApiError` with a code, which `errorMessage()` turns into words in
 the reader's language. The names of all cached lists live in `queryKeys`, in the same file.
 
+## Step 11.10: The admin panel opens without two-step sign-in
+
+Scanning the QR code for two-step sign-in didn't work on the live server, and the admin panel was
+locked behind it. Now the panel opens for any platform admin straight away: the "Turn on two-step
+sign-in first" screen is gone. Two-step sign-in is still in Settings → Security for anyone who wants
+it. Because the admin account is now protected by its password alone, give it a long, unique password.
+
+**How it was checked:** the paying-by-hand browser test now runs as an admin who never turned two-step
+on; the other admin test still turns it on to show it works. The whole suite passes, along with
+typecheck, lint, the 82 unit tests and the build.
+
 ## Step 11.9: Paying by hand (bKash, Nagad, Rocket, bank)
 
 There is no merchant account yet, so this is how people pay for Pro for now. They sign up free with
@@ -502,8 +513,8 @@ For customers:
 
 ### Becoming the admin
 
-Nobody is an admin by default. Turn on two-step sign-in in Settings → Security, then on the backend run
-`npm run admin:grant -- your-email`. Without two-step sign-in the panel only asks you to turn it on.
+Nobody is an admin by default. Sign up in the app, then on the backend run
+`npm run admin:grant -- your-email`. (Two-step sign-in used to be required; step 11.10 removed that.)
 
 ### How it was checked
 

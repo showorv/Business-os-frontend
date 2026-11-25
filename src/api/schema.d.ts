@@ -16870,7 +16870,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Accounts by plan state, people, and money received. Platform admins with two-step verification only, like every /admin route */
+        /** Accounts by plan state, people, and money received. Platform admins only, like every /admin route */
         get: {
             parameters: {
                 query?: never;

@@ -126,7 +126,6 @@
   "COUPON_INVALID_used_up": "That coupon has been used as many times as it allows.",
   "COUPON_INVALID_wrong_plan": "That coupon isn't for this plan.",
   "PLATFORM_ADMIN_ONLY": "Only platform admins can open this.",
-  "PLATFORM_ADMIN_MFA_REQUIRED": "Turn on two-step sign-in to use the admin panel.",
   "WORKSPACE_SUSPENDED": "This account is suspended. Please contact support.",
   "AI_PAUSED": "The AI assistant is paused for a short while. Please try again later.",
   "SIGNUPS_CLOSED": "New sign-ups are closed for now. You can join if someone invites you.",
