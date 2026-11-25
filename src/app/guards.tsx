@@ -42,13 +42,15 @@ export const FrontDoor = () => {
 };
 
 // "/app" (and "/" when signed in) opens the business used last, or the first one, or the set-up for a first business.
+// A platform admin with no business goes to the admin panel instead: running the platform needs no business.
 export const HomeRedirect = () => {
   const userId = useAppSelector((state) => state.auth.user?.id);
+  const isAdmin = useAppSelector((state) => state.auth.user?.isPlatformAdmin === true);
   const businesses = useBusinesses();
   if (businesses.isLoading) return <FullPageSpinner />;
   const list = businesses.data ?? [];
   const remembered = userId ? lastBusiness(userId) : null;
   const open = list.filter((business) => business.status !== "ARCHIVED");
   const target = list.find((business) => business.id === remembered) ?? open[0] ?? list[0];
-  return <Navigate to={target ? `/b/${target.id}` : "/onboarding"} replace />;
+  return <Navigate to={target ? `/b/${target.id}` : isAdmin ? "/admin" : "/onboarding"} replace />;
 };

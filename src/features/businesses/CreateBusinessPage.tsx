@@ -30,6 +30,7 @@ export const CreateBusinessPage = () => {
   const { t } = useTranslation(["businesses", "validation", "common"]);
   const navigate = useNavigate();
   const userId = useAppSelector((state) => state.auth.user?.id);
+  const isAdmin = useAppSelector((state) => state.auth.user?.isPlatformAdmin === true);
   const hasBusinesses = (useBusinesses().data?.length ?? 0) > 0;
   const create = useCreateBusiness();
   const form = useForm({
@@ -119,6 +120,10 @@ export const CreateBusinessPage = () => {
             {hasBusinesses ? (
               <Button variant="outline" asChild>
                 <Link to="/">{t("common:cancel")}</Link>
+              </Button>
+            ) : isAdmin ? (
+              <Button variant="outline" asChild>
+                <Link to="/admin">{t("businesses:openAdmin")}</Link>
               </Button>
             ) : null}
             <Button type="submit" disabled={create.isPending}>

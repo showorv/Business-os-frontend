@@ -178,6 +178,20 @@ export const useCreateBusiness = () =>
 The helpers turn server errors into an `ApiError` with a code, which `errorMessage()` turns into words in
 the reader's language. The names of all cached lists live in `queryKeys`, in the same file.
 
+## Step 11.12: An admin doesn't need a business
+
+The admin made from the backend's `.env` (step 11.11) starts with no business, and signing in sent it
+to "Create a business". Running the platform needs no business, so now:
+
+- A platform admin with no business who signs in, or opens `/`, goes straight to the admin panel.
+- The admin panel's bottom link reads **Set up a business** instead of *Back to the app* while the
+  admin has none, and the "Create a business" page shows **Go to the admin panel** next to *Create
+  business*. An admin who also runs a business gets the app as usual.
+- Everyone else still sets up their first business first, as before.
+
+**How it was checked:** the paying-by-hand browser test now uses an admin with no business and checks
+it lands on `/admin` with *Set up a business* shown. Typecheck, lint and the 82 unit tests pass.
+
 ## Step 11.10: The admin panel opens without two-step sign-in
 
 Scanning the QR code for two-step sign-in didn't work on the live server, and the admin panel was

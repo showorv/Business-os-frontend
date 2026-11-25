@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, Navigate, NavLink, Outlet } from "react-router";
 import { useAppSelector } from "@/app/store";
+import { useBusinesses } from "@/features/businesses/api";
 import { LanguageSwitch } from "@/components/layout/LanguageSwitch";
 import { ThemeSwitch } from "@/components/layout/ThemeSwitch";
 import { UserMenu } from "@/components/layout/UserMenu";
@@ -24,6 +25,9 @@ const ITEMS = [
 
 const Nav = ({ onNavigate }: { onNavigate?: () => void }) => {
   const { t } = useTranslation("admin");
+  // An admin doesn't need a business; without one, this offers to set one up instead.
+  const businesses = useBusinesses();
+  const hasBusiness = (businesses.data?.length ?? 0) > 0;
   return (
     <div className="flex h-full flex-col">
       <div className="flex h-16 items-center gap-2 px-5 font-semibold">
@@ -48,9 +52,13 @@ const Nav = ({ onNavigate }: { onNavigate?: () => void }) => {
         ))}
       </nav>
       <div className="border-t p-3">
-        <Link to="/" onClick={onNavigate} className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted">
+        <Link
+          to={hasBusiness || businesses.isLoading ? "/" : "/onboarding"}
+          onClick={onNavigate}
+          className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted"
+        >
           <ArrowLeft className="size-4" />
-          {t("backToApp")}
+          {hasBusiness || businesses.isLoading ? t("backToApp") : t("setUpBusiness")}
         </Link>
       </div>
     </div>

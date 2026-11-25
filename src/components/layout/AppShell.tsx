@@ -7,6 +7,7 @@ import { cn } from "@/lib/cn";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Spinner } from "@/components/ui/spinner";
+import { useAppSelector } from "@/app/store";
 import { useCurrentBusiness } from "@/features/businesses/useCurrentBusiness";
 import { PlanBanner } from "@/features/billing/PlanBanner";
 import { NotificationBell } from "@/features/notifications/NotificationBell";
@@ -22,12 +23,13 @@ export const AppShell = () => {
   const { t } = useTranslation("shell");
   const [menuOpen, setMenuOpen] = useState(false);
   const { business, businesses, isLoading, notFound } = useCurrentBusiness();
+  const isAdmin = useAppSelector((state) => state.auth.user?.isPlatformAdmin === true);
   // The assistant uses the whole width beside the menu; its messages keep a readable width inside.
   const wide = useMatch("/b/:businessId/assistant") !== null;
 
   if (isLoading) return <Spinner className="mt-32" />;
-  // Someone with no business yet sets one up first.
-  if (businesses.length === 0) return <Navigate to="/onboarding" replace />;
+  // Someone with no business yet sets one up first; a platform admin goes to the admin panel.
+  if (businesses.length === 0) return <Navigate to={isAdmin ? "/admin" : "/onboarding"} replace />;
   if (notFound) return <Navigate to="/" replace />;
 
   return (

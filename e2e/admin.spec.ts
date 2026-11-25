@@ -119,8 +119,11 @@ test("paying by hand: the customer tells us the transaction ID, the admin reject
   const admin = await secondPerson(browser, info);
   const adminEmail = freshEmail(info.project.name, "cashier");
   await register(admin, adminEmail, "Cash Desk");
-  await createBusiness(admin, "Cash Desk Co");
   makePlatformAdmin(adminEmail);
+  // An admin with no business opens the admin panel, not "create a business".
+  await admin.goto("/");
+  await expect(admin).toHaveURL(/\/admin$/);
+  await expect(admin.getByRole("link", { name: "Set up a business" })).toBeVisible();
 
   // No two-step sign-in needed. The admin turns it on with a bKash number and WhatsApp.
   await admin.goto("/admin/settings");
